@@ -1,0 +1,2440 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="stylesheet" as="style" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; -webkit-font-smoothing: antialiased; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: #E0D6C4; border-radius: 4px; }
+  @keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  @keyframes shakeX { 0%,100% { transform: translateX(0) scale(var(--sc,1)); } 25% { transform: translateX(-4px) scale(var(--sc,1)); } 75% { transform: translateX(4px) scale(var(--sc,1)); } }
+  @keyframes pulseRing { 0%,100% { box-shadow: 0 0 0 0 rgba(232,93,61,0.35); } 50% { box-shadow: 0 0 0 10px rgba(232,93,61,0); } }
+  @keyframes popIn { 0% { opacity:0; transform: translateY(6px) scale(0.9); } 100% { opacity:1; transform: translateY(0) scale(1); } }
+  @keyframes interviewerNod { 0%,100% { transform: translateY(0) rotate(0deg); } 35% { transform: translateY(2px) rotate(-1deg); } 70% { transform: translateY(0) rotate(1deg); } }
+  @keyframes interviewerMouth { 0%,100% { height:4px; border-radius:999px; } 35% { height:13px; border-radius:0 0 999px 999px; } 70% { height:8px; } }
+  @keyframes interviewerBlink { 0%,92%,100% { transform:scaleY(1); } 95% { transform:scaleY(0.12); } }
+  @keyframes listenGlow { 0%,100% { box-shadow:0 0 0 0 rgba(44,140,90,0.26); } 50% { box-shadow:0 0 0 9px rgba(44,140,90,0); } }
+  .ai-interviewer-stage { position:relative; min-height:218px; margin-bottom:14px; border-radius:16px; overflow:hidden; background:linear-gradient(180deg,#F8EFE3 0%,#F1DFC6 62%,#D7B995 100%); display:flex; align-items:flex-end; justify-content:center; }
+  .ai-interviewer-stage::before { content:""; position:absolute; inset:22px 28px auto; height:72px; border:2px solid rgba(26,26,26,0.22); border-left:none; border-right:none; }
+  .ai-interviewer-stage::after { content:""; position:absolute; left:0; right:0; bottom:0; height:58px; background:#8B5E3C; border-top:3px solid #1a1a1a; }
+  .ai-interviewer-person { position:relative; z-index:1; width:150px; height:190px; display:flex; flex-direction:column; align-items:center; animation:floatY 3.4s ease-in-out infinite; transform-origin:50% 82%; }
+  .ai-interviewer-speaking .ai-interviewer-person { animation:interviewerNod 1s ease-in-out infinite; }
+  .ai-interviewer-head { width:84px; height:96px; border:3px solid #1a1a1a; border-radius:38px 38px 34px 34px; background:#F3C7A6; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; }
+  .ai-interviewer-hair { position:absolute; top:-9px; left:8px; right:8px; height:30px; background:#2E2B29; border:3px solid #1a1a1a; border-radius:34px 34px 14px 14px; }
+  .ai-interviewer-eyes { display:flex; gap:18px; margin-top:12px; }
+  .ai-interviewer-eye { width:8px; height:8px; border-radius:50%; background:#1a1a1a; animation:interviewerBlink 5.2s infinite; }
+  .ai-interviewer-mouth { width:28px; height:4px; background:#1a1a1a; border-radius:999px; transition:height 0.15s ease; }
+  .ai-interviewer-speaking .ai-interviewer-mouth { animation:interviewerMouth 0.42s linear infinite; }
+  .ai-interviewer-body { width:132px; height:96px; margin-top:-4px; border:3px solid #1a1a1a; border-bottom:none; border-radius:34px 34px 0 0; background:#243B53; position:relative; }
+  .ai-interviewer-body::before { content:""; position:absolute; top:0; left:43px; width:42px; height:62px; background:#fff; clip-path:polygon(0 0,100% 0,50% 100%); border-left:2px solid #1a1a1a; border-right:2px solid #1a1a1a; }
+  .ai-interviewer-body::after { content:""; position:absolute; top:27px; left:59px; width:12px; height:42px; background:#E85D3D; border:2px solid #1a1a1a; transform:rotate(2deg); }
+  .ai-interviewer-status { position:absolute; z-index:2; right:14px; top:14px; max-width:185px; background:#fff; border:2px solid #1a1a1a; border-radius:12px; padding:9px 11px; font-size:11px; line-height:1.4; font-weight:800; }
+  .ai-listening-dot { width:8px; height:8px; border-radius:50%; background:#2C8C5A; animation:listenGlow 1.2s infinite; }
+  .live-feedback-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+  .live-feedback-metric { background:#FFF6EC; border:2px solid #1a1a1a; border-radius:12px; padding:11px 12px; min-width:0; }
+  .live-feedback-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:12px; }
+  @media (max-width: 820px) {
+    .design-flow-grid { grid-template-columns: minmax(0,1fr) !important; }
+    .design-flow-grid > div { max-height:none !important; position:static !important; }
+    .practice-stage-grid { grid-template-columns:minmax(0,1fr) !important; }
+    .feedback-slide-card { grid-template-columns:minmax(0,1fr) !important; }
+    .ai-interviewer-status { left:12px; right:12px; max-width:none; }
+    .live-feedback-grid, .live-feedback-list { grid-template-columns:minmax(0,1fr) !important; }
+  }
+</style>
+</helmet>
+<div style="min-height:100vh; width:100%; background:#FFF6EC; font-family:'Pretendard', system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif; color:#1a1a1a; display:flex; flex-direction:column; align-items:stretch;">
+
+  <sc-if value="{{ showTopNav }}">
+  <div style="position:sticky; top:0; z-index:10; background:#FFF6EC; border-bottom:3px solid #1a1a1a; display:flex; justify-content:center;">
+    <div style="width:100%; max-width:820px; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+      <div style="font-size:15px; font-weight:800; letter-spacing:-0.01em;">🗣️ 말버릇 코치</div>
+      <div style="display:flex; gap:10px;">
+        <div onClick="{{ goHome }}" style="font-size:13px; font-weight:800; color:{{ navHomeColor }}; cursor:pointer; padding:6px 14px; border-radius:999px; background:{{ navHomeBg }}; border:2px solid #1a1a1a;">홈</div>
+        <div onClick="{{ goArchive }}" style="font-size:13px; font-weight:800; color:{{ navArchiveColor }}; cursor:pointer; padding:6px 14px; border-radius:999px; background:{{ navArchiveBg }}; border:2px solid #1a1a1a;">아카이브</div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ HOME ============ -->
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <div data-screen-label="홈/대시보드" style="width:100%; max-width:820px; margin:0 auto; padding:28px 20px 60px; display:flex; flex-direction:column; gap:20px;">
+
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <div style="font-size:13px; font-weight:700; color:#E85D3D; letter-spacing:0.02em;">말버릇 코치</div>
+        <div style="font-size:24px; font-weight:800; margin-top:2px;">안녕하세요 👋</div>
+      </div>
+      <div style="width:46px; height:46px; border-radius:50%; background:#FFD166; border:3px solid #1a1a1a; display:flex; align-items:center; justify-content:center; font-weight:800; color:#1a1a1a;">나</div>
+    </div>
+
+    <div style="background:#E85D3D; border:3px solid #1a1a1a; border-radius:24px; padding:22px; color:#fff; display:flex; flex-direction:column; gap:14px; box-shadow:6px 6px 0 #1a1a1a;">
+      <div style="display:flex; align-items:baseline; justify-content:space-between;">
+        <div style="font-size:15px; font-weight:700; opacity:0.95;">연속 연습 🔥</div>
+        <div style="font-size:13px; opacity:0.85; font-weight:600;">이번 주 목표 {{ settings.targetWpm }} WPM</div>
+      </div>
+      <div style="font-size:40px; font-weight:800; line-height:1; font-family:'JetBrains Mono', monospace;">{{ streakDays }}일째</div>
+      <div style="display:flex; gap:6px; align-items:flex-end; height:44px;">
+        <sc-for list="{{ weeklyBars }}" as="bar" hint-placeholder-count="7">
+          <div style="flex:1; height:{{ bar.pct }}%; min-height:6px; background:rgba(255,255,255,{{ bar.opacity }}); border-radius:5px;"></div>
+        </sc-for>
+      </div>
+      <button onClick="{{ startNewSession }}" style="margin-top:4px; background:#FFD166; color:#1a1a1a; border:3px solid #1a1a1a; border-radius:14px; padding:14px; font-size:15px; font-weight:800; cursor:pointer; box-shadow:4px 4px 0 #1a1a1a;">새 연습 시작하기</button>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:14px;">
+      <div style="background:#fff; border:3px solid #1a1a1a; border-radius:18px; padding:16px;">
+        <div style="font-size:12px; color:#6b6258; font-weight:700;">총 연습 횟수</div>
+        <div style="font-size:26px; font-weight:800; margin-top:4px; font-family:'JetBrains Mono', monospace;">{{ totalSessions }}회</div>
+      </div>
+      <div style="background:#fff; border:3px solid #1a1a1a; border-radius:18px; padding:16px;">
+        <div style="font-size:12px; color:#6b6258; font-weight:700;">평균 말 속도</div>
+        <div style="font-size:26px; font-weight:800; margin-top:4px; font-family:'JetBrains Mono', monospace;">{{ avgWpmAll }} <span style="font-size:13px; font-weight:700; color:#6b6258; font-family:'Pretendard', sans-serif;">WPM</span></div>
+        <div style="font-size:11px; color:#2C8C5A; font-weight:800; margin-top:4px;">▲ {{ wpmTrendLabel }}</div>
+      </div>
+    </div>
+
+    <div style="background:#fff; border:3px solid #1a1a1a; border-radius:18px; padding:18px;">
+      <div style="font-size:14px; font-weight:800; margin-bottom:12px;">자주 쓰는 말 TOP 3</div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <sc-for list="{{ topHabitWords }}" as="w" hint-placeholder-count="3">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="font-size:13px; font-weight:700; width:64px; flex-shrink:0;">{{ w.word }}</div>
+            <div style="flex:1; height:10px; background:#F3ECDF; border-radius:5px; overflow:hidden; border:2px solid #1a1a1a;">
+              <div style="height:100%; width:{{ w.pct }}%; background:#FFD166; border-radius:0;"></div>
+            </div>
+            <div style="font-size:12px; color:#6b6258; width:32px; text-align:right; font-weight:700;">{{ w.count }}회</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div onClick="{{ goArchive }}" style="display:flex; align-items:center; justify-content:space-between; background:#fff; border:3px solid #1a1a1a; border-radius:18px; padding:16px 18px; cursor:pointer; box-shadow:4px 4px 0 #1a1a1a;">
+      <div>
+        <div style="font-size:13px; font-weight:800;">내 연습 아카이브</div>
+        <div style="font-size:12px; color:#6b6258; margin-top:2px; font-weight:600;">지난 연습 기록과 리포트를 모아봐요</div>
+      </div>
+      <div style="font-size:18px; font-weight:800;">›</div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ MODE SELECT ============ -->
+  <sc-if value="{{ isModeSelect }}">
+  <div data-screen-label="모드 선택" style="width:100%; max-width:680px; margin:0 auto; padding:28px 20px 60px; display:flex; flex-direction:column; gap:24px; flex:1; justify-content:center;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button onClick="{{ goHome }}" style="width:38px; height:38px; border-radius:50%; border:3px solid #1a1a1a; background:#fff; font-size:16px; cursor:pointer; font-weight:800;">←</button>
+      <div>
+        <div style="font-size:22px; font-weight:800;">어떤 연습을 할까요?</div>
+        <div style="font-size:13px; color:#6b6258; margin-top:2px; font-weight:600;">선택한 모드로 새 연습 기록이 만들어져요</div>
+      </div>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:18px;">
+      <div onClick="{{ chooseModeSpeech }}" style="flex:1 1 260px; background:#fff; border:3px solid #1a1a1a; border-radius:22px; padding:28px 24px; cursor:pointer; display:flex; flex-direction:column; gap:14px; box-shadow:5px 5px 0 #1a1a1a; transition:transform 0.1s ease;" style-hover="transform:translate(-2px,-2px); box-shadow:7px 7px 0 #1a1a1a;">
+        <div style="width:56px; height:56px; border-radius:16px; background:#FFD166; border:3px solid #1a1a1a; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800;">🎤</div>
+        <div>
+          <div style="font-size:18px; font-weight:800;">발표 연습</div>
+          <div style="font-size:13px; color:#6b6258; margin-top:6px; line-height:1.5; font-weight:600;">슬라이드와 실제 발화를 비교해 부족한 설명과 보완할 자료를 알려드려요.</div>
+        </div>
+      </div>
+      <div onClick="{{ chooseModeInterview }}" style="flex:1 1 260px; background:#fff; border:3px solid #1a1a1a; border-radius:22px; padding:28px 24px; cursor:pointer; display:flex; flex-direction:column; gap:14px; box-shadow:5px 5px 0 #1a1a1a; transition:transform 0.1s ease;" style-hover="transform:translate(-2px,-2px); box-shadow:7px 7px 0 #1a1a1a;">
+        <div style="width:56px; height:56px; border-radius:16px; background:#E85D3D; border:3px solid #1a1a1a; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800;">💼</div>
+        <div>
+          <div style="font-size:18px; font-weight:800;">면접 연습</div>
+          <div style="font-size:13px; color:#6b6258; margin-top:6px; line-height:1.5; font-weight:600;">지원 자료와 직무를 바탕으로 질문을 만들고 답변 내용과 말하기 습관을 함께 분석해요.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ AI 연습 설계 ============ -->
+  <sc-if value="{{ isDesign }}">
+  <div data-screen-label="AI 연습 설계" style="width:100%; max-width:1180px; margin:0 auto; padding:20px 24px 100px; display:flex; flex-direction:column; gap:18px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button onClick="{{ goBasicSetup }}" style="width:38px; height:38px; border-radius:50%; border:3px solid #1a1a1a; background:#fff; font-size:16px; cursor:pointer; font-weight:800;">←</button>
+      <div>
+        <div style="font-size:20px; font-weight:800;">AI 연습 설계 · 대본 흐름 편집</div>
+        <div style="font-size:12px; color:#6b6258; font-weight:600; margin-top:2px;">전체 대본을 보면서 발화마다 슬라이드, 시간과 리허설 문장을 다듬어보세요.</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800; flex-wrap:wrap;">
+      <div style="color:{{ bc1Color }};">① 자료 준비</div><div style="color:#c9bfa9;">—</div>
+      <div style="color:{{ bc2Color }};">② AI 연습 설계</div><div style="color:#c9bfa9;">—</div>
+      <div style="color:{{ bc3Color }};">③ 리허설</div><div style="color:#c9bfa9;">—</div>
+      <div style="color:{{ bc4Color }};">④ 리포트</div>
+    </div>
+
+    <div style="background:#FFD166; border:3px solid #1a1a1a; border-radius:18px; padding:15px 18px; box-shadow:4px 4px 0 #1a1a1a;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;">
+        <div>
+          <div style="font-size:12px; font-weight:800; color:#6b6258;">전체 발표 설정</div>
+          <div style="font-size:14px; font-weight:800; margin-top:4px;">{{ globalSettingsSummary }}</div>
+          <div style="font-size:11px; font-weight:700; color:{{ plannedTimeColor }}; margin-top:5px;">계획 {{ plannedTotalLabel }} / 목표 {{ targetDurationLabel }} · {{ timeGapLabel }}</div>
+        </div>
+        <button onClick="{{ toggleGlobalSettings }}" style="border:2px solid #1a1a1a; background:#fff; border-radius:10px; padding:9px 13px; font-size:12px; font-weight:800; cursor:pointer;">{{ globalSettingsButtonLabel }}</button>
+      </div>
+      <sc-if value="{{ showGlobalSettings }}">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-top:15px; padding-top:15px; border-top:2px solid #1a1a1a;">
+          <div><div style="font-size:11px; font-weight:800; margin-bottom:6px;">목표 시간(분)</div><input type="number" value="{{ targetDurationMin }}" onChange="{{ onTargetDurationChange }}" style="width:100%; border:2px solid #1a1a1a; border-radius:9px; padding:9px 10px; font-size:12px;"></input></div>
+          <div><div style="font-size:11px; font-weight:800; margin-bottom:6px;">목표 말 속도</div><input type="number" value="{{ settings.targetWpm }}" onChange="{{ onTargetWpmChange }}" style="width:100%; border:2px solid #1a1a1a; border-radius:9px; padding:9px 10px; font-size:12px;"></input></div>
+          <div><div style="font-size:11px; font-weight:800; margin-bottom:6px;">발표 대상</div><input type="text" value="{{ presentationAudience }}" onChange="{{ onPresentationAudienceChange }}" style="width:100%; border:2px solid #1a1a1a; border-radius:9px; padding:9px 10px; font-size:12px;"></input></div>
+          <div><div style="font-size:11px; font-weight:800; margin-bottom:6px;">발표 목적</div><input type="text" value="{{ presentationPurpose }}" onChange="{{ onPresentationPurposeChange }}" style="width:100%; border:2px solid #1a1a1a; border-radius:9px; padding:9px 10px; font-size:12px;"></input></div>
+          <div><div style="font-size:11px; font-weight:800; margin-bottom:6px;">발표 톤</div><input type="text" value="{{ presentationTone }}" onChange="{{ onPresentationToneChange }}" style="width:100%; border:2px solid #1a1a1a; border-radius:9px; padding:9px 10px; font-size:12px;"></input></div>
+        </div>
+        <div style="margin-top:12px;"><div style="font-size:11px; font-weight:800; margin-bottom:6px;">집중 피드백</div><input type="text" value="{{ feedbackFocus }}" onChange="{{ onFeedbackFocusChange }}" style="width:100%; border:2px solid #1a1a1a; border-radius:9px; padding:9px 10px; font-size:12px;"></input></div>
+        <div style="margin-top:12px;"><div style="font-size:11px; font-weight:800; margin-bottom:6px;">감지할 금지어</div><div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:7px;"><sc-for list="{{ forbiddenWordItems }}" as="w" hint-placeholder-count="2"><div style="display:flex; align-items:center; gap:5px; background:#fff; border:2px solid #1a1a1a; border-radius:999px; padding:5px 7px 5px 10px; font-size:11px; font-weight:700;">{{ w.word }}<button onClick="{{ w.remove }}" style="width:15px; height:15px; border-radius:50%; border:none; background:#E85D3D; color:#fff; font-size:9px; padding:0;">×</button></div></sc-for></div><div style="display:flex; gap:7px;"><input type="text" placeholder="금지어 추가" value="{{ settingsNewWord }}" onChange="{{ onNewWordChange }}" onKeyDown="{{ onNewWordKeyDown }}" style="flex:1; border:2px solid #1a1a1a; border-radius:9px; padding:9px 10px; font-size:11px;"></input><button onClick="{{ addForbiddenWord }}" style="border:2px solid #1a1a1a; background:#1a1a1a; color:#fff; border-radius:9px; padding:0 12px; font-size:11px; font-weight:800;">추가</button></div></div>
+      </sc-if>
+    </div>
+
+    <div class="design-flow-grid" style="display:grid; grid-template-columns:minmax(320px,0.9fr) minmax(420px,1.1fr); gap:16px; align-items:start;">
+      <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:16px; max-height:calc(100vh - 250px); overflow-y:auto;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px;">
+          <div><div style="font-size:14px; font-weight:800;">전체 대본 흐름</div><div style="font-size:11px; color:#a89d8c; font-weight:600; margin-top:3px;">수정할 발화를 선택하세요</div></div>
+          <div style="font-size:11px; font-weight:800; background:#FBE9C7; border:2px solid #1a1a1a; border-radius:999px; padding:5px 8px;">{{ flowItemCountLabel }}</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <sc-for list="{{ designSlideNavItems }}" as="nav" hint-placeholder-count="8">
+            <div onClick="{{ nav.select }}" style="cursor:pointer; background:{{ nav.bg }}; border:2px solid #1a1a1a; border-radius:12px; padding:11px 12px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
+                <div style="font-size:10px; font-weight:800; color:#6b6258;">순서 {{ nav.n }}</div>
+                <div style="display:flex; gap:5px;"><span style="font-size:9px; font-weight:800; background:#fff; border:1px solid #1a1a1a; border-radius:999px; padding:3px 6px;">S{{ nav.slideN }}</span><span style="font-size:9px; font-weight:800; background:#fff; border:1px solid #1a1a1a; border-radius:999px; padding:3px 6px;">{{ nav.time }}초</span></div>
+              </div>
+              <div style="font-size:12px; font-weight:700; line-height:1.5;">{{ nav.script }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:20px; display:flex; flex-direction:column; gap:16px; max-height:calc(100vh - 250px); overflow-y:auto;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;"><div style="font-size:16px; font-weight:800;">발화 {{ dsN }} 설정</div><div style="font-size:11px; font-weight:800; background:#FBE9C7; border:2px solid #1a1a1a; border-radius:999px; padding:5px 8px;">슬라이드 {{ dsSlideN }}</div></div>
+
+        <sc-if value="{{ hasOriginalScript }}"><div style="background:#FFF6EC; border:2px solid #1a1a1a; border-radius:12px; padding:12px 13px;"><div style="font-size:10px; font-weight:800; color:#6b6258; margin-bottom:5px;">원본 대본</div><div style="font-size:12px; line-height:1.55; font-weight:600;">{{ dsSourceText }}</div></div></sc-if>
+
+        <div><div style="font-size:12px; font-weight:800; color:#6b6258; margin-bottom:7px;">연결 슬라이드</div><div style="display:flex; gap:7px; overflow-x:auto; padding-bottom:4px;"><sc-for list="{{ designSlideChoiceItems }}" as="choice" hint-placeholder-count="5"><div onClick="{{ choice.assign }}" style="flex:0 0 112px; cursor:pointer; background:{{ choice.bg }}; border:2px solid {{ choice.border }}; border-radius:9px; padding:8px;"><div style="font-size:9px; font-weight:800; color:#E85D3D;">S{{ choice.n }}</div><div style="font-size:10px; font-weight:700; line-height:1.3; margin-top:4px;">{{ choice.title }}</div></div></sc-for></div></div>
+
+        <div><div style="display:flex; align-items:center; gap:7px; margin-bottom:7px;"><div style="font-size:12px; font-weight:800; color:#6b6258;">{{ designScriptHeading }}</div><div style="font-size:9px; font-weight:800; background:#FFD166; border:1px solid #1a1a1a; border-radius:999px; padding:3px 6px;">{{ designScriptBadge }}</div></div><textarea value="{{ dsScript }}" onChange="{{ onDesignScriptChange }}" style="width:100%; min-height:105px; border:2px solid #1a1a1a; border-radius:11px; padding:11px 12px; font-size:13px; line-height:1.6; resize:vertical;"></textarea><div style="display:flex; gap:7px; margin-top:7px;"><input type="text" placeholder="AI 재추천 요청 (예: 더 짧게, 자연스럽게)" value="{{ designInstruction }}" onChange="{{ onDesignInstructionChange }}" style="flex:1; min-width:0; border:2px solid #1a1a1a; border-radius:9px; padding:9px 10px; font-size:11px;"></input><button onClick="{{ regenerateDesignSlide }}" disabled="{{ isRegeneratingDesign }}" style="border:2px solid #1a1a1a; background:#E85D3D; color:#fff; border-radius:9px; padding:0 12px; font-size:11px; font-weight:800; white-space:nowrap;">{{ regenerateLabel }}</button></div></div>
+
+        <div style="display:grid; grid-template-columns:minmax(0,1fr) 105px; gap:10px;"><div><div style="font-size:12px; font-weight:800; color:#6b6258; margin-bottom:7px;">{{ transitionHeading }}</div><input type="text" value="{{ dsTransition }}" onChange="{{ onDesignTransitionChange }}" style="width:100%; border:2px solid #1a1a1a; border-radius:9px; padding:10px; font-size:12px;"></input></div><div><div style="font-size:12px; font-weight:800; color:#6b6258; margin-bottom:7px;">권장 시간</div><div style="display:flex; align-items:center; gap:5px;"><input type="number" value="{{ dsTime }}" onChange="{{ onDesignTimeChange }}" style="width:100%; border:2px solid #1a1a1a; border-radius:9px; padding:10px; font-size:12px;"></input><span style="font-size:11px; font-weight:800;">초</span></div></div></div>
+
+        <div><div style="font-size:12px; font-weight:800; color:#6b6258; margin-bottom:7px;">반드시 말할 핵심 키워드</div><div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:7px;"><sc-for list="{{ designKeywordItems }}" as="kw" hint-placeholder-count="2"><div style="display:flex; align-items:center; gap:5px; background:#F6C9BC; border:2px solid #1a1a1a; border-radius:999px; padding:5px 7px 5px 10px; font-size:11px; font-weight:700; color:#8c2f1c;">{{ kw.text }}<button onClick="{{ kw.remove }}" style="width:15px; height:15px; border-radius:50%; border:none; background:#E85D3D; color:#fff; font-size:9px; padding:0;">×</button></div></sc-for></div><div style="display:flex; gap:7px;"><input type="text" placeholder="키워드 추가" value="{{ designNewKeyword }}" onChange="{{ onDesignNewKeywordChange }}" onKeyDown="{{ onDesignNewKeywordKeyDown }}" style="flex:1; border:2px solid #1a1a1a; border-radius:9px; padding:9px 10px; font-size:11px;"></input><button onClick="{{ submitDesignNewKeyword }}" style="border:2px solid #1a1a1a; background:#1a1a1a; color:#fff; border-radius:9px; padding:0 12px; font-size:11px; font-weight:800;">추가</button></div></div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <sc-if value="{{ hasScriptForConnect }}"><button onClick="{{ goDesignConnectFromPlan }}" style="flex:1 1 160px; background:#fff; color:#1a1a1a; border:3px solid #1a1a1a; border-radius:14px; padding:15px; font-size:14px; font-weight:800; cursor:pointer;">연결 다시 확인</button></sc-if>
+      <button onClick="{{ confirmDesignPlan }}" style="flex:2 1 220px; background:#E85D3D; color:#fff; border:3px solid #1a1a1a; border-radius:14px; padding:15px; font-size:14px; font-weight:800; cursor:pointer; box-shadow:4px 4px 0 #1a1a1a;">발표 흐름 확정하고 리허설 시작</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ 발표 자료 입력 ============ -->
+  <sc-if value="{{ isBasicSetup }}">
+  <div data-screen-label="발표 자료 입력" style="width:100%; max-width:720px; margin:0 auto; padding:20px 20px 60px; display:flex; flex-direction:column; gap:20px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button onClick="{{ goModeSelect }}" style="width:38px; height:38px; border-radius:50%; border:3px solid #1a1a1a; background:#fff; font-size:16px; cursor:pointer; font-weight:800;">←</button>
+      <div>
+        <div style="font-size:20px; font-weight:800;">발표 준비</div>
+        <div style="font-size:12px; color:#6b6258; font-weight:600; margin-top:2px;">자료를 올리면 바로 발표 연습을 시작할 수 있어요.</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800; flex-wrap:wrap;">
+      <div style="color:#E85D3D;">① 준비</div><div style="color:#c9bfa9;">—</div>
+      <div style="color:#a89d8c;">② 연습</div><div style="color:#c9bfa9;">—</div>
+      <div style="color:#a89d8c;">③ 피드백</div>
+    </div>
+
+    <div>
+      <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:#6b6258;">발표 연습 제목</div>
+      <input type="text" placeholder="예: AI 발표 프로젝트 시연" value="{{ sessionName }}" onChange="{{ onSessionNameChangeBasic }}" style="width:100%; border:3px solid #1a1a1a; border-radius:12px; padding:12px 14px; font-size:14px; font-family:inherit; outline:none; background:#fff;"></input>
+    </div>
+
+    <div>
+      <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:#6b6258;">발표 자료 (PPT 또는 PDF)</div>
+      <sc-if value="{{ materialUploaded }}">
+        <div style="border:3px solid #1a1a1a; background:#fff; border-radius:16px; padding:16px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:42px; height:42px; border-radius:10px; background:#FFD166; border:2px solid #1a1a1a; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:11px;">PDF</div>
+            <div>
+              <div style="font-size:13px; font-weight:800;">{{ materialFileName }}</div>
+              <div style="font-size:12px; color:#6b6258; font-weight:600;">5장 · 분석 준비 완료</div>
+            </div>
+          </div>
+          <button onClick="{{ resetMaterial }}" style="border:none; background:none; font-size:12px; color:#E85D3D; font-weight:800; cursor:pointer;">변경</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ materialNotUploaded }}">
+        <div onClick="{{ onMaterialUpload }}" style="border:3px dashed #1a1a1a; border-radius:16px; padding:24px 16px; text-align:center; cursor:pointer; color:#6b6258; background:#fff; font-size:13px; font-weight:700;">발표 자료를 드래그하거나 클릭하여 업로드</div>
+      </sc-if>
+    </div>
+
+    <div class="practice-stage-grid" style="display:grid; grid-template-columns:minmax(0,1fr) 150px; gap:12px; align-items:end;">
+      <div>
+        <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:#6b6258;">집중해서 봐줄 점 <span style="font-size:11px; color:#a89d8c;">(선택)</span></div>
+        <textarea placeholder="예: 핵심 내용 누락과 시간 배분" value="{{ feedbackRequest }}" onChange="{{ onFeedbackRequestChange }}" style="width:100%; min-height:76px; border:3px solid #1a1a1a; border-radius:14px; padding:12px 14px; font-size:14px; line-height:1.5; font-family:inherit; outline:none; resize:vertical; background:#fff;"></textarea>
+      </div>
+      <div>
+        <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:#6b6258;">발표 제한 시간</div>
+        <div style="display:flex; align-items:center; gap:8px;"><input type="number" min="1" value="{{ targetDurationMin }}" onChange="{{ onTargetDurationChange }}" style="width:100%; border:3px solid #1a1a1a; border-radius:12px; padding:12px 14px; font-size:14px; font-family:'JetBrains Mono', monospace; outline:none; background:#fff;"></input><span style="font-size:13px; font-weight:800;">분</span></div>
+      </div>
+    </div>
+
+    <button onClick="{{ startPresentationPractice }}" disabled="{{ cannotStartPresentation }}" style="background:{{ startPresentationBg }}; color:#fff; border:3px solid #1a1a1a; border-radius:14px; padding:16px; font-size:15px; font-weight:800; cursor:pointer; margin-top:8px; box-shadow:4px 4px 0 #1a1a1a;">발표 시작하기</button>
+  </div>
+  </sc-if>
+
+  <!-- ============ 대본·슬라이드 연결 확인 ============ -->
+  <sc-if value="{{ isDesignConnect }}">
+  <div data-screen-label="연결 확인" style="width:100%; max-width:980px; margin:0 auto; padding:20px 24px 60px; display:flex; flex-direction:column; gap:18px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button onClick="{{ goBasicSetup }}" style="width:38px; height:38px; border-radius:50%; border:3px solid #1a1a1a; background:#fff; font-size:16px; cursor:pointer; font-weight:800;">←</button>
+      <div>
+        <div style="font-size:20px; font-weight:800;">대본 · 슬라이드 연결 확인</div>
+        <div style="font-size:12px; color:#6b6258; font-weight:600; margin-top:2px;">문장을 클릭하고, 연결할 슬라이드를 눌러 바꿀 수 있어요</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800;">
+      <div style="color:{{ bc1Color }};">① 자료 준비</div><div style="color:#c9bfa9;">—</div>
+      <div style="color:{{ bc2Color }};">② AI 연습 설계</div><div style="color:#c9bfa9;">—</div>
+      <div style="color:{{ bc3Color }};">③ 리허설</div><div style="color:#c9bfa9;">—</div>
+      <div style="color:{{ bc4Color }};">④ 리포트</div>
+    </div>
+
+    <sc-if value="{{ hasUnconnectedSentences }}">
+      <div style="background:#FDEDED; border:2px solid #E85D3D; border-radius:12px; padding:12px 16px; font-size:12px; font-weight:700; color:#8c2f1c;">연결되지 않은 문장이 있어요 — 빨간 테두리 문장을 눌러 슬라이드에 연결해주세요.</div>
+    </sc-if>
+
+    <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:24px 28px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px;">
+        <div>
+          <div style="font-size:13px; font-weight:800;">원본 대본 흐름</div>
+          <div style="font-size:11px; color:#a89d8c; font-weight:600; margin-top:3px;">문장을 누르면 아래에서 연결 슬라이드를 바꿀 수 있어요</div>
+        </div>
+        <div style="font-size:11px; font-weight:800; color:#2C8C5A; background:#E6F5EC; border:2px solid #1a1a1a; border-radius:999px; padding:5px 9px; white-space:nowrap;">{{ connectedCountLabel }}</div>
+      </div>
+      <div style="font-size:17px; line-height:2.45; color:#1a1a1a;">
+        <sc-for list="{{ connectSentenceItems }}" as="cs" hint-placeholder-count="8">
+          <span onClick="{{ cs.select }}" style="cursor:pointer; display:inline; background:{{ cs.bg }}; padding:3px 6px; margin:0 6px 7px 0; border-radius:6px; box-decoration-break:clone; -webkit-box-decoration-break:clone; box-shadow:{{ cs.shadow }};">
+            {{ cs.text }}
+            <span style="display:inline-block; margin-left:4px; transform:translateY(-1px); font-size:9px; line-height:1; font-weight:800; color:{{ cs.labelColor }}; background:#fff; border:1px solid #1a1a1a; border-radius:999px; padding:3px 5px; white-space:nowrap;">{{ cs.shortSlideLabel }}</span>
+          </span>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:16px;">
+      <div style="font-size:13px; font-weight:800; color:#6b6258; margin-bottom:4px;">슬라이드</div>
+      <div style="font-size:11px; color:#a89d8c; font-weight:600; margin-bottom:10px;">문장을 선택한 뒤, 연결할 슬라이드를 눌러주세요</div>
+      <div style="display:flex; gap:14px; overflow-x:auto; padding-bottom:6px;">
+        <sc-for list="{{ connectSlideItems }}" as="sl" hint-placeholder-count="5">
+          <div onClick="{{ sl.assign }}" style="flex:0 0 200px; display:flex; flex-direction:column; gap:6px; cursor:pointer;">
+            <div style="font-size:11px; font-weight:700; color:#6b6258;">슬라이드 {{ sl.n }}</div>
+            <div style="width:200px; aspect-ratio:16/10; background:#fff; border-width:{{ sl.borderWidth }}px; border-style:solid; border-color:{{ sl.border }}; border-radius:10px; display:flex; align-items:center; justify-content:center; padding:10px;">
+              <div style="font-size:12px; font-weight:700; color:#6b6258; text-align:center; line-height:1.4;">{{ sl.title }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <button onClick="{{ goBasicSetup }}" style="flex:1; background:#fff; color:#1a1a1a; border:3px solid #1a1a1a; border-radius:14px; padding:15px; font-size:14px; font-weight:800; cursor:pointer;">기본 설정으로 돌아가기</button>
+      <button onClick="{{ completeConnect }}" style="flex:1; background:#E85D3D; color:#fff; border:3px solid #1a1a1a; border-radius:14px; padding:15px; font-size:14px; font-weight:800; cursor:pointer; box-shadow:4px 4px 0 #1a1a1a;">연결 확인 완료</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ ARCHIVE ============ -->
+  <sc-if value="{{ isArchive }}">
+  <div data-screen-label="아카이브" style="width:100%; max-width:820px; margin:0 auto; padding:28px 20px 60px; display:flex; flex-direction:column; gap:18px;">
+    <div>
+      <div style="font-size:22px; font-weight:800;">내 연습 아카이브</div>
+      <div style="font-size:13px; color:#6b6258; margin-top:2px; font-weight:600;">지난 연습 기록을 모두 확인해보세요</div>
+    </div>
+    <div style="display:flex; background:#fff; border:3px solid #1a1a1a; border-radius:14px; padding:4px; gap:4px; width:fit-content;">
+      <button onClick="{{ setArchiveFilterAll }}" style="border:none; border-radius:10px; padding:8px 16px; font-size:13px; font-weight:800; cursor:pointer; background:{{ archiveFilterAllBg }}; color:#1a1a1a;">전체</button>
+      <button onClick="{{ setArchiveFilterSpeech }}" style="border:none; border-radius:10px; padding:8px 16px; font-size:13px; font-weight:800; cursor:pointer; background:{{ archiveFilterSpeechBg }}; color:#1a1a1a;">발표</button>
+      <button onClick="{{ setArchiveFilterInterview }}" style="border:none; border-radius:10px; padding:8px 16px; font-size:13px; font-weight:800; cursor:pointer; background:{{ archiveFilterInterviewBg }}; color:#1a1a1a;">면접</button>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <sc-if value="{{ hasArchiveSessions }}">
+      <sc-for list="{{ archiveSessions }}" as="sess" hint-placeholder-count="2">
+        <div onClick="{{ sess.open }}" style="background:#fff; border:3px solid #1a1a1a; border-radius:18px; padding:16px 18px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;">
+          <div>
+            <div style="font-size:14px; font-weight:800;">{{ sess.name }}</div>
+            <div style="font-size:12px; color:#6b6258; margin-top:3px; font-weight:600;">{{ sess.date }} · {{ sess.mode }} · {{ sess.durationLabel }} · 평균 {{ sess.avgWpm }} WPM</div>
+          </div>
+          <div style="font-size:18px; font-weight:800;">›</div>
+        </div>
+      </sc-for>
+      </sc-if>
+      <sc-if value="{{ noArchiveSessions }}">
+        <div style="text-align:center; padding:40px 20px; color:#a89d8c; font-size:13px; font-weight:600;">해당하는 연습 기록이 없어요</div>
+      </sc-if>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ SETTINGS ============ -->
+  <sc-if value="{{ isSettings }}">
+  <div data-screen-label="연습 설정" style="width:100%; max-width:680px; margin:0 auto; padding:20px 20px 60px; display:flex; flex-direction:column; gap:20px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button onClick="{{ goModeSelect }}" style="width:38px; height:38px; border-radius:50%; border:3px solid #1a1a1a; background:#fff; font-size:16px; cursor:pointer; font-weight:800;">←</button>
+        <div><div style="font-size:20px; font-weight:800;">면접 준비</div><div style="font-size:12px; color:#6b6258; font-weight:600; margin-top:2px;">지원 정보를 바탕으로 연습할 질문을 준비해요.</div></div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800;">
+      <div style="color:#E85D3D;">① 준비</div>
+      <div style="color:#c9bfa9;">—</div>
+      <div style="color:#a89d8c;">② 연습</div>
+      <div style="color:#c9bfa9;">—</div>
+      <div style="color:#a89d8c;">③ 피드백</div>
+    </div>
+
+    <div>
+      <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:#6b6258;">연습 이름</div>
+      <input type="text" placeholder="예: 프론트엔드 직무 모의면접" value="{{ sessionName }}" onChange="{{ onSessionNameChange }}" style="width:100%; border:3px solid #1a1a1a; border-radius:12px; padding:12px 14px; font-size:14px; font-family:inherit; outline:none; background:#fff;"></input>
+    </div>
+
+    <sc-if value="{{ isInterviewMode }}">
+    <div>
+      <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:#6b6258;">자기소개서·포트폴리오 <span style="font-size:11px; color:#a89d8c;">(선택)</span></div>
+      <div style="margin-bottom:16px;">
+        <sc-if value="{{ interviewMaterialUploaded }}">
+          <div style="border:3px solid #1a1a1a; background:#fff; border-radius:16px; padding:16px; display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:38px; height:38px; border-radius:10px; background:#FFD166; border:2px solid #1a1a1a; display:flex; align-items:center; justify-content:center; color:#1a1a1a; font-weight:800; font-size:11px;">PDF</div>
+              <div>
+                <div style="font-size:13px; font-weight:800;">{{ interviewMaterialFileName }}</div>
+                <div style="font-size:12px; color:#6b6258; font-weight:600;">업로드 완료 · 질문 생성에 참고돼요</div>
+              </div>
+            </div>
+            <button onClick="{{ resetInterviewMaterial }}" style="border:none; background:none; font-size:12px; color:#E85D3D; font-weight:800; cursor:pointer;">변경</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ interviewMaterialNotUploaded }}">
+          <div onClick="{{ uploadInterviewMaterial }}" style="border:3px dashed #1a1a1a; border-radius:16px; padding:20px 16px; text-align:center; cursor:pointer; color:#6b6258; background:#fff;">
+            <div style="font-size:13px; font-weight:700;">자기소개서, 포트폴리오 등을 업로드하세요</div>
+            <div style="font-size:12px; margin-top:4px; color:#a89d8c; font-weight:600;">.pdf, .docx — AI가 맞춤 질문을 만들 때 참고해요</div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:#6b6258;">맞춤 질문 만들기</div>
+      <div style="background:#fff; border:3px solid #1a1a1a; border-radius:16px; padding:16px; margin-bottom:16px; display:flex; flex-direction:column; gap:10px;">
+        <div style="font-size:12px; color:#6b6258; font-weight:700;">지원 직무를 입력하면 연습 질문을 만들어드려요.</div>
+        <input type="text" placeholder="회사/산업 (예: 스타트업 · 핀테크)" value="{{ jobCompany }}" onChange="{{ onJobCompanyChange }}" style="border:2px solid #1a1a1a; border-radius:10px; padding:11px 14px; font-size:13px; font-family:inherit; outline:none; background:#fff;"></input>
+        <input type="text" placeholder="직무 (예: 프론트엔드 개발자)" value="{{ jobRole }}" onChange="{{ onJobRoleChange }}" style="border:2px solid #1a1a1a; border-radius:10px; padding:11px 14px; font-size:13px; font-family:inherit; outline:none; background:#fff;"></input>
+        <button onClick="{{ generateQuestions }}" disabled="{{ cannotGenerateQuestions }}" style="border:3px solid #1a1a1a; background:{{ generateButtonBg }}; color:#fff; border-radius:10px; padding:12px; font-size:13px; font-weight:800; cursor:pointer;">{{ generateButtonLabel }}</button>
+        <sc-if value="{{ generateError }}"><div style="font-size:12px; color:#8c2f1c; font-weight:700;">질문 생성에 실패했어요. 다시 시도해주세요.</div></sc-if>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:4px;"><div style="font-size:13px; font-weight:800; color:#6b6258;">연습 질문</div><div style="font-size:11px; color:#E85D3D; font-weight:800;">{{ questionCountLabel }}</div></div>
+      <div style="font-size:12px; color:#a89d8c; margin-bottom:10px; font-weight:600;">필요한 질문만 남기거나 직접 추가할 수 있어요.</div>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+        <sc-for list="{{ questionItems }}" as="q" hint-placeholder-count="5">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; border:2px solid #1a1a1a; background:#fff; border-radius:12px; padding:12px 14px;">
+            <div style="font-size:13px; font-weight:700;">{{ q.question }}</div>
+            <button onClick="{{ q.remove }}" style="width:22px; height:22px; flex-shrink:0; border-radius:50%; border:2px solid #1a1a1a; background:#fff; color:#1a1a1a; font-size:12px; cursor:pointer; padding:0; font-weight:800;">×</button>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <input type="text" placeholder="질문 추가 (예: 팀에서 맡은 역할은?)" value="{{ settingsNewQuestion }}" onChange="{{ onNewQuestionChange }}" onKeyDown="{{ onNewQuestionKeyDown }}" style="flex:1; border:2px solid #1a1a1a; border-radius:10px; padding:11px 14px; font-size:13px; font-family:inherit; outline:none; background:#fff;"></input>
+        <button onClick="{{ addInterviewQuestion }}" style="border:2px solid #1a1a1a; background:#1a1a1a; color:#fff; border-radius:10px; padding:0 18px; font-size:13px; font-weight:800; cursor:pointer;">추가</button>
+      </div>
+    </div>
+    </sc-if>
+
+    <button onClick="{{ toggleAdvancedSettings }}" style="width:100%; background:#fff; color:#1a1a1a; border:2px solid #1a1a1a; border-radius:12px; padding:12px; font-size:12px; font-weight:800; cursor:pointer;">{{ advancedSettingsLabel }}</button>
+    <sc-if value="{{ showAdvancedSettings }}">
+    <div style="background:#fff; border:2px solid #1a1a1a; border-radius:16px; padding:16px;">
+      <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:#6b6258;">목표 말 속도 — {{ settings.targetWpm }} WPM</div>
+      <input type="range" min="90" max="180" step="5" value="{{ settings.targetWpm }}" onChange="{{ onTargetWpmChange }}" style="width:100%; accent-color:#E85D3D;"></input>
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:#a89d8c; margin-top:4px; font-weight:600;">
+        <div>느리게 (90)</div><div>빠르게 (180)</div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:#6b6258;">직접 확인할 습관어</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+        <sc-for list="{{ forbiddenWordItems }}" as="w" hint-placeholder-count="2">
+          <div style="display:flex; align-items:center; gap:6px; background:#FBE9C7; color:#1a1a1a; border:2px solid #1a1a1a; border-radius:999px; padding:7px 8px 7px 14px; font-size:13px; font-weight:700;">
+            {{ w.word }}
+            <button onClick="{{ w.remove }}" style="width:18px; height:18px; border-radius:50%; border:none; background:#E85D3D; color:#fff; font-size:11px; line-height:18px; cursor:pointer; padding:0; font-weight:800;">×</button>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <input type="text" placeholder="직접 입력 (예: 그니까)" value="{{ settingsNewWord }}" onChange="{{ onNewWordChange }}" onKeyDown="{{ onNewWordKeyDown }}" style="flex:1; border:2px solid #1a1a1a; border-radius:10px; padding:11px 14px; font-size:13px; font-family:inherit; outline:none; background:#fff;"></input>
+        <button onClick="{{ addForbiddenWord }}" style="border:2px solid #1a1a1a; background:#1a1a1a; color:#fff; border-radius:10px; padding:0 18px; font-size:13px; font-weight:800; cursor:pointer;">추가</button>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;">
+        <sc-for list="{{ suggestionItems }}" as="s" hint-placeholder-count="4">
+          <div onClick="{{ s.add }}" style="font-size:12px; padding:6px 12px; border-radius:999px; border:2px solid #1a1a1a; color:#1a1a1a; cursor:pointer; font-weight:700; background:#fff;">+ {{ s.word }}</div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <button onClick="{{ startPractice }}" style="background:#E85D3D; color:#fff; border:3px solid #1a1a1a; border-radius:14px; padding:16px; font-size:15px; font-weight:800; cursor:pointer; margin-top:8px; box-shadow:4px 4px 0 #1a1a1a;">면접 시작하기</button>
+  </div>
+  </sc-if>
+
+  <!-- ============ PRACTICE ============ -->
+  <sc-if value="{{ isPractice }}">
+  <div data-screen-label="연습 녹화" style="width:100%; max-width:980px; margin:0 auto; padding:20px 24px 110px; display:flex; flex-direction:column; gap:18px; flex:1;">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button onClick="{{ practiceBack }}" style="width:36px; height:36px; border-radius:50%; border:3px solid #1a1a1a; background:#fff; font-size:15px; cursor:pointer; font-weight:800;">←</button>
+        <div>
+          <div style="font-size:18px; font-weight:800;">{{ settings.mode }} 연습 · {{ attemptLabel }}</div>
+          <div style="display:flex; align-items:center; gap:6px; font-size:11px; font-weight:800; margin-top:2px;">
+            <div style="color:#a89d8c;">준비</div><div style="color:#c9bfa9;">—</div>
+            <div style="color:#E85D3D;">② 연습</div><div style="color:#c9bfa9;">—</div>
+            <div style="color:#a89d8c;">피드백</div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:13px; font-weight:800; font-variant-numeric:tabular-nums; color:#1a1a1a; font-family:'JetBrains Mono', monospace; background:#fff; border:2px solid #1a1a1a; border-radius:999px; padding:5px 14px;">{{ elapsedLabel }} / {{ durationLabel }}</div>
+    </div>
+
+    <div class="practice-stage-grid" style="display:grid; grid-template-columns:minmax(0,1.65fr) minmax(260px,0.8fr); gap:14px; align-items:stretch;">
+      <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:18px; min-height:390px; display:flex; flex-direction:column;">
+        <sc-if value="{{ isSpeechMode }}">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px;"><div style="font-size:12px; font-weight:800; color:#E85D3D;">SLIDE {{ currentPracticeSlideN }} / {{ practiceSlideCount }}</div><div style="font-size:11px; color:#a89d8c; font-weight:700;">자료를 넘기며 평소처럼 발표하세요</div></div>
+          <div style="flex:1; min-height:270px; border:2px solid #1a1a1a; border-radius:14px; background:#FFF6EC; display:flex; align-items:center; justify-content:center; padding:30px; text-align:center;"><div><div style="font-size:11px; color:#E85D3D; font-weight:800;">SLIDE {{ currentPracticeSlideN }}</div><div style="font-size:24px; font-weight:800; margin-top:10px;">{{ currentPracticeSlideTitle }}</div></div></div>
+          <div style="display:flex; gap:8px; margin-top:12px;"><button onClick="{{ prevPracticeSlide }}" style="flex:1; border:2px solid #1a1a1a; background:#fff; border-radius:10px; padding:10px; font-size:12px; font-weight:800; cursor:pointer;">← 이전</button><button onClick="{{ nextPracticeSlide }}" style="flex:1; border:2px solid #1a1a1a; background:#FFD166; border-radius:10px; padding:10px; font-size:12px; font-weight:800; cursor:pointer;">다음 →</button></div>
+        </sc-if>
+        <sc-if value="{{ isInterviewMode }}">
+          <div class="{{ interviewerStageClass }}">
+            <div class="ai-interviewer-status">{{ interviewerStatusLabel }}</div>
+            <div class="ai-interviewer-person">
+              <div class="ai-interviewer-head">
+                <div class="ai-interviewer-hair"></div>
+                <div class="ai-interviewer-eyes"><div class="ai-interviewer-eye"></div><div class="ai-interviewer-eye"></div></div>
+                <div class="ai-interviewer-mouth"></div>
+              </div>
+              <div class="ai-interviewer-body"></div>
+            </div>
+          </div>
+          <div style="font-size:12px; font-weight:800; color:#E85D3D;">질문 {{ questionProgressLabel }}</div>
+          <div style="flex:1; display:flex; align-items:center; justify-content:center; text-align:center; padding:28px 16px;"><div style="font-size:25px; font-weight:800; line-height:1.5;">{{ currentQuestionText }}</div></div>
+          <button onClick="{{ speakQuestion }}" style="align-self:center; border:2px solid #1a1a1a; background:#FFD166; border-radius:999px; padding:9px 16px; font-size:12px; font-weight:800; cursor:pointer; color:#1a1a1a;">▶ 질문 듣기</button>
+          <div style="display:flex; gap:8px; margin-top:12px;"><button onClick="{{ prevQuestion }}" style="flex:1; border:2px solid #1a1a1a; background:#fff; border-radius:10px; padding:10px; font-size:12px; font-weight:800; cursor:pointer;">이전 질문</button><button onClick="{{ nextQuestion }}" style="flex:1; border:2px solid #1a1a1a; background:#E85D3D; color:#fff; border-radius:10px; padding:10px; font-size:12px; font-weight:800; cursor:pointer;">다음 질문</button></div>
+        </sc-if>
+      </div>
+      <div style="position:relative; background:#1a1a1a; border:3px solid #1a1a1a; border-radius:20px; min-height:390px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+        <video ref="{{ videoRef }}" autoPlay="{{ true }}" muted="{{ true }}" playsInline="{{ true }}" style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1); display:{{ videoDisplay }};"></video>
+        <sc-if value="{{ showCameraPlaceholder }}"><div style="color:#cfc7ba; font-size:12px; text-align:center; padding:0 20px; font-weight:600;">{{ cameraPlaceholderLabel }}</div></sc-if>
+        <sc-if value="{{ showCameraStartButton }}"><button onClick="{{ startCameraPreview }}" style="position:absolute; bottom:14px; left:50%; transform:translateX(-50%); border:2px solid #1a1a1a; background:#FFD166; color:#1a1a1a; border-radius:999px; padding:9px 15px; font-size:12px; font-weight:800; cursor:pointer;">카메라 켜기</button></sc-if>
+        <sc-if value="{{ isCameraLive }}"><div style="position:absolute; top:12px; right:12px; display:flex; align-items:center; gap:6px; background:#fff; border:2px solid #1a1a1a; border-radius:999px; padding:5px 10px;"><div style="width:8px; height:8px; border-radius:50%; background:#2C8C5A;"></div><div style="font-size:11px; font-weight:800;">CAM</div></div></sc-if>
+        <sc-if value="{{ isRecording }}"><div style="position:absolute; top:12px; left:12px; display:flex; align-items:center; gap:6px; background:#fff; border:2px solid #1a1a1a; border-radius:999px; padding:5px 10px;"><div style="width:8px; height:8px; border-radius:50%; background:#E85D3D; animation:pulseRing 1.2s infinite;"></div><div style="font-size:11px; font-weight:800;">REC</div></div></sc-if>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) 150px; gap:12px; background:#fff; border:2px solid #1a1a1a; border-radius:14px; padding:14px;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+          <div style="font-size:12px; font-weight:800;">실시간 음성 인식</div>
+          <div style="display:flex; align-items:center; gap:6px; border:1px solid #1a1a1a; border-radius:999px; padding:4px 8px; background:{{ speechStatusBg }};"><sc-if value="{{ showListeningDot }}"><div class="ai-listening-dot"></div></sc-if><span style="font-size:10px; font-weight:800; color:{{ speechStatusColor }};">{{ speechStatusLabel }}</span></div>
+        </div>
+        <div style="min-height:58px; max-height:124px; overflow:auto; background:#FFF6EC; border:2px solid #1a1a1a; border-radius:10px; padding:10px 12px; font-size:13px; line-height:1.55; font-weight:700; color:{{ transcriptTextColor }};">{{ liveTranscriptText }}</div>
+        <sc-if value="{{ speechErrorVisible }}"><div style="font-size:11px; color:#8c2f1c; line-height:1.45; font-weight:700; margin-top:7px;">{{ speechErrorLabel }}</div></sc-if>
+      </div>
+      <div style="border-left:2px solid #1a1a1a; padding-left:12px; display:flex; flex-direction:column; justify-content:center; gap:6px;">
+        <div style="font-size:10px; color:#6b6258; font-weight:800;">인식 단어</div>
+        <div style="font-size:24px; font-weight:800; font-family:'JetBrains Mono', monospace;">{{ transcriptWordCount }}</div>
+        <div style="font-size:10px; color:#6b6258; font-weight:700; line-height:1.35;">녹음 중 말한 내용이 리포트에 저장됩니다.</div>
+      </div>
+    </div>
+
+    <sc-if value="{{ isInterviewMode }}">
+    <div style="background:#fff; border:2px solid #1a1a1a; border-radius:14px; padding:14px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+        <div>
+          <div style="font-size:13px; font-weight:800;">표정·어조 실시간 피드백</div>
+          <div style="font-size:10px; color:#6b6258; font-weight:700; margin-top:3px;">landmark 모델과 마이크 입력으로 관찰 지표를 계산합니다.</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <div style="font-size:10px; font-weight:800; border:1px solid #1a1a1a; border-radius:999px; padding:5px 8px; background:{{ landmarkStatusBg }}; color:{{ landmarkStatusColor }};">표정 {{ landmarkStatusLabel }}</div>
+          <div style="font-size:10px; font-weight:800; border:1px solid #1a1a1a; border-radius:999px; padding:5px 8px; background:{{ toneStatusBg }}; color:{{ toneStatusColor }};">어조 {{ toneStatusLabel }}</div>
+        </div>
+      </div>
+      <sc-if value="{{ showLandmarkError }}"><div style="font-size:11px; color:#8c2f1c; font-weight:800; line-height:1.45; background:#F6C9BC; border:2px solid #1a1a1a; border-radius:10px; padding:9px 11px; margin-bottom:10px;">{{ landmarkErrorLabel }}</div></sc-if>
+      <div class="live-feedback-grid">
+        <div class="live-feedback-metric"><div style="font-size:10px; color:#6b6258; font-weight:800;">주의 점수</div><div style="font-size:21px; font-weight:800; margin-top:4px; font-family:'JetBrains Mono', monospace;">{{ attentionScoreLabel }}</div><div style="font-size:10px; color:#6b6258; font-weight:700; margin-top:3px;">{{ attentionHint }}</div></div>
+        <div class="live-feedback-metric"><div style="font-size:10px; color:#6b6258; font-weight:800;">시선</div><div style="font-size:17px; font-weight:800; margin-top:5px;">{{ gazeLabel }}</div><div style="font-size:10px; color:#6b6258; font-weight:700; margin-top:3px;">{{ headPoseLabel }}</div></div>
+        <div class="live-feedback-metric"><div style="font-size:10px; color:#6b6258; font-weight:800;">톤/피치</div><div style="font-size:17px; font-weight:800; margin-top:5px;">{{ toneMetricLabel }}</div><div style="font-size:10px; color:#6b6258; font-weight:700; margin-top:3px;">{{ pitchMetricLabel }}</div></div>
+        <div class="live-feedback-metric"><div style="font-size:10px; color:#6b6258; font-weight:800;">말 흐름</div><div style="font-size:17px; font-weight:800; margin-top:5px;">{{ speechFlowLabel }}</div><div style="font-size:10px; color:#6b6258; font-weight:700; margin-top:3px;">{{ volumeMetricLabel }}</div></div>
+      </div>
+      <div class="live-feedback-list">
+        <sc-for list="{{ realtimeFeedbackItems }}" as="fb" hint-placeholder-count="2">
+          <div style="border:2px solid #1a1a1a; border-radius:12px; padding:10px 12px; background:{{ fb.bg }};">
+            <div style="font-size:10px; color:{{ fb.color }}; font-weight:800;">{{ fb.kind }}</div>
+            <div style="font-size:12px; line-height:1.45; font-weight:800; margin-top:4px;">{{ fb.title }}</div>
+            <div style="font-size:10px; line-height:1.45; color:#6b6258; font-weight:700; margin-top:3px;">{{ fb.desc }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <div style="display:flex; align-items:center; gap:10px; background:#fff; border:2px solid #1a1a1a; border-radius:14px; padding:12px 14px;"><div style="width:28px; height:28px; flex-shrink:0; border-radius:50%; background:#FFD166; border:2px solid #1a1a1a; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800;">AI</div><div><div style="font-size:12px; font-weight:800;">연습에 집중하세요</div><div style="font-size:11px; color:#6b6258; font-weight:600; margin-top:2px;">말하기와 시선·자세 분석은 종료 후 피드백에서 확인할 수 있어요.</div></div></div>
+
+    <div style="position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:center; padding:18px; pointer-events:none;">
+      <div style="pointer-events:auto; display:flex; align-items:center; gap:14px; background:#1a1a1a; border-radius:999px; padding:10px 10px 10px 20px; box-shadow:0 8px 24px rgba(0,0,0,0.25); border:3px solid #1a1a1a;">
+        <div style="font-size:12px; color:#FFF6EC; font-variant-numeric:tabular-nums; font-family:'JetBrains Mono', monospace;">{{ elapsedLabel }}</div>
+        <sc-if value="{{ isRecording }}">
+          <button onClick="{{ stopRecording }}" style="width:52px; height:52px; border-radius:50%; background:#E85D3D; border:3px solid #FFF6EC; cursor:pointer; display:flex; align-items:center; justify-content:center; animation:pulseRing 1.6s infinite;">
+            <div style="width:16px; height:16px; background:#fff; border-radius:4px;"></div>
+          </button>
+        </sc-if>
+        <sc-if value="{{ isNotRecording }}">
+          <button onClick="{{ startRecording }}" style="width:52px; height:52px; border-radius:50%; background:#FFD166; border:3px solid #FFF6EC; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <div style="width:0; height:0; border-top:11px solid transparent; border-bottom:11px solid transparent; border-left:16px solid #1a1a1a; margin-left:4px;"></div>
+          </button>
+        </sc-if>
+        <div style="font-size:12px; color:#FFF6EC; min-width:70px; font-weight:600;">{{ recordStatusLabel }}</div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ REPORT ============ -->
+  <sc-if value="{{ isReport }}">
+  <div data-screen-label="분석 리포트" style="width:100%; max-width:820px; margin:0 auto; padding:20px 20px 60px; display:flex; flex-direction:column; gap:18px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button onClick="{{ goHome }}" style="width:38px; height:38px; border-radius:50%; border:3px solid #1a1a1a; background:#fff; font-size:16px; cursor:pointer; font-weight:800;">←</button>
+      <div>
+        <div style="font-size:20px; font-weight:800;">{{ report.name }}</div>
+        <div style="font-size:12px; color:#6b6258; font-weight:600;">{{ report.date }} · {{ report.mode }} · {{ report.attemptLabel }} · {{ report.durationLabel }}</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800;">
+      <sc-if value="{{ report.isSpeechReport }}">
+        <div style="color:#a89d8c;">준비</div><div style="color:#c9bfa9;">—</div>
+        <div style="color:#a89d8c;">연습</div><div style="color:#c9bfa9;">—</div>
+        <div style="color:#E85D3D;">③ 피드백</div>
+      </sc-if>
+      <sc-if value="{{ report.isInterview }}">
+        <div style="color:#a89d8c;">준비</div>
+        <div style="color:#c9bfa9;">—</div>
+        <div style="color:#a89d8c;">연습</div>
+        <div style="color:#c9bfa9;">—</div>
+        <div style="color:#E85D3D;">③ 피드백</div>
+      </sc-if>
+    </div>
+
+    <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:20px; box-shadow:4px 4px 0 #1a1a1a;">
+      <div style="font-size:16px; font-weight:800;">이번 연습에서 먼저 고칠 점</div>
+      <div style="display:flex; flex-direction:column; gap:9px; margin-top:14px;">
+        <sc-for list="{{ reportPriorityItems }}" as="p" hint-placeholder-count="3"><div style="display:flex; align-items:flex-start; gap:10px;"><div style="width:22px; height:22px; flex-shrink:0; border-radius:50%; background:#E85D3D; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800;">{{ p.n }}</div><div style="font-size:13px; line-height:1.5; font-weight:700;">{{ p.text }}</div></div></sc-for>
+      </div>
+    </div>
+
+    <sc-if value="{{ report.hasTranscript }}">
+    <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:18px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+        <div style="font-size:14px; font-weight:800;">음성 인식 텍스트</div>
+        <div style="font-size:10px; color:#6b6258; font-weight:800;">{{ report.transcriptWordCount }} 단어</div>
+      </div>
+      <div style="background:#FFF6EC; border:2px solid #1a1a1a; border-radius:12px; padding:12px 14px; font-size:13px; line-height:1.65; font-weight:700;">{{ report.transcript }}</div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ report.isSpeechReport }}">
+      <div style="display:flex; align-items:end; justify-content:space-between; gap:12px; margin-top:4px;">
+        <div><div style="font-size:17px; font-weight:800;">보완이 필요한 슬라이드</div><div style="font-size:12px; color:#6b6258; font-weight:600; margin-top:3px;">문제가 발견된 슬라이드만 보여드려요.</div></div>
+        <div style="font-size:11px; font-weight:800; color:#E85D3D;">{{ feedbackSlideCountLabel }}</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <sc-for list="{{ feedbackSlideItems }}" as="fb" hint-placeholder-count="2">
+          <div class="feedback-slide-card" style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:18px; display:grid; grid-template-columns:150px minmax(0,1fr); gap:16px;">
+            <div><div style="font-size:10px; font-weight:800; color:#E85D3D; margin-bottom:6px;">SLIDE {{ fb.n }}</div><div style="aspect-ratio:16/10; border:2px solid #1a1a1a; border-radius:10px; background:#FFF6EC; display:flex; align-items:center; justify-content:center; padding:12px; text-align:center; font-size:12px; line-height:1.4; font-weight:800;">{{ fb.title }}</div></div>
+            <div style="display:flex; flex-direction:column; gap:9px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><div style="font-size:10px; font-weight:800; color:#E85D3D; background:#F6C9BC; border:1px solid #1a1a1a; border-radius:999px; padding:4px 7px;">{{ fb.category }}</div><div style="font-size:10px; color:#a89d8c; font-weight:800;">{{ fb.time }}</div></div>
+              <div style="font-size:15px; line-height:1.45; font-weight:800;">{{ fb.issue }}</div>
+              <div style="font-size:11px; line-height:1.5; color:#6b6258; font-weight:600;">근거 발화 · “{{ fb.evidence }}”</div>
+              <div style="background:#FBE9C7; border:2px solid #1a1a1a; border-radius:10px; padding:10px 12px;"><div style="font-size:10px; color:#E85D3D; font-weight:800; margin-bottom:4px;">다음 연습에서 이렇게 해보세요</div><div style="font-size:12px; line-height:1.55; font-weight:700;">{{ fb.action }}</div></div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex; align-items:center; justify-content:center; gap:7px; color:#E85D3D; font-size:11px; font-weight:800;"><span>SLIDE 4</span><span>→</span><span>추가 제안</span><span>→</span><span>SLIDE 5</span></div>
+      <div style="background:#FFD166; border:3px dashed #1a1a1a; border-radius:18px; padding:16px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;"><div style="font-size:11px; font-weight:800; color:#8c2f1c;">+ 자료 보강 제안</div><div style="font-size:10px; font-weight:800; background:#fff; border:1px solid #1a1a1a; border-radius:999px; padding:3px 7px;">슬라이드 4와 5 사이</div></div>
+        <div style="font-size:15px; font-weight:800; margin-top:9px;">‘기존 방식 vs AI 코칭’ 비교 슬라이드</div>
+        <div style="font-size:11px; line-height:1.55; color:#6b6258; font-weight:600; margin-top:7px;">차이를 말로만 설명한 구간이에요. 비교 자료를 넣으면 변화가 한눈에 보여요.</div>
+      </div>
+
+    </sc-if>
+
+    <sc-if value="{{ report.isInterview }}">
+      <div><div style="font-size:17px; font-weight:800;">보완이 필요한 답변</div><div style="font-size:12px; color:#6b6258; font-weight:600; margin-top:3px;">질문 의도에서 벗어나거나 근거가 부족한 답변만 보여드려요.</div></div>
+      <div style="display:flex; flex-direction:column; gap:12px;"><sc-for list="{{ interviewAnswerItems }}" as="answer" hint-placeholder-count="2"><div style="background:#fff; border:3px solid #1a1a1a; border-radius:18px; padding:18px;"><div style="font-size:11px; color:#E85D3D; font-weight:800;">{{ answer.question }}</div><div style="font-size:12px; line-height:1.55; margin-top:9px; font-weight:600;">실제 답변 · “{{ answer.actual }}”</div><div style="background:#FBE9C7; border:2px solid #1a1a1a; border-radius:10px; padding:10px 12px; margin-top:10px;"><div style="font-size:10px; color:#E85D3D; font-weight:800; margin-bottom:4px;">다음 답변에서 보완할 점</div><div style="font-size:13px; line-height:1.55; font-weight:700;">{{ answer.recommended }}</div></div><div style="font-size:11px; color:#6b6258; line-height:1.5; margin-top:8px; font-weight:600;">{{ answer.reason }}</div></div></sc-for></div>
+    </sc-if>
+
+    <button onClick="{{ toggleDetailAnalysis }}" style="width:100%; background:#fff; color:#1a1a1a; border:3px solid #1a1a1a; border-radius:14px; padding:13px 15px; font-size:12px; font-weight:800; cursor:pointer;">{{ detailAnalysisButtonLabel }}</button>
+    <sc-if value="{{ showDetailAnalysis }}">
+    <sc-if value="{{ report.isSpeechReport }}">
+    <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:20px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <div><div style="font-size:16px; font-weight:800;">내 발표 MBTI는?</div><div style="font-size:11px; color:#6b6258; font-weight:600; margin-top:3px;">말의 속도·구조·습관을 바탕으로 재미있게 한 줄 평을 받아보세요.</div></div>
+        <div style="display:flex; gap:6px;"><sc-for list="{{ styleToneItems }}" as="tone" hint-placeholder-count="3"><button onClick="{{ tone.select }}" style="border:2px solid #1a1a1a; background:{{ tone.bg }}; color:{{ tone.color }}; border-radius:999px; padding:7px 11px; font-size:11px; font-weight:800; cursor:pointer;">{{ tone.label }}</button></sc-for></div>
+      </div>
+      <button onClick="{{ revealPresentationStyle }}" style="width:100%; margin-top:14px; border:3px solid #1a1a1a; background:#FFD166; border-radius:12px; padding:13px; font-size:14px; font-weight:800; cursor:pointer; box-shadow:3px 3px 0 #1a1a1a;">{{ styleButtonLabel }}</button>
+      <sc-if value="{{ showPresentationStyle }}"><div style="margin-top:14px; background:#1a1a1a; color:#fff; border-radius:14px; padding:18px; animation:popIn 0.25s ease;"><div style="font-size:11px; color:#FFD166; font-weight:800;">{{ presentationStyleCode }}</div><div style="font-size:20px; font-weight:800; margin-top:5px;">{{ presentationStyleName }}</div><div style="font-size:13px; line-height:1.55; margin-top:8px; font-weight:600;">{{ presentationStyleReview }}</div></div></sc-if>
+      <div style="font-size:10px; color:#a89d8c; text-align:center; margin-top:10px; font-weight:600;">재미를 위한 발표 스타일 분석이며 실제 성격 진단은 아니에요.</div>
+    </div>
+    </sc-if>
+
+    <div><div style="font-size:16px; font-weight:800;">말하기·시선 상세 분석</div><div style="font-size:11px; color:#6b6258; font-weight:600; margin-top:3px;">문제가 감지된 시점과 고칠 행동을 확인해요.</div></div>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+      <div style="background:#fff; border:3px solid #1a1a1a; border-radius:16px; padding:14px; text-align:center;">
+        <div style="font-size:11px; color:#6b6258; font-weight:700;">평균 속도</div>
+        <div style="font-size:22px; font-weight:800; margin-top:4px; font-family:'JetBrains Mono', monospace;">{{ report.avgWpm }} <span style="font-size:10px; font-family:'Pretendard', sans-serif; color:#6b6258;">WPM</span></div>
+      </div>
+      <div style="background:#fff; border:3px solid #1a1a1a; border-radius:16px; padding:14px; text-align:center;">
+        <div style="font-size:11px; color:#6b6258; font-weight:700;">빠른 구간</div>
+        <div style="font-size:22px; font-weight:800; margin-top:4px; font-family:'JetBrains Mono', monospace;">2<span style="font-size:11px; font-family:'Pretendard', sans-serif;">건</span></div>
+      </div>
+      <div style="background:#fff; border:3px solid #1a1a1a; border-radius:16px; padding:14px; text-align:center;">
+        <div style="font-size:11px; color:#6b6258; font-weight:700;">설정한 습관어</div>
+        <div style="font-size:22px; font-weight:800; margin-top:4px; color:#E85D3D; font-family:'JetBrains Mono', monospace;">{{ report.forbiddenCount }}회</div>
+      </div>
+    </div>
+
+    <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:18px;">
+      <div style="font-size:13px; font-weight:800; margin-bottom:12px;">확인할 구간</div>
+      <div style="display:flex; flex-direction:column; gap:8px;"><sc-for list="{{ speechEventItems }}" as="event" hint-placeholder-count="2"><div style="display:flex; align-items:flex-start; gap:10px; border:2px solid #1a1a1a; border-radius:11px; padding:10px 12px; background:#FFF6EC;"><div style="font-size:10px; color:#E85D3D; font-weight:800; white-space:nowrap; background:#fff; border:1px solid #1a1a1a; border-radius:999px; padding:4px 7px;">{{ event.time }}</div><div><div style="font-size:12px; font-weight:800;">{{ event.issue }}</div><div style="font-size:11px; color:#6b6258; line-height:1.5; font-weight:600; margin-top:3px;">{{ event.action }}</div></div></div></sc-for></div>
+    </div>
+
+    <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:18px;">
+      <div style="font-size:13px; font-weight:800; margin-bottom:12px;">습관어 / 반복 표현</div>
+      <sc-if value="{{ report.hasHabit }}">
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <sc-for list="{{ report.habitEntries }}" as="h" hint-placeholder-count="2">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="font-size:13px; font-weight:700; width:80px; flex-shrink:0;">{{ h.word }}</div>
+              <div style="flex:1; height:10px; background:#F3ECDF; border-radius:5px; overflow:hidden; border:2px solid #1a1a1a;"><div style="height:100%; width:{{ h.pct }}%; background:#FFD166;"></div></div>
+              <div style="font-size:12px; color:#6b6258; width:32px; text-align:right; font-weight:700;">{{ h.count }}회</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ report.noHabit }}"><div style="font-size:13px; color:#a89d8c; font-weight:600;">이번 연습에서 반복 습관어가 감지되지 않았어요.</div></sc-if>
+    </div>
+
+
+    <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:18px;">
+      <div style="font-size:13px; font-weight:800; margin-bottom:12px;">시선·자세</div>
+      <sc-if value="{{ report.hasGesture }}">
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <sc-for list="{{ report.gestureEntries }}" as="g" hint-placeholder-count="2">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="font-size:13px; font-weight:700; width:150px; flex-shrink:0;">{{ g.word }}</div>
+              <div style="flex:1; height:10px; background:#F3ECDF; border-radius:5px; overflow:hidden; border:2px solid #1a1a1a;"><div style="height:100%; width:{{ g.pct }}%; background:#E85D3D;"></div></div>
+              <div style="font-size:12px; color:#6b6258; width:32px; text-align:right; font-weight:700;">{{ g.count }}회</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ report.noGesture }}"><div style="font-size:13px; color:#a89d8c; font-weight:600;">기준을 넘은 시선·자세 습관이 감지되지 않았어요.</div></sc-if>
+    </div>
+
+    <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:18px;">
+      <div style="font-size:13px; font-weight:800; margin-bottom:12px;">직접 설정한 습관어 사용 시점</div>
+      <sc-if value="{{ report.hasForbidden }}">
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <sc-for list="{{ report.forbiddenEntries }}" as="f" hint-placeholder-count="2">
+            <div style="display:flex; align-items:center; justify-content:space-between; background:#F6C9BC; border:2px solid #1a1a1a; border-radius:10px; padding:9px 12px;">
+              <div style="font-size:13px; font-weight:800; color:#8c2f1c;">{{ f.word }}</div>
+              <div style="font-size:12px; color:#8c2f1c; font-weight:700;">{{ f.at }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ report.noForbidden }}"><div style="font-size:13px; color:#a89d8c; font-weight:600;">직접 설정한 습관어는 감지되지 않았어요.</div></sc-if>
+    </div>
+    </sc-if>
+
+    <div style="display:flex; gap:10px;">
+      <sc-if value="{{ report.isSpeechReport }}">
+        <button onClick="{{ retryPractice }}" style="flex:2; background:#E85D3D; color:#fff; border:3px solid #1a1a1a; border-radius:14px; padding:15px; font-size:14px; font-weight:800; cursor:pointer; box-shadow:4px 4px 0 #1a1a1a;">같은 자료로 다시 발표</button>
+      </sc-if>
+      <sc-if value="{{ report.isInterview }}">
+        <button onClick="{{ retryPractice }}" style="flex:2; background:#E85D3D; color:#fff; border:3px solid #1a1a1a; border-radius:14px; padding:15px; font-size:14px; font-weight:800; cursor:pointer; box-shadow:4px 4px 0 #1a1a1a;">같은 질문으로 다시 면접</button>
+      </sc-if>
+      <button onClick="{{ goHome }}" style="flex:1; background:#fff; color:#1a1a1a; border:3px solid #1a1a1a; border-radius:14px; padding:15px; font-size:14px; font-weight:800; cursor:pointer;">홈으로</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ SCRIPT REVIEW ============ -->
+  <sc-if value="{{ isScriptReview }}">
+  <div data-screen-label="대본 복기" style="width:100%; max-width:820px; margin:0 auto; padding:20px 20px 60px; display:flex; flex-direction:column; gap:18px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button onClick="{{ goReportFromScriptReview }}" style="width:38px; height:38px; border-radius:50%; border:3px solid #1a1a1a; background:#fff; font-size:16px; cursor:pointer; font-weight:800;">←</button>
+      <div>
+        <div style="font-size:20px; font-weight:800;">대본 복기</div>
+        <div style="font-size:12px; color:#6b6258; margin-top:2px; font-weight:600;">문장을 클릭하면 매칭 슬라이드가 진해져요</div>
+      </div>
+    </div>
+
+    <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:28px 32px;">
+      <div style="font-size:17px; line-height:2.2; color:#1a1a1a;">
+        <sc-for list="{{ sentenceItems }}" as="line" hint-placeholder-count="6">
+          <span onClick="{{ line.select }}" style="cursor:pointer; background:{{ line.rowBg }}; padding:1px 4px; margin:0 2px 4px 0; border-radius:4px; box-decoration-break:clone; -webkit-box-decoration-break:clone;">{{ line.text }}</span>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:16px;">
+      <div style="font-size:13px; font-weight:800; color:#6b6258; margin-bottom:12px;">매칭 슬라이드</div>
+      <div style="display:flex; gap:14px; overflow-x:auto; padding-bottom:6px;">
+        <sc-for list="{{ slideItems }}" as="sl" hint-placeholder-count="5">
+          <div style="flex:0 0 200px; display:flex; flex-direction:column; gap:6px;">
+            <div style="font-size:11px; font-weight:{{ sl.numWeight }}; color:{{ sl.numColor }};">슬라이드 {{ sl.n }}</div>
+            <div style="width:200px; aspect-ratio:16/10; background:#fff; border-width:{{ sl.borderWidth }}px; border-style:solid; border-color:{{ sl.border }}; border-radius:10px; display:flex; align-items:center; justify-content:center; padding:10px;">
+              <div style="font-size:12px; font-weight:700; color:#6b6258; text-align:center; line-height:1.4;">{{ sl.title }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  sentences = [
+    "안녕하세요, 오늘 발표를 맡은 발표자입니다.",
+    "저희 팀은 지난 한 달간 사용자 인터뷰를 진행했습니다.",
+    "그 결과 세 가지 핵심 문제를 발견했습니다.",
+    "첫째, 사용자는 자신의 말하기 습관을 스스로 인지하기 어렵습니다.",
+    "둘째, 기존 서비스는 연습이 끝난 후에야 피드백을 제공합니다.",
+    "셋째, 실시간으로 반응하는 코칭 도구가 거의 없습니다.",
+    "저희는 이 문제를 게임형 실시간 피드백으로 해결하고자 합니다.",
+    "말 속도를 게이지로 보여주고, 캐릭터가 습관어에 반응합니다.",
+    "이를 통해 사용자는 말하는 순간 자신의 습관을 인지할 수 있습니다.",
+    "감사합니다. 질문 있으신가요?"
+  ];
+
+  scriptRef = React.createRef();
+  videoRef = React.createRef();
+  slides = [
+    { n: 1, title: '인트로 · 문제 제기' },
+    { n: 2, title: '사용자 인터뷰 결과' },
+    { n: 3, title: '핵심 문제 3가지' },
+    { n: 4, title: '솔루션 소개' },
+    { n: 5, title: '마무리 · Q&A' },
+  ];
+  gesturePool = ['손을 자주 만지작거려요', '다리를 떨고 있어요', '시선이 자주 흔들려요', '팔짱을 자주 껴요'];
+  goalOptions = ['말 속도 안정화', '습관어 줄이기', '핵심 키워드 빠짐없이 말하기', '자연스러운 슬라이드 전환'];
+
+  buildDefaultDesignSlides() {
+    const defs = [
+      { title: '인트로 · 문제 제기', keyPoints: ['발표 목적 소개', '청중 관심 유도'], script: '안녕하세요, 오늘 발표를 맡은 발표자입니다. 저희 팀은 지난 한 달간 사용자 인터뷰를 진행했습니다.', transition: '그 결과 몇 가지 핵심 문제를 발견했습니다.', time: 25, keywords: ['문제 정의', '배경'] },
+      { title: '사용자 인터뷰 결과', keyPoints: ['기존 방식의 문제점', '사용자 피드백 부족'], script: '기존 발표 연습은 녹화 영상을 사용자가 직접 확인해야 한다는 불편함이 있습니다.', transition: '이러한 문제를 해결하기 위해 다음과 같은 서비스를 제안합니다.', time: 30, keywords: ['불편함', '수동 확인'] },
+      { title: '핵심 문제 3가지', keyPoints: ['자기 인지의 어려움', '사후 피드백의 한계', '실시간 코칭 부재'], script: '사용자는 자신의 말하기 습관을 스스로 인지하기 어렵고, 기존 서비스는 연습 후에야 피드백을 제공합니다.', transition: '저희는 이 문제를 게임형 실시간 피드백으로 해결하고자 합니다.', time: 35, keywords: ['실시간', '습관 인지'] },
+      { title: '솔루션 소개', keyPoints: ['게이지 기반 피드백', '캐릭터 반응'], script: '말 속도를 게이지로 보여주고, 캐릭터가 습관어에 반응합니다.', transition: '이를 통해 사용자는 말하는 순간 자신의 습관을 인지할 수 있습니다.', time: 30, keywords: ['게이지', '캐릭터'] },
+      { title: '마무리 · Q&A', keyPoints: ['요약', '질의응답 안내'], script: '감사합니다. 질문 있으신가요?', transition: '', time: 15, keywords: ['감사 인사'] },
+    ];
+    return defs.map((d, i) => ({
+      n: i + 1, order: i + 1,
+      title: d.title, slideN: i + 1, slideTitle: d.title,
+      sourceText: d.script,
+      keyPoints: d.keyPoints, keyPointsEdited: false,
+      script: d.script, scriptEdited: false,
+      transition: d.transition, transitionEdited: false,
+      time: d.time, timeEdited: false,
+      keywords: d.keywords, keywordsEdited: false,
+    }));
+  }
+
+  buildFlowItems(sentences, sentenceSlideMap) {
+    const slideDefs = this.buildDefaultDesignSlides();
+    return sentences.map((text, i) => {
+      const slideIdx = Math.max(0, Math.min(slideDefs.length - 1, sentenceSlideMap[i] ?? 0));
+      const base = slideDefs[slideIdx];
+      const nextSlideIdx = i < sentences.length - 1
+        ? Math.max(0, Math.min(slideDefs.length - 1, sentenceSlideMap[i + 1] ?? slideIdx))
+        : -1;
+      const shortTitle = text.length > 24 ? `${text.slice(0, 24)}…` : text;
+      return {
+        ...base,
+        n: i + 1,
+        order: i + 1,
+        title: shortTitle || `발화 구간 ${i + 1}`,
+        slideN: base.slideN,
+        slideTitle: base.slideTitle,
+        sourceText: text,
+        script: text,
+        scriptEdited: false,
+        transition: i === sentences.length - 1
+          ? '이상으로 발표를 마치겠습니다.'
+          : (nextSlideIdx !== slideIdx ? `다음으로 ${slideDefs[nextSlideIdx].slideTitle}에 대해 말씀드리겠습니다.` : ''),
+        transitionEdited: false,
+        time: Math.max(15, Math.round(text.length / 3.2)),
+        timeEdited: false,
+      };
+    });
+  }
+
+  normalizePlanTimes(items, targetMinutes) {
+    if (!items.length) return items;
+    const targetSec = Math.max(60, Number(targetMinutes || 1) * 60);
+    const baseTotal = items.reduce((sum, item) => sum + Math.max(1, item.time || 1), 0);
+    let assigned = 0;
+    return items.map((item, i) => {
+      const time = i === items.length - 1
+        ? Math.max(10, targetSec - assigned)
+        : Math.max(10, Math.round((item.time / baseTotal) * targetSec));
+      assigned += time;
+      return { ...item, time };
+    });
+  }
+
+  constructor(props) {
+    super(props);
+    const genSamples = (target, n) => Array.from({length:n}, (_,i) => Math.max(70, Math.min(190, target + Math.sin(i/3)*20 + (Math.random()-0.5)*16)));
+    this.sampleReports = [
+      {
+        name: '팀 회의 발표 연습',
+        date: '2026.07.09', durationSec: 96, mode: '발표', target: 130,
+        avgWpm: 141, maxWpm: 172, minWpm: 108,
+        forbiddenLog: [{word:'음...', at: 14}, {word:'그니까', at: 52}],
+        habitTally: {'약간': 5, '그러니까': 3},
+        gestureTally: {},
+        wpmSamples: genSamples(141, 22),
+      },
+      {
+        name: '상반기 공채 모의면접',
+        date: '2026.07.06', durationSec: 88, mode: '면접', target: 125,
+        avgWpm: 118, maxWpm: 150, minWpm: 92,
+        forbiddenLog: [],
+        habitTally: {'음...': 6, '뭐랄까': 2},
+        gestureTally: {'다리를 떨고 있어요': 4, '손을 자주 만지작거려요': 3},
+        wpmSamples: genSamples(118, 20),
+      },
+    ];
+    this.state = {
+      screen: 'home',
+      practiceVariant: 'a',
+      settings: {
+        forbiddenWords: ['음...', '그니까'], targetWpm: 130, mode: '발표', scriptUploaded: true,
+        interviewQuestions: ['자기소개를 해주세요', '지원 동기를 말씀해주세요', '본인의 강점과 약점은 무엇인가요', '협업 중 어려웠던 경험을 말씀해주세요', '마지막으로 하고 싶은 말이 있나요'],
+      },
+      settingsNewWord: '', settingsNewQuestion: '', currentQIndex: 0,
+      jobCompany: '', jobRole: '', isGeneratingQuestions: false, generateError: false,
+      interviewMaterialUploaded: false, interviewMaterialFileName: '',
+      sessionName: '', selectedSentenceIndex: null, archiveFilter: '전체',
+      currentSessionId: 0, attemptNo: 1,
+      designSlides: this.buildDefaultDesignSlides(), selectedDesignSlideIndex: 0, designInstruction: '', isRegeneratingDesign: false,
+      designGoal: this.goalOptions[0], designGoalCustom: '', confirmedPlan: null,
+      designNewKeyPoint: '', designNewKeyword: '',
+      showGlobalSettings: false,
+      presentationAudience: '프로젝트 평가자',
+      presentationPurpose: '서비스 핵심 가치 전달',
+      presentationTone: '간결하고 자신감 있게',
+      feedbackFocus: '시간 관리, 추임새, 핵심 내용 전달',
+      materialUploaded: true, materialFileName: 'project.pdf', targetDurationMin: 7,
+      feedbackRequest: '평가자에게 문제 해결 과정을 설득력 있게 보여주고 싶어요. 시간 배분과 핵심 내용 누락을 중점적으로 봐주세요.',
+      currentPracticeSlideIndex: 0,
+      presentationStyleTone: '냉정', showPresentationStyle: false, showDetailAnalysis: false, showAdvancedSettings: false,
+      scriptMethod: 'upload', typedScript: '',
+      connectSentences: [], sentenceSlideMap: [], selectedConnectIndex: null,
+      isRecording: false,
+      elapsed: 0,
+      duration: 100,
+      wpm: 130,
+      wpmSamples: [],
+      characterScale: 1,
+      characterMood: 'neutral',
+      lastDetected: null,
+      lastDetectedAt: -99,
+      lastHabitWord: null,
+      lastHabitAt: -99,
+      cameraState: 'idle',
+      speechState: 'idle',
+      speechError: '',
+      transcriptFinal: '',
+      transcriptInterim: '',
+      interviewerSpeaking: false,
+      interviewerStatus: '면접관이 질문을 준비하고 있어요.',
+      landmarkState: 'idle',
+      landmarkError: '',
+      landmarkMetrics: null,
+      audioToneState: 'idle',
+      audioToneError: '',
+      audioToneMetrics: null,
+      realtimeFeedbackItems: [],
+      forbiddenLog: [],
+      habitTally: {},
+      gestureTally: {},
+      sentenceIndex: 0,
+      lastReport: this.sampleReports[0],
+    };
+  }
+
+  componentDidMount() { this._lastScreen = this.state.screen; }
+  componentDidUpdate() {
+    const prevScreen = this._lastScreen;
+    const currentScreen = this.state.screen;
+    if (prevScreen === currentScreen) return;
+    this._lastScreen = currentScreen;
+    if (currentScreen === 'practice') this.startCamera();
+    if (prevScreen === 'practice' && currentScreen !== 'practice') {
+      this.stopCamera();
+      this.stopSpeechRecognition();
+      this.stopSpeechSynthesis();
+      this.stopRealtimeInterviewAnalysis();
+    }
+  }
+  componentWillUnmount() {
+    this.stopTimer();
+    this.stopCamera();
+    this.stopSpeechRecognition();
+    this.stopSpeechSynthesis();
+    this.stopRealtimeInterviewAnalysis();
+  }
+  stopTimer() { if (this._handle) { clearInterval(this._handle); this._handle = null; } }
+
+  startCamera = () => {
+    if (this._stream) {
+      if (this.videoRef.current) {
+        const video = this.videoRef.current;
+        if (video.srcObject !== this._stream) video.srcObject = this._stream;
+        const playPromise = video.play && video.play();
+        if (playPromise && playPromise.catch) playPromise.catch(() => {});
+      }
+      this.setState({ cameraState: 'live' });
+      return Promise.resolve(true);
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      this.setState({ cameraState: 'error' });
+      return Promise.resolve(false);
+    }
+    this.setState({ cameraState: 'starting' });
+    return navigator.mediaDevices.getUserMedia({
+      video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
+      audio: false
+    }).then(stream => {
+      this._stream = stream;
+      if (this.videoRef.current) {
+        const video = this.videoRef.current;
+        video.srcObject = stream;
+        video.muted = true;
+        video.playsInline = true;
+        const playVideo = () => {
+          const playPromise = video.play && video.play();
+          if (playPromise && playPromise.catch) playPromise.catch(() => {});
+        };
+        if (video.readyState >= 2) playVideo();
+        else video.onloadedmetadata = playVideo;
+      }
+      this.setState({ cameraState: 'live' });
+      return true;
+    }).catch(() => {
+      this.setState({ cameraState: 'error' });
+      return false;
+    });
+  };
+  startCameraPreview = () => this.startCamera();
+  stopCamera = () => {
+    if (this._stream) { this._stream.getTracks().forEach(t => t.stop()); this._stream = null; }
+    if (this.videoRef.current) this.videoRef.current.srcObject = null;
+    this.setState({ cameraState: 'idle' });
+  };
+
+  getSpeechRecognitionCtor() {
+    return window.SpeechRecognition || window.webkitSpeechRecognition;
+  }
+  normalizeSpeechText(text) {
+    return String(text || '').toLowerCase().replace(/[^0-9a-z가-힣ㄱ-ㅎㅏ-ㅣ\s]/gi, ' ').replace(/\s+/g, ' ').trim();
+  }
+  countWords(text) {
+    const normalized = this.normalizeSpeechText(text);
+    if (!normalized) return 0;
+    const words = normalized.match(/[0-9a-z가-힣ㄱ-ㅎㅏ-ㅣ]+/gi);
+    return words ? words.length : 0;
+  }
+  countKeyword(text, keyword) {
+    if (!text || !keyword) return 0;
+    if (keyword.length <= 1) return text.split(/\s+/).filter(token => token === keyword).length;
+    let count = 0;
+    let pos = 0;
+    while ((pos = text.indexOf(keyword, pos)) >= 0) {
+      count += 1;
+      pos += keyword.length;
+    }
+    return count;
+  }
+  estimateTranscriptWpm(text, elapsed) {
+    const words = this.countWords(text);
+    if (!words || elapsed < 2) return null;
+    return Math.max(50, Math.min(220, (words / Math.max(1, elapsed)) * 60));
+  }
+  analyzeTranscriptChunk(text, state) {
+    const normalized = this.normalizeSpeechText(text);
+    if (!normalized) return {};
+    const elapsed = Math.max(0, state.elapsed || 0);
+    let forbiddenLog = state.forbiddenLog;
+    let habitTally = state.habitTally;
+    let characterScale = state.characterScale;
+    let lastDetected = state.lastDetected;
+    let lastDetectedAt = state.lastDetectedAt;
+    let lastHabitWord = state.lastHabitWord;
+    let lastHabitAt = state.lastHabitAt;
+    let foundSignal = false;
+    const forbiddenKeys = new Set(state.settings.forbiddenWords.map(w => this.normalizeSpeechText(w)).filter(Boolean));
+    state.settings.forbiddenWords.forEach(word => {
+      const key = this.normalizeSpeechText(word);
+      const count = this.countKeyword(normalized, key);
+      if (!count) return;
+      forbiddenLog = [...forbiddenLog, ...Array.from({ length: count }, () => ({ word, at: elapsed }))];
+      lastDetected = word;
+      lastDetectedAt = elapsed;
+      characterScale = Math.max(0.42, characterScale - 0.1 * count);
+      foundSignal = true;
+    });
+    ['음', '어', '그니까', '그러니까', '약간', '뭐랄까', '사실', '이제'].forEach(word => {
+      const key = this.normalizeSpeechText(word);
+      if (forbiddenKeys.has(key)) return;
+      const count = this.countKeyword(normalized, key);
+      if (!count) return;
+      habitTally = { ...habitTally, [word]: (habitTally[word] || 0) + count };
+      lastHabitWord = word;
+      lastHabitAt = elapsed;
+      characterScale = Math.max(0.6, characterScale - 0.05 * count);
+      foundSignal = true;
+    });
+    return foundSignal
+      ? { forbiddenLog, habitTally, characterScale, lastDetected, lastDetectedAt, lastHabitWord, lastHabitAt, characterMood: 'shrink' }
+      : {};
+  }
+  commitTranscriptChunk(chunk) {
+    const cleaned = String(chunk || '').replace(/\s+/g, ' ').trim();
+    if (!cleaned) return;
+    this.setState(s => ({
+      transcriptFinal: `${s.transcriptFinal} ${cleaned}`.trim(),
+      transcriptInterim: '',
+      speechState: 'listening',
+      speechError: '',
+      ...this.analyzeTranscriptChunk(cleaned, s),
+    }));
+  }
+  startSpeechRecognition = () => {
+    const Recognition = this.getSpeechRecognitionCtor();
+    if (!Recognition) {
+      this.setState({ speechState: 'unsupported', speechError: '이 브라우저는 실시간 음성 인식을 지원하지 않습니다. Chrome 또는 Edge에서 실행해보세요.' });
+      return;
+    }
+    this.stopSpeechRecognition(false);
+    const recognition = new Recognition();
+    recognition.lang = 'ko-KR';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+    this._speechStopRequested = false;
+    this._recognition = recognition;
+    recognition.onstart = () => this.setState({ speechState: 'listening', speechError: '' });
+    recognition.onerror = (event) => {
+      if (event.error === 'no-speech') return;
+      const denied = event.error === 'not-allowed' || event.error === 'service-not-allowed';
+      if (denied) this._speechStopRequested = true;
+      this.setState({
+        speechState: denied ? 'denied' : 'error',
+        speechError: denied ? '마이크 권한이 거부됐어요. 브라우저 주소창의 권한 설정을 확인해주세요.' : '음성 인식 중 오류가 발생했어요. 잠시 후 다시 시작해보세요.',
+      });
+    };
+    recognition.onresult = (event) => {
+      let finalText = '';
+      let interimText = '';
+      for (let i = event.resultIndex; i < event.results.length; i += 1) {
+        const result = event.results[i];
+        const text = result[0] ? result[0].transcript : '';
+        if (result.isFinal) finalText += ` ${text}`;
+        else interimText += ` ${text}`;
+      }
+      if (finalText.trim()) this.commitTranscriptChunk(finalText);
+      this.setState({ transcriptInterim: interimText.trim(), speechState: 'listening' });
+    };
+    recognition.onend = () => {
+      const shouldRestart = this.state.isRecording && this._recognition === recognition && !this._speechStopRequested;
+      if (shouldRestart) {
+        window.setTimeout(() => {
+          if (!this.state.isRecording || this._recognition !== recognition || this._speechStopRequested) return;
+          try { recognition.start(); } catch (e) {}
+        }, 250);
+        return;
+      }
+      if (this._recognition === recognition) this.setState({ speechState: this.state.isRecording ? 'idle' : 'idle' });
+    };
+    this.setState({ speechState: 'starting', speechError: '' });
+    try { recognition.start(); }
+    catch (e) { this.setState({ speechState: 'error', speechError: '음성 인식을 시작할 수 없어요. 다시 시도해주세요.' }); }
+  };
+  stopSpeechRecognition = (updateState = true) => {
+    this._speechStopRequested = true;
+    const recognition = this._recognition;
+    this._recognition = null;
+    if (recognition) {
+      recognition.onend = null;
+      recognition.onerror = null;
+      recognition.onresult = null;
+      try { recognition.stop(); } catch (e) {}
+    }
+    if (updateState) this.setState({ speechState: 'idle', transcriptInterim: '' });
+  };
+  pickKoreanVoice() {
+    if (!window.speechSynthesis) return null;
+    const voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+    return voices.find(v => /ko/i.test(v.lang)) || voices.find(v => /korean|한국/i.test(v.name)) || null;
+  }
+  stopSpeechSynthesis = () => {
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    this._utterance = null;
+    this.setState({ interviewerSpeaking: false });
+  };
+
+  startRealtimeInterviewAnalysis = () => {
+    if (this.state.settings.mode !== '면접') return;
+    this.startBrowserLandmarkAnalysis();
+    this.startAudioToneAnalysis();
+  };
+  stopRealtimeInterviewAnalysis = () => {
+    if (this._landmarkRaf) cancelAnimationFrame(this._landmarkRaf);
+    this._landmarkRaf = null;
+    this._landmarkStopRequested = true;
+    if (this._audioToneTimer) clearTimeout(this._audioToneTimer);
+    this._audioToneTimer = null;
+    if (this._audioToneSource) {
+      try { this._audioToneSource.disconnect(); } catch (e) {}
+      this._audioToneSource = null;
+    }
+    if (this._audioToneContext) {
+      try { this._audioToneContext.close(); } catch (e) {}
+      this._audioToneContext = null;
+    }
+    if (this._audioToneStream) {
+      this._audioToneStream.getTracks().forEach(track => track.stop());
+      this._audioToneStream = null;
+    }
+    this.setState({ landmarkState: 'idle', audioToneState: 'idle' });
+  };
+  ensureFaceLandmarker = async () => {
+    if (this._faceLandmarker) return this._faceLandmarker;
+    if (!this._faceLandmarkerPromise) {
+      this._faceLandmarkerPromise = import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14').then(async vision => {
+        const fileset = await vision.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');
+        const modelCandidates = [
+          new URL('landmark/models/face_landmarker.task', window.location.href).href,
+          'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task',
+        ];
+        let landmarker = null;
+        let lastError = null;
+        for (const modelAssetPath of modelCandidates) {
+          try {
+            landmarker = await vision.FaceLandmarker.createFromOptions(fileset, {
+              baseOptions: { modelAssetPath, delegate: 'CPU' },
+              runningMode: 'VIDEO',
+              numFaces: 1,
+              outputFaceBlendshapes: true,
+            });
+            break;
+          } catch (e) {
+            lastError = e;
+          }
+        }
+        if (!landmarker) throw lastError || new Error('FaceLandmarker 모델 생성 실패');
+        this._faceLandmarker = landmarker;
+        return landmarker;
+      });
+    }
+    return this._faceLandmarkerPromise;
+  };
+  startBrowserLandmarkAnalysis = async () => {
+    if (this._landmarkRaf || this.state.landmarkState === 'loading') return;
+    this._landmarkStopRequested = false;
+    this._landmarkErrorCount = 0;
+    this._lastLandmarkTimestamp = null;
+    this.setState({ landmarkState: 'loading', landmarkError: '' });
+    try {
+      await this.startCamera();
+      const landmarker = await this.ensureFaceLandmarker();
+      this.setState({ landmarkState: 'live', landmarkError: '' });
+      const loop = () => {
+        if (this._landmarkStopRequested || !this.state.isRecording || this.state.settings.mode !== '면접') {
+          this._landmarkRaf = null;
+          return;
+        }
+        const video = this.videoRef.current;
+        if (!video || video.readyState < 2 || !video.videoWidth) {
+          this._landmarkRaf = requestAnimationFrame(loop);
+          return;
+        }
+        try {
+          const timestampMs = this.nextLandmarkTimestamp(video);
+          const result = landmarker.detectForVideo(video, timestampMs);
+          const metrics = this.buildLandmarkMetrics(result);
+          this._landmarkErrorCount = 0;
+          const statePatch = metrics
+            ? { landmarkState: 'live', landmarkError: '', landmarkMetrics: metrics, realtimeFeedbackItems: this.buildRealtimeFeedbackItems(metrics, this.state.audioToneMetrics) }
+            : { landmarkState: 'noFace', landmarkError: '', landmarkMetrics: null, realtimeFeedbackItems: this.buildRealtimeFeedbackItems(null, this.state.audioToneMetrics) };
+          this.setState(statePatch);
+        } catch (e) {
+          this._landmarkErrorCount = (this._landmarkErrorCount || 0) + 1;
+          console.warn('Face landmark analysis failed', e);
+          if (this._landmarkErrorCount >= 3) {
+            this.setState({
+              landmarkState: 'error',
+              landmarkError: `표정 분석 중 오류가 발생했어요: ${e && e.message ? e.message : String(e)}`,
+            });
+          }
+        }
+        this._landmarkRaf = requestAnimationFrame(loop);
+      };
+      this._landmarkRaf = requestAnimationFrame(loop);
+    } catch (e) {
+      console.warn('Face landmark model load failed', e);
+      this.setState({ landmarkState: 'error', landmarkError: `landmark 모델을 불러오지 못했어요: ${e && e.message ? e.message : String(e)}` });
+    }
+  };
+  nextLandmarkTimestamp(video) {
+    let timestamp = video && Number.isFinite(video.currentTime) && video.currentTime > 0
+      ? video.currentTime * 1000
+      : performance.now();
+    if (this._lastLandmarkTimestamp != null && timestamp <= this._lastLandmarkTimestamp) {
+      timestamp = this._lastLandmarkTimestamp + 1;
+    }
+    this._lastLandmarkTimestamp = timestamp;
+    return timestamp;
+  }
+  buildLandmarkMetrics(result) {
+    const landmarks = result && (result.faceLandmarks || result.face_landmarks) && (result.faceLandmarks || result.face_landmarks)[0];
+    if (!landmarks || !landmarks.length) return null;
+    const validPoint = (p) => p && Number.isFinite(p.x) && Number.isFinite(p.y);
+    const at = (i) => validPoint(landmarks[i]) ? landmarks[i] : { x: 0.5, y: 0.5, z: 0 };
+    const dist = (a, b) => Math.hypot((a.x || 0) - (b.x || 0), (a.y || 0) - (b.y || 0));
+    const meanPoint = (indices) => {
+      const pts = indices.map(at);
+      return {
+        x: pts.reduce((sum, p) => sum + p.x, 0) / pts.length,
+        y: pts.reduce((sum, p) => sum + p.y, 0) / pts.length,
+      };
+    };
+    const ratioInRange = (value, low, high) => Math.max(0, Math.min(1, (value - low) / Math.max(0.0001, high - low)));
+    const leftEyeW = dist(at(33), at(133));
+    const rightEyeW = dist(at(362), at(263));
+    const leftEyeH = dist(at(159), at(145));
+    const rightEyeH = dist(at(386), at(374));
+    const eyeOpen = ((leftEyeH / Math.max(leftEyeW, 0.0001)) + (rightEyeH / Math.max(rightEyeW, 0.0001))) / 2;
+    const eyeClosed = eyeOpen < 0.18;
+    const now = performance.now() / 1000;
+    if (this._eyeWasClosed && !eyeClosed) {
+      this._blinkCount = (this._blinkCount || 0) + 1;
+      this._blinkTimes = [...(this._blinkTimes || []), now].filter(t => now - t <= 60);
+    }
+    this._eyeWasClosed = eyeClosed;
+    const blinkRate = (this._blinkTimes || []).filter(t => now - t <= 60).length;
+
+    let gazeX = 0.5;
+    let gazeY = 0.5;
+    if (landmarks.length > 477) {
+      const leftIris = meanPoint([468, 469, 470, 471, 472]);
+      const rightIris = meanPoint([473, 474, 475, 476, 477]);
+      const leftLow = Math.min(at(33).x, at(133).x);
+      const leftHigh = Math.max(at(33).x, at(133).x);
+      const rightLow = Math.min(at(362).x, at(263).x);
+      const rightHigh = Math.max(at(362).x, at(263).x);
+      gazeX = (ratioInRange(leftIris.x, leftLow, leftHigh) + ratioInRange(rightIris.x, rightLow, rightHigh)) / 2;
+      const leftTop = Math.min(at(159).y, at(145).y);
+      const leftBottom = Math.max(at(159).y, at(145).y);
+      const rightTop = Math.min(at(386).y, at(374).y);
+      const rightBottom = Math.max(at(386).y, at(374).y);
+      gazeY = (ratioInRange(leftIris.y, leftTop, leftBottom) + ratioInRange(rightIris.y, rightTop, rightBottom)) / 2;
+    }
+    let gazeDirection = 'center';
+    if (gazeX < 0.38) gazeDirection = 'right';
+    else if (gazeX > 0.62) gazeDirection = 'left';
+    else if (gazeY < 0.34) gazeDirection = 'up';
+    else if (gazeY > 0.68) gazeDirection = 'down';
+
+    const nose = at(1), chin = at(152), forehead = at(10), leftFace = at(234), rightFace = at(454);
+    const faceWidth = Math.max(0.0001, dist(leftFace, rightFace));
+    const faceHeight = Math.max(0.0001, dist(forehead, chin));
+    const centerX = (leftFace.x + rightFace.x) / 2;
+    const centerY = (forehead.y + chin.y) / 2;
+    const yaw = ((nose.x - centerX) / faceWidth) * 75;
+    const pitch = ((nose.y - centerY) / faceHeight) * 85;
+    const roll = Math.atan2(rightFace.y - leftFace.y, rightFace.x - leftFace.x) * 180 / Math.PI;
+    let headDirection = 'center';
+    if (yaw < -10) headDirection = 'left';
+    else if (yaw > 10) headDirection = 'right';
+    else if (pitch < -8) headDirection = 'up';
+    else if (pitch > 10) headDirection = 'down';
+    else if (Math.abs(roll) > 8) headDirection = 'tilted';
+
+    const mouthOpen = dist(at(13), at(14)) / Math.max(0.0001, dist(at(61), at(291)));
+    const lipPress = mouthOpen < 0.16;
+    const faceBlendshapes = result.faceBlendshapes || result.face_blendshapes || [];
+    const blendCategories = (faceBlendshapes[0] && faceBlendshapes[0].categories) || [];
+    const blendshapes = blendCategories.reduce((map, cat) => {
+      const name = cat.categoryName || cat.category_name || cat.displayName || cat.display_name;
+      if (!name) return map;
+      return { ...map, [name]: Number(cat.score) || 0 };
+    }, {});
+    const joyScore = Math.max(0, Math.min(1, ((blendshapes.mouthSmileLeft || 0) + (blendshapes.mouthSmileRight || 0)) / 2));
+    const expressionTension = Math.max(0, Math.min(1, (lipPress ? 0.38 : 0) + (eyeClosed ? 0.24 : 0) + (joyScore < 0.08 ? 0.18 : 0)));
+    let attentionScore = 1;
+    if (gazeDirection !== 'center') attentionScore -= 0.3;
+    if (headDirection !== 'center') attentionScore -= 0.25;
+    if (Math.abs(roll) > 8) attentionScore -= 0.1;
+    attentionScore = Math.max(0, Math.min(1, attentionScore));
+    const negativeBehaviors = [];
+    if (gazeDirection !== 'center') negativeBehaviors.push('시선 이탈');
+    if (headDirection !== 'center') negativeBehaviors.push('고개 방향 이탈');
+    if (lipPress) negativeBehaviors.push('입술 압박');
+    if (expressionTension > 0.6) negativeBehaviors.push('표정 경직 높음');
+    if (blinkRate >= 30) negativeBehaviors.push('눈깜빡임 많음');
+    return {
+      attentionScore, gazeDirection, headDirection,
+      yaw, pitch, roll, blinkRate, lipPress, expressionTension, joyScore,
+      negativeBehaviors,
+    };
+  }
+  startAudioToneAnalysis = async () => {
+    if (this._audioToneTimer || this.state.audioToneState === 'loading') return;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      this.setState({ audioToneState: 'unsupported', audioToneError: '마이크 분석을 지원하지 않는 브라우저예요.' });
+      return;
+    }
+    this.setState({ audioToneState: 'loading', audioToneError: '' });
+    try {
+      this._audioToneStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, video: false });
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      this._audioToneContext = new AudioContext();
+      this._audioToneSource = this._audioToneContext.createMediaStreamSource(this._audioToneStream);
+      this._audioToneAnalyser = this._audioToneContext.createAnalyser();
+      this._audioToneAnalyser.fftSize = 2048;
+      this._audioToneBuffer = new Float32Array(this._audioToneAnalyser.fftSize);
+      this._audioToneSource.connect(this._audioToneAnalyser);
+      this._pitchHistory = [];
+      this._speechPeakTimes = [];
+      this._lastAudioPeakAt = 0;
+      this._lastSpeakingAt = performance.now() / 1000;
+      this.setState({ audioToneState: 'live' });
+      const tickAudio = () => {
+        if (!this.state.isRecording || this.state.settings.mode !== '면접' || !this._audioToneAnalyser) {
+          this._audioToneTimer = null;
+          return;
+        }
+        this._audioToneAnalyser.getFloatTimeDomainData(this._audioToneBuffer);
+        const metrics = this.analyzeAudioToneBuffer(this._audioToneBuffer, this._audioToneContext.sampleRate);
+        this.setState({
+          audioToneState: 'live',
+          audioToneMetrics: metrics,
+          realtimeFeedbackItems: this.buildRealtimeFeedbackItems(this.state.landmarkMetrics, metrics),
+        });
+        this._audioToneTimer = window.setTimeout(tickAudio, 260);
+      };
+      tickAudio();
+    } catch (e) {
+      this.setState({ audioToneState: 'error', audioToneError: '마이크 권한을 확인해주세요.' });
+    }
+  };
+  analyzeAudioToneBuffer(buffer, sampleRate) {
+    const now = performance.now() / 1000;
+    let sum = 0;
+    for (let i = 0; i < buffer.length; i += 1) sum += buffer[i] * buffer[i];
+    const rms = Math.sqrt(sum / buffer.length) + 1e-9;
+    const volumeDb = 20 * Math.log10(rms);
+    const isSpeaking = volumeDb > -48;
+    if (isSpeaking) this._lastSpeakingAt = now;
+    const pitchHz = isSpeaking ? this.estimatePitch(buffer, sampleRate) : null;
+    if (pitchHz) this._pitchHistory = [...(this._pitchHistory || []), pitchHz].slice(-60);
+    const baseline = this._pitchHistory && this._pitchHistory.length >= 10
+      ? [...this._pitchHistory].sort((a, b) => a - b)[Math.floor(this._pitchHistory.length / 2)]
+      : pitchHz;
+    let toneLabel = 'unknown';
+    if (pitchHz && baseline) {
+      if (pitchHz >= Math.max(260, baseline * 1.25)) toneLabel = 'high';
+      else if (pitchHz <= Math.min(120, baseline * 0.75)) toneLabel = 'low';
+      else toneLabel = 'normal';
+    }
+    if (isSpeaking && rms > 0.035 && now - (this._lastAudioPeakAt || 0) > 0.16) {
+      this._speechPeakTimes = [...(this._speechPeakTimes || []), now].filter(t => now - t <= 15);
+      this._lastAudioPeakAt = now;
+    }
+    const transcriptRate = this.estimateTranscriptWpm(`${this.state.transcriptFinal} ${this.state.transcriptInterim}`, Math.max(1, this.state.elapsed));
+    const peakRate = ((this._speechPeakTimes || []).length / 15) * 60;
+    const speechRate = transcriptRate || peakRate;
+    const speechRateLabel = speechRate >= 250 ? 'fast' : (speechRate > 0 && speechRate <= 90 ? 'slow' : 'normal');
+    const longPause = !isSpeaking && now - (this._lastSpeakingAt || now) >= 1.2;
+    const agitatedTone = isSpeaking && volumeDb > -24 && toneLabel === 'high' && speechRateLabel === 'fast';
+    const negativeBehaviors = [];
+    if (speechRateLabel === 'fast') negativeBehaviors.push('말 빠름');
+    if (toneLabel === 'high') negativeBehaviors.push('높은 톤');
+    if (agitatedTone) negativeBehaviors.push('격앙된 어조 가능');
+    if (longPause) negativeBehaviors.push('긴 침묵');
+    return {
+      isSpeaking,
+      volumeDb,
+      pitchHz,
+      toneLabel,
+      speechRate,
+      speechRateLabel,
+      longPause,
+      agitatedTone,
+      negativeBehaviors,
+    };
+  }
+  estimatePitch(buffer, sampleRate) {
+    const size = buffer.length;
+    let bestLag = -1;
+    let bestCorr = 0;
+    const minLag = Math.floor(sampleRate / 450);
+    const maxLag = Math.min(Math.floor(sampleRate / 70), size - 1);
+    let energy = 0;
+    for (let i = 0; i < size; i += 1) energy += buffer[i] * buffer[i];
+    if (energy < 0.0005) return null;
+    for (let lag = minLag; lag <= maxLag; lag += 1) {
+      let corr = 0;
+      for (let i = 0; i < size - lag; i += 1) corr += buffer[i] * buffer[i + lag];
+      corr = corr / (size - lag);
+      if (corr > bestCorr) {
+        bestCorr = corr;
+        bestLag = lag;
+      }
+    }
+    if (bestLag <= 0 || bestCorr < 0.004) return null;
+    return sampleRate / bestLag;
+  }
+  buildRealtimeFeedbackItems(face, audio) {
+    const items = [];
+    const warn = (kind, title, desc) => items.push({ kind, title, desc, bg: '#F6C9BC', color: '#8c2f1c' });
+    const ok = (kind, title, desc) => items.push({ kind, title, desc, bg: '#E8F4EE', color: '#2C8C5A' });
+    const info = (kind, title, desc) => items.push({ kind, title, desc, bg: '#FBE9C7', color: '#6b6258' });
+    if (this.state.landmarkState === 'loading') info('표정', 'landmark 모델 로딩 중', '첫 실행에는 모델을 불러오는 데 시간이 걸릴 수 있어요.');
+    else if (this.state.landmarkState === 'error') warn('표정', 'landmark 분석 오류', 'localhost 주소로 열고 새로고침한 뒤 카메라 권한을 다시 허용해주세요.');
+    else if (this.state.landmarkState === 'noFace') warn('표정', '얼굴이 잘 안 잡혀요', '카메라 정면에 얼굴이 들어오도록 위치를 맞춰보세요.');
+    else if (face) {
+      if (face.attentionScore < 0.55) warn('표정', '시선과 고개 방향이 흔들려요', '답변 첫 문장과 결론 문장은 카메라 쪽을 보며 말해보세요.');
+      if (face.expressionTension > 0.6) warn('표정', '표정이 조금 굳어 보여요', '문장 끝에서 입을 살짝 풀고 짧게 숨을 쉬면 자연스러워집니다.');
+      if (face.joyScore > 0.35) ok('표정', '표정 에너지가 좋아요', '미소가 과하지 않게 유지되면 면접 인상이 부드러워집니다.');
+    }
+    if (this.state.audioToneState === 'loading') info('어조', '마이크 분석 준비 중', '마이크 권한을 허용하면 톤과 침묵을 볼 수 있어요.');
+    else if (audio) {
+      if (audio.longPause) warn('어조', '침묵이 길어졌어요', '생각할 시간이 필요하면 “잠시 정리해서 말씀드리겠습니다”처럼 연결해보세요.');
+      if (audio.speechRateLabel === 'fast') warn('어조', '말 속도가 빠릅니다', '핵심 단어 앞뒤로 반 박자 쉬면 답변이 더 또렷해져요.');
+      if (audio.toneLabel === 'high') warn('어조', '톤이 높아졌어요', '목소리를 조금 낮추고 문장 끝을 내려 안정감을 주세요.');
+      if (audio.isSpeaking && !audio.negativeBehaviors.length) ok('어조', '어조가 안정적입니다', '현재 리듬을 유지하면서 답변 구조만 분명히 잡아보세요.');
+    }
+    if (!items.length) info('대기', '녹화를 시작하면 분석이 표시됩니다', '표정은 landmark 모델, 어조는 마이크 입력으로 계산합니다.');
+    return items.slice(0, 4);
+  }
+
+  goHome = () => {
+    this.stopTimer();
+    this.stopCamera();
+    this.stopSpeechRecognition();
+    this.stopSpeechSynthesis();
+    this.stopRealtimeInterviewAnalysis();
+    this.setState({ screen: 'home', isRecording: false });
+  };
+  goArchive = () => {
+    this.stopTimer();
+    this.stopCamera();
+    this.stopSpeechRecognition();
+    this.stopSpeechSynthesis();
+    this.stopRealtimeInterviewAnalysis();
+    this.setState({ screen: 'archive', isRecording: false });
+  };
+  goScriptReview = () => this.setState({ screen: 'scriptReview' });
+  goReportFromScriptReview = () => this.setState({ screen: 'report' });
+  goModeSelect = () => this.setState({ screen: 'modeSelect' });
+  startNewSession = () => {
+    this.stopTimer();
+    this.stopCamera();
+    this.stopSpeechRecognition();
+    this.stopSpeechSynthesis();
+    this.stopRealtimeInterviewAnalysis();
+    this.setState(s => ({
+      screen: 'modeSelect', isRecording: false,
+      currentSessionId: s.currentSessionId + 1, attemptNo: 1,
+      sessionName: '', materialUploaded: false, materialFileName: '', feedbackRequest: '',
+      interviewMaterialUploaded: false, interviewMaterialFileName: '', jobCompany: '', jobRole: '',
+      settings: {
+        ...s.settings,
+        interviewQuestions: ['자기소개를 해주세요', '지원 동기를 말씀해주세요', '본인의 강점과 약점은 무엇인가요', '협업 중 어려웠던 경험을 말씀해주세요', '마지막으로 하고 싶은 말이 있나요'],
+      },
+      elapsed: 0, currentQIndex: 0, currentPracticeSlideIndex: 0,
+      forbiddenLog: [], habitTally: {}, gestureTally: {}, wpmSamples: [], showPresentationStyle: false, showDetailAnalysis: false, showAdvancedSettings: false,
+      speechState: 'idle', speechError: '', transcriptFinal: '', transcriptInterim: '',
+      interviewerSpeaking: false, interviewerStatus: '면접관이 질문을 준비하고 있어요.',
+      landmarkState: 'idle', landmarkError: '', landmarkMetrics: null,
+      audioToneState: 'idle', audioToneError: '', audioToneMetrics: null,
+      realtimeFeedbackItems: this.buildRealtimeFeedbackItems(null, null),
+    }));
+  };
+  selectMode = (mode) => this.setState(s => ({ settings: { ...s.settings, mode }, screen: 'settings' }));
+  chooseModeSpeech = () => this.setState(s => ({ settings: { ...s.settings, mode: '발표' }, screen: 'basicSetup' }));
+  chooseModeInterview = () => this.setState(s => ({ settings: { ...s.settings, mode: '면접' }, screen: 'settings' }));
+
+  onMaterialUpload = () => this.setState({ materialUploaded: true, materialFileName: 'project.pdf' });
+  resetMaterial = () => this.setState({ materialUploaded: false, materialFileName: '' });
+  onSessionNameChangeBasic = (e) => this.setState({ sessionName: e.target.value });
+  onFeedbackRequestChange = (e) => this.setState({ feedbackRequest: e.target.value });
+  onTargetDurationChange = (e) => {
+    const targetDurationMin = Number(e.target.value) || 0;
+    this.setState(s => ({
+      targetDurationMin,
+      designSlides: s.screen === 'design'
+        ? this.normalizePlanTimes(s.designSlides, targetDurationMin)
+        : s.designSlides,
+    }));
+  };
+  setScriptMethod = (m) => this.setState({ scriptMethod: m });
+  onTypedScriptChange = (e) => this.setState({ typedScript: e.target.value });
+  goBasicSetup = () => this.setState({ screen: 'basicSetup' });
+  startPresentationPractice = () => this.setState(s => ({
+    settings: { ...s.settings, mode: '발표' },
+    confirmedPlan: null,
+    duration: Math.max(60, Number(s.targetDurationMin || 1) * 60),
+    currentPracticeSlideIndex: 0,
+    sentenceIndex: 0,
+    showPresentationStyle: false,
+    screen: 'practice',
+  }));
+
+  analyzeAndDesign = () => {
+    const s = this.state;
+    let connectSentences = [];
+    if (s.scriptMethod === 'upload') connectSentences = this.sentences.slice();
+    else if (s.scriptMethod === 'type') {
+      connectSentences = s.typedScript.split(/(?<=[.!?])\s+/).map(t => t.trim()).filter(Boolean);
+    }
+    const slideCount = 5;
+    const sentenceSlideMap = connectSentences.map((_, i) => Math.min(slideCount - 1, Math.floor((i / Math.max(1, connectSentences.length)) * slideCount)));
+    const rawDesignSlides = connectSentences.length
+      ? this.buildFlowItems(connectSentences, sentenceSlideMap)
+      : this.buildDefaultDesignSlides().map(item => ({ ...item, sourceText: '' }));
+    const designSlides = this.normalizePlanTimes(rawDesignSlides, s.targetDurationMin);
+    this.setState({ connectSentences, sentenceSlideMap, designSlides, selectedConnectIndex: null }, () => {
+      this.setState({ screen: s.scriptMethod === 'none' ? 'design' : 'designConnect' });
+    });
+  };
+
+  selectConnectSentence = (i) => this.setState({ selectedConnectIndex: i });
+  assignConnectSentenceToSlide = (slideIdx) => {
+    if (this.state.selectedConnectIndex == null) return;
+    const i = this.state.selectedConnectIndex;
+    this.setState(s => ({ sentenceSlideMap: s.sentenceSlideMap.map((v, idx) => idx === i ? slideIdx : v) }));
+  };
+  completeConnect = () => {
+    this.setState(s => {
+      const designSlides = this.normalizePlanTimes(this.buildFlowItems(s.connectSentences, s.sentenceSlideMap), s.targetDurationMin);
+      return { designSlides, selectedDesignSlideIndex: 0, screen: 'design' };
+    });
+  };
+
+  goDesign = () => this.setState({ screen: 'design' });
+  selectDesignSlide = (i) => this.setState({ selectedDesignSlideIndex: i });
+  updateDesignSlide = (i, patch) => this.setState(s => ({ designSlides: s.designSlides.map((sl, idx) => idx === i ? { ...sl, ...patch } : sl) }));
+  onDesignScriptChange = (e) => this.updateDesignSlide(this.state.selectedDesignSlideIndex, { script: e.target.value, scriptEdited: true });
+  onDesignTransitionChange = (e) => this.updateDesignSlide(this.state.selectedDesignSlideIndex, { transition: e.target.value, transitionEdited: true });
+  onDesignTimeChange = (e) => this.updateDesignSlide(this.state.selectedDesignSlideIndex, { time: Number(e.target.value) || 0, timeEdited: true });
+  assignDesignItemSlide = (slideIdx) => {
+    const slide = this.slides[slideIdx];
+    this.updateDesignSlide(this.state.selectedDesignSlideIndex, { slideN: slide.n, slideTitle: slide.title });
+  };
+  addDesignKeyPoint = (text) => { if (!text.trim()) return; const i = this.state.selectedDesignSlideIndex; const sl = this.state.designSlides[i]; this.updateDesignSlide(i, { keyPoints: [...sl.keyPoints, text.trim()], keyPointsEdited: true }); };
+  removeDesignKeyPoint = (kp) => { const i = this.state.selectedDesignSlideIndex; const sl = this.state.designSlides[i]; this.updateDesignSlide(i, { keyPoints: sl.keyPoints.filter(k => k !== kp), keyPointsEdited: true }); };
+  addDesignKeyword = (text) => { if (!text.trim()) return; const i = this.state.selectedDesignSlideIndex; const sl = this.state.designSlides[i]; this.updateDesignSlide(i, { keywords: [...sl.keywords, text.trim()], keywordsEdited: true }); };
+  removeDesignKeyword = (kw) => { const i = this.state.selectedDesignSlideIndex; const sl = this.state.designSlides[i]; this.updateDesignSlide(i, { keywords: sl.keywords.filter(k => k !== kw), keywordsEdited: true }); };
+  onDesignNewKeyPointChange = (e) => this.setState({ designNewKeyPoint: e.target.value });
+  onDesignNewKeyPointKeyDown = (e) => { if (e.key === 'Enter') { this.addDesignKeyPoint(this.state.designNewKeyPoint); this.setState({ designNewKeyPoint: '' }); } };
+  submitDesignNewKeyPoint = () => { this.addDesignKeyPoint(this.state.designNewKeyPoint); this.setState({ designNewKeyPoint: '' }); };
+  onDesignNewKeywordChange = (e) => this.setState({ designNewKeyword: e.target.value });
+  onDesignNewKeywordKeyDown = (e) => { if (e.key === 'Enter') { this.addDesignKeyword(this.state.designNewKeyword); this.setState({ designNewKeyword: '' }); } };
+  submitDesignNewKeyword = () => { this.addDesignKeyword(this.state.designNewKeyword); this.setState({ designNewKeyword: '' }); };
+  onDesignInstructionChange = (e) => this.setState({ designInstruction: e.target.value });
+  setDesignGoal = (g) => this.setState({ designGoal: g, designGoalCustom: '' });
+  onDesignGoalCustomChange = (e) => this.setState({ designGoalCustom: e.target.value, designGoal: '' });
+  toggleGlobalSettings = () => this.setState(s => ({ showGlobalSettings: !s.showGlobalSettings }));
+  onPresentationAudienceChange = (e) => this.setState({ presentationAudience: e.target.value });
+  onPresentationPurposeChange = (e) => this.setState({ presentationPurpose: e.target.value });
+  onPresentationToneChange = (e) => this.setState({ presentationTone: e.target.value });
+  onFeedbackFocusChange = (e) => this.setState({ feedbackFocus: e.target.value });
+
+  regenerateDesignSlide = async () => {
+    if (this.state.isRegeneratingDesign) return;
+    const i = this.state.selectedDesignSlideIndex;
+    const sl = this.state.designSlides[i];
+    this.setState({ isRegeneratingDesign: true });
+    try {
+      const instruction = this.state.designInstruction.trim() || '더 자연스러운 발표체로';
+      const prompt = `당신은 발표 코치입니다. 아래 슬라이드 발표 대본을 "${instruction}" 요청에 맞게 한국어로 다시 써주세요.\n슬라이드 제목: ${sl.title}\n핵심 내용: ${sl.keyPoints.join(', ')}\n기존 대본: ${sl.script}\n\n규칙: 새 대본 문장만 출력하고, 설명이나 따옴표는 넣지 마세요.`;
+      const text = await window.claude.complete(prompt);
+      const newScript = text.trim().split('\n')[0] || sl.script;
+      this.updateDesignSlide(i, { script: newScript, scriptEdited: false });
+    } catch (e) {
+      // keep existing script on failure
+    } finally {
+      this.setState({ isRegeneratingDesign: false });
+    }
+  };
+  cancelDesignChanges = () => this.setState(s => ({
+    designSlides: s.connectSentences.length
+      ? this.buildFlowItems(s.connectSentences, s.sentenceSlideMap)
+      : this.buildDefaultDesignSlides(),
+    selectedDesignSlideIndex: 0,
+    designGoal: this.goalOptions[0],
+    designGoalCustom: '',
+  }));
+  confirmDesignPlan = () => this.setState(s => ({
+    confirmedPlan: s.designSlides,
+    duration: Math.max(60, s.designSlides.reduce((sum, item) => sum + Number(item.time || 0), 0)),
+    sentenceIndex: 0,
+    screen: 'practice',
+  }));
+  reviseAfterReport = () => this.setState({ screen: 'basicSetup', showPresentationStyle: false });
+
+  getActiveSlides() {
+    const cp = this.state.confirmedPlan;
+    return cp ? cp.map(item => ({ n: item.slideN, title: item.slideTitle })) : this.slides;
+  }
+  getActiveSentences() {
+    const cp = this.state.confirmedPlan;
+    if (!cp) return this.sentences;
+    const out = cp.map(item => item.script).filter(Boolean);
+    return out.length ? out : this.sentences;
+  }
+  goSettings = () => {
+    this.stopTimer();
+    this.stopCamera();
+    this.stopSpeechRecognition();
+    this.stopSpeechSynthesis();
+    this.stopRealtimeInterviewAnalysis();
+    this.setState({ screen: 'settings', isRecording: false });
+  };
+  startPractice = () => this.setState({ screen: 'practice' });
+  practiceBack = () => {
+    this.stopTimer();
+    this.stopCamera();
+    this.stopSpeechRecognition();
+    this.stopSpeechSynthesis();
+    this.stopRealtimeInterviewAnalysis();
+    this.setState(s => ({ screen: s.settings.mode === '발표' ? 'basicSetup' : 'settings', isRecording: false }));
+  };
+  retryPractice = () => {
+    this.stopTimer();
+    this.stopCamera();
+    this.stopSpeechRecognition();
+    this.stopSpeechSynthesis();
+    this.stopRealtimeInterviewAnalysis();
+    this.setState(s => ({
+      screen: 'practice', isRecording: false, attemptNo: s.attemptNo + 1,
+      elapsed: 0, currentQIndex: 0, currentPracticeSlideIndex: 0, sentenceIndex: 0,
+      forbiddenLog: [], habitTally: {}, gestureTally: {}, wpmSamples: [],
+      characterScale: 1, characterMood: 'neutral', showPresentationStyle: false, showDetailAnalysis: false,
+      speechState: 'idle', speechError: '', transcriptFinal: '', transcriptInterim: '',
+      interviewerSpeaking: false, interviewerStatus: '면접관이 질문을 준비하고 있어요.',
+      landmarkState: 'idle', landmarkError: '', landmarkMetrics: null,
+      audioToneState: 'idle', audioToneError: '', audioToneMetrics: null,
+      realtimeFeedbackItems: this.buildRealtimeFeedbackItems(null, null),
+    }));
+  };
+  prevPracticeSlide = () => this.setState(s => ({ currentPracticeSlideIndex: Math.max(0, s.currentPracticeSlideIndex - 1) }));
+  nextPracticeSlide = () => this.setState(s => ({ currentPracticeSlideIndex: Math.min(this.slides.length - 1, s.currentPracticeSlideIndex + 1) }));
+  setPresentationStyleTone = (tone) => this.setState({ presentationStyleTone: tone, showPresentationStyle: false });
+  revealPresentationStyle = () => this.setState({ showPresentationStyle: true });
+  toggleDetailAnalysis = () => this.setState(s => ({ showDetailAnalysis: !s.showDetailAnalysis }));
+  toggleAdvancedSettings = () => this.setState(s => ({ showAdvancedSettings: !s.showAdvancedSettings }));
+
+  setVariantA = () => this.setState({ practiceVariant: 'a' });
+  setVariantB = () => this.setState({ practiceVariant: 'b' });
+  setVariantC = () => this.setState({ practiceVariant: 'c' });
+  setVariantD = () => this.setState({ practiceVariant: 'd' });
+
+  setModeSpeech = () => this.setState(s => ({ settings: { ...s.settings, mode: '발표' }, screen: s.screen === 'settings' ? 'basicSetup' : s.screen }));
+  setModeInterview = () => this.setState(s => ({ settings: { ...s.settings, mode: '면접' }, screen: s.screen === 'basicSetup' ? 'settings' : s.screen }));
+  uploadScript = () => this.setState(s => ({ settings: { ...s.settings, scriptUploaded: true } }));
+  resetScript = () => this.setState(s => ({ settings: { ...s.settings, scriptUploaded: false } }));
+  onTargetWpmChange = (e) => { const v = Number(e.target.value); this.setState(s => ({ settings: { ...s.settings, targetWpm: v } })); };
+  onSessionNameChange = (e) => this.setState({ sessionName: e.target.value });
+  selectSentence = (i) => this.setState({ selectedSentenceIndex: i });
+  setArchiveFilter = (f) => this.setState({ archiveFilter: f });
+  onNewWordChange = (e) => this.setState({ settingsNewWord: e.target.value });
+  onNewWordKeyDown = (e) => { if (e.key === 'Enter') this.addForbiddenWord(); };
+  addForbiddenWord = () => {
+    const w = this.state.settingsNewWord.trim();
+    if (!w) return;
+    this.setState(s => ({ settings: { ...s.settings, forbiddenWords: s.settings.forbiddenWords.includes(w) ? s.settings.forbiddenWords : [...s.settings.forbiddenWords, w] }, settingsNewWord: '' }));
+  };
+  removeForbiddenWord = (w) => this.setState(s => ({ settings: { ...s.settings, forbiddenWords: s.settings.forbiddenWords.filter(x => x !== w) } }));
+
+  onNewQuestionChange = (e) => this.setState({ settingsNewQuestion: e.target.value });
+  onNewQuestionKeyDown = (e) => { if (e.key === 'Enter') this.addInterviewQuestion(); };
+  addInterviewQuestion = () => {
+    const q = this.state.settingsNewQuestion.trim();
+    if (!q) return;
+    this.setState(s => ({ settings: { ...s.settings, interviewQuestions: [...s.settings.interviewQuestions, q] }, settingsNewQuestion: '' }));
+  };
+  removeInterviewQuestion = (q) => this.setState(s => ({ settings: { ...s.settings, interviewQuestions: s.settings.interviewQuestions.filter(x => x !== q) } }));
+  nextQuestion = () => this.setState(s => ({ currentQIndex: Math.min(s.settings.interviewQuestions.length - 1, s.currentQIndex + 1) }), () => this.speakQuestion());
+  prevQuestion = () => this.setState(s => ({ currentQIndex: Math.max(0, s.currentQIndex - 1) }), () => this.speakQuestion());
+  speakQuestion = () => {
+    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+      this.setState({ interviewerStatus: '이 브라우저는 TTS를 지원하지 않아요.' });
+      return;
+    }
+    const s = this.state;
+    const qIndex = Math.min(s.currentQIndex, Math.max(0, s.settings.interviewQuestions.length - 1));
+    const text = s.settings.interviewQuestions[qIndex];
+    if (!text) return;
+    window.speechSynthesis.cancel();
+    const u = new window.SpeechSynthesisUtterance(text);
+    const voice = this.pickKoreanVoice();
+    if (voice) u.voice = voice;
+    u.lang = 'ko-KR';
+    u.rate = 0.92;
+    u.pitch = 0.92;
+    u.volume = 1;
+    u.onstart = () => this.setState({ interviewerSpeaking: true, interviewerStatus: '질문을 읽는 중입니다.' });
+    u.onend = () => this.setState({ interviewerSpeaking: false, interviewerStatus: '답변을 들을게요. 편하게 말해주세요.' });
+    u.onerror = () => this.setState({ interviewerSpeaking: false, interviewerStatus: '질문 음성 재생에 실패했어요.' });
+    this._utterance = u;
+    window.speechSynthesis.speak(u);
+  };
+
+  uploadInterviewMaterial = () => this.setState({ interviewMaterialUploaded: true, interviewMaterialFileName: '자기소개서_최종.pdf' });
+  resetInterviewMaterial = () => this.setState({ interviewMaterialUploaded: false, interviewMaterialFileName: '' });
+  onJobCompanyChange = (e) => this.setState({ jobCompany: e.target.value });
+  onJobRoleChange = (e) => this.setState({ jobRole: e.target.value });
+  generateQuestions = async () => {
+    const role = this.state.jobRole.trim();
+    if (!role || this.state.isGeneratingQuestions) return;
+    this.setState({ isGeneratingQuestions: true, generateError: false });
+    try {
+      const company = this.state.jobCompany.trim();
+      const prompt = `당신은 실무 채용 면접관입니다. 아래 직무에 지원한 사람에게 실제로 물어볼 법한 면접 질문을 한국어로 6개 만드세요.\n회사/산업: ${company || '일반 기업'}\n직무: ${role}\n\n규칙: 질문 문장만 한 줄에 하나씩 출력. 번호, 설명, 따옴표 없이 출력.`;
+      const text = await window.claude.complete(prompt);
+      const questions = text.split('\n').map(l => l.replace(/^[\s\d\.\-\)\u2022]+/, '').trim()).filter(Boolean).slice(0, 8);
+      if (questions.length) {
+        this.setState(s => ({ settings: { ...s.settings, interviewQuestions: questions }, currentQIndex: 0, isGeneratingQuestions: false }));
+      } else {
+        this.setState({ isGeneratingQuestions: false, generateError: true });
+      }
+    } catch (e) {
+      this.setState({ isGeneratingQuestions: false, generateError: true });
+    }
+  };
+
+  startRecording = () => {
+    this.stopTimer();
+    this.stopSpeechRecognition();
+    this.stopSpeechSynthesis();
+    this.stopRealtimeInterviewAnalysis();
+    this.setState({
+      isRecording: true, elapsed: 0, wpmSamples: [], forbiddenLog: [], habitTally: {}, gestureTally: {},
+      sentenceIndex: 0, currentQIndex: 0, currentPracticeSlideIndex: 0, characterScale: 1, characterMood: 'neutral',
+      lastDetected: null, lastDetectedAt: -99, lastHabitWord: null, lastHabitAt: -99, selectedSentenceIndex: null,
+      speechState: 'starting', speechError: '', transcriptFinal: '', transcriptInterim: '',
+      interviewerSpeaking: false, interviewerStatus: '면접관이 질문을 준비하고 있어요.',
+      landmarkState: 'idle', landmarkError: '', landmarkMetrics: null,
+      audioToneState: 'idle', audioToneError: '', audioToneMetrics: null,
+      realtimeFeedbackItems: this.buildRealtimeFeedbackItems(null, null),
+    }, () => {
+      this.startCamera();
+      this.startSpeechRecognition();
+      if (this.state.settings.mode === '면접') {
+        this.startRealtimeInterviewAnalysis();
+        window.setTimeout(() => this.speakQuestion(), 500);
+      }
+    });
+    this._handle = setInterval(this.tick, 450);
+  };
+  stopRecording = () => this.finishRecording();
+
+  tick = () => {
+    this.setState(s => {
+      if (!s.isRecording) return null;
+      const elapsed = s.elapsed + 0.45;
+      const target = s.settings.targetWpm;
+      const transcriptText = `${s.transcriptFinal} ${s.transcriptInterim}`.trim();
+      const realWpm = this.estimateTranscriptWpm(transcriptText, elapsed);
+      const usingTranscript = realWpm != null;
+      const wpm = usingTranscript ? realWpm : Math.max(60, Math.min(200, target + Math.sin(elapsed / 4) * 22 + (Math.random() - 0.5) * 14));
+      const activeLen = this.getActiveSentences().length;
+      let sentenceIndex = s.sentenceIndex;
+      if (s.settings.mode === '발표') {
+        if (s.confirmedPlan && s.confirmedPlan.length) {
+          let cumulative = 0;
+          sentenceIndex = s.confirmedPlan.findIndex(item => {
+            cumulative += Number(item.time || 0);
+            return elapsed < cumulative;
+          });
+          if (sentenceIndex < 0) sentenceIndex = activeLen - 1;
+        } else {
+          sentenceIndex = Math.min(activeLen - 1, Math.floor((elapsed / s.duration) * activeLen));
+        }
+      }
+      let { characterScale, forbiddenLog, habitTally, gestureTally, lastDetected, lastDetectedAt, lastHabitWord, lastHabitAt } = s;
+      if (Math.random() < 0.1) {
+        const g = this.gesturePool[Math.floor(Math.random() * this.gesturePool.length)];
+        gestureTally = { ...gestureTally, [g]: (gestureTally[g] || 0) + 1 };
+      }
+      let mood = 'neutral';
+      const roll = Math.random();
+      const combinedPool = [...s.settings.forbiddenWords, '음...', '그러니까', '약간', '뭐랄까'];
+      let hitForbidden = false, hitHabit = false;
+      if (!usingTranscript && roll < 0.16) {
+        const word = combinedPool[Math.floor(Math.random() * combinedPool.length)];
+        if (s.settings.forbiddenWords.includes(word)) {
+          forbiddenLog = [...forbiddenLog, { word, at: elapsed }];
+          lastDetected = word; lastDetectedAt = elapsed;
+          characterScale = Math.max(0.42, characterScale - 0.18);
+          hitForbidden = true;
+        } else {
+          habitTally = { ...habitTally, [word]: (habitTally[word] || 0) + 1 };
+          lastHabitWord = word; lastHabitAt = elapsed;
+          characterScale = Math.max(0.6, characterScale - 0.1);
+          hitHabit = true;
+        }
+      }
+      const diff = wpm - target;
+      if (hitForbidden || hitHabit) mood = 'shrink';
+      else if (Math.abs(diff) <= 15) { mood = 'happy'; characterScale = Math.min(1.12, characterScale + 0.02); }
+      else if (diff > 15) { mood = 'fast'; characterScale = Math.min(1.05, characterScale + 0.006); }
+      else { mood = 'slow'; characterScale = Math.min(1.0, characterScale + 0.01); }
+      const wpmSamples = [...s.wpmSamples, wpm].slice(-160);
+      return { elapsed, wpm, sentenceIndex, characterScale, characterMood: mood, forbiddenLog, habitTally, gestureTally, lastDetected, lastDetectedAt, lastHabitWord, lastHabitAt, wpmSamples };
+    }, () => {
+      if (this.state.elapsed >= this.state.duration && this.state.isRecording) { this.finishRecording(); return; }
+      if (this.state.settings.mode === '발표') {
+        const el = this.scriptRef.current;
+        if (el) {
+          const target = el.scrollHeight * (this.state.sentenceIndex / this.getActiveSentences().length) - el.clientHeight / 2;
+          el.scrollTop = Math.max(0, target);
+        }
+      }
+    });
+  };
+
+  finishRecording = () => {
+    this.stopTimer();
+    const s = this.state;
+    const transcript = `${s.transcriptFinal} ${s.transcriptInterim}`.replace(/\s+/g, ' ').trim();
+    this.stopCamera();
+    this.stopSpeechRecognition();
+    this.stopSpeechSynthesis();
+    this.stopRealtimeInterviewAnalysis();
+    const avg = s.wpmSamples.length ? Math.round(s.wpmSamples.reduce((a, b) => a + b, 0) / s.wpmSamples.length) : s.settings.targetWpm;
+    const max = s.wpmSamples.length ? Math.round(Math.max(...s.wpmSamples)) : avg;
+    const min = s.wpmSamples.length ? Math.round(Math.min(...s.wpmSamples)) : avg;
+    const report = {
+      name: s.sessionName.trim() || `${s.settings.mode} 연습`,
+      date: '2026.07.11', durationSec: Math.round(s.elapsed), mode: s.settings.mode, target: s.settings.targetWpm,
+      attemptNo: s.attemptNo, sessionId: s.currentSessionId,
+      avgWpm: avg, maxWpm: max, minWpm: min,
+      forbiddenLog: s.forbiddenLog, habitTally: s.habitTally, gestureTally: s.gestureTally, wpmSamples: s.wpmSamples,
+      transcript,
+    };
+    this.setState({ isRecording: false, screen: 'report', lastReport: report, showDetailAnalysis: false });
+  };
+
+  openSample = (i) => this.setState({ screen: 'report', lastReport: this.sampleReports[i], showDetailAnalysis: false });
+
+  formatTime(sec) {
+    const s = Math.max(0, Math.round(sec));
+    const m = Math.floor(s / 60);
+    const r = s % 60;
+    return `${m}:${r.toString().padStart(2, '0')}`;
+  }
+
+  buildCharacter(size) {
+    const s = this.state;
+    const mood = s.characterMood;
+    const eyeSize = mood === 'shrink' ? size * 0.09 : size * 0.075;
+    const faceStyle = {
+      width: size, height: size, borderRadius: '50%', background: '#FFD166', border: `${Math.max(2, size*0.025)}px solid #1a1a1a`,
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      transform: `scale(${s.characterScale})`, transition: 'transform 0.25s ease',
+      animation: mood === 'shrink' ? 'shakeX 0.3s ease' : mood === 'fast' ? 'floatY 0.5s ease-in-out infinite' : 'floatY 2.4s ease-in-out infinite',
+      boxShadow: mood === 'shrink' ? '0 0 0 4px #F6C9BC' : 'none',
+      position: 'relative',
+    };
+    const eyeRow = React.createElement('div', { style: { display: 'flex', gap: size * 0.16, marginBottom: size * 0.06 } },
+      React.createElement('div', { style: { width: eyeSize, height: eyeSize, borderRadius: '50%', background: '#1a1a1a' } }),
+      React.createElement('div', { style: { width: eyeSize, height: eyeSize, borderRadius: '50%', background: '#1a1a1a' } })
+    );
+    let mouth;
+    if (mood === 'happy') mouth = React.createElement('div', { style: { width: size * 0.32, height: size * 0.18, borderRadius: '0 0 999px 999px', border: `${Math.max(2, size*0.03)}px solid #1a1a1a`, borderTop: 'none' } });
+    else if (mood === 'shrink') mouth = React.createElement('div', { style: { width: size * 0.16, height: size * 0.16, borderRadius: '50%', background: '#1a1a1a' } });
+    else if (mood === 'fast') mouth = React.createElement('div', { style: { width: size * 0.22, height: size * 0.1, borderRadius: '999px', background: '#1a1a1a' } });
+    else if (mood === 'slow') mouth = React.createElement('div', { style: { width: size * 0.26, height: Math.max(2, size*0.035), borderRadius: '999px', background: '#1a1a1a', transform: 'rotate(8deg)' } });
+    else mouth = React.createElement('div', { style: { width: size * 0.26, height: Math.max(2, size*0.035), borderRadius: '999px', background: '#1a1a1a' } });
+    return React.createElement('div', { style: faceStyle }, eyeRow, mouth);
+  }
+
+  renderVals() {
+    const s = this.state;
+    const target = s.settings.targetWpm;
+    const diff = s.wpm - target;
+    const isGood = Math.abs(diff) <= 15;
+    const isFast = diff > 15;
+    const isSlow = diff < -15 && !isFast;
+    const wpmPercent = Math.max(4, Math.min(100, ((s.wpm - 50) / (200 - 50)) * 100));
+    const moodLabelMap = { happy: '👍 좋은 속도예요!', fast: '💨 조금 천천히 말해보세요', slow: '🐢 조금 더 힘있게!', shrink: '앗, 방금 습관어를 썼어요', neutral: '말을 시작해보세요' };
+    const moodColorMap = { happy: '#2C8C5A', fast: '#B8631F', slow: '#B8631F', shrink: '#C0392B', neutral: '#6b6258' };
+
+    const activeSentences = this.getActiveSentences();
+    const activeSlidesArr = this.getActiveSlides();
+    const practiceSlideIndex = Math.max(0, Math.min(this.slides.length - 1, s.currentPracticeSlideIndex));
+    const currentPracticeSlide = this.slides[practiceSlideIndex];
+    const sentenceItems = activeSentences.map((text, i) => {
+      const active = i === s.sentenceIndex;
+      const past = i < s.sentenceIndex;
+      const selected = i === s.selectedSentenceIndex;
+      return {
+        text, fontSize: active ? 16 : 14, fontSizeLg: active ? 22 : 17,
+        fontWeight: active ? 800 : 500,
+        color: active ? '#1a1a1a' : (past ? '#c9bfa9' : '#6b6258'),
+        select: () => this.selectSentence(i),
+        isSelected: selected,
+        rowBg: selected ? '#FFD166' : '#FBE9C7',
+      };
+    });
+    const effectiveSentenceIndex = s.selectedSentenceIndex != null ? s.selectedSentenceIndex : s.sentenceIndex;
+
+    const isSpeechMode = s.settings.mode === '발표';
+    const isInterviewMode = s.settings.mode === '면접';
+    const questionItems = s.settings.interviewQuestions.map(q => ({ question: q, remove: () => this.removeInterviewQuestion(q) }));
+    const qIndex = Math.min(s.currentQIndex, Math.max(0, s.settings.interviewQuestions.length - 1));
+    const currentQuestionText = s.settings.interviewQuestions[qIndex] || '질문을 추가해주세요';
+    const questionProgressLabel = `${s.settings.interviewQuestions.length ? qIndex + 1 : 0} / ${s.settings.interviewQuestions.length}`;
+    const canPrevQuestion = qIndex > 0;
+    const canNextQuestion = qIndex < s.settings.interviewQuestions.length - 1;
+
+    const forbiddenWordItems = s.settings.forbiddenWords.map(w => ({ word: w, remove: () => this.removeForbiddenWord(w) }));
+    const suggestions = ['음...', '그니까', '사실', '약간', '그래서 이제'].filter(w => !s.settings.forbiddenWords.includes(w));
+    const suggestionItems = suggestions.map(w => ({ word: w, add: () => this.setState(st => ({ settings: { ...st.settings, forbiddenWords: [...st.settings.forbiddenWords, w] } })) }));
+
+    const habitEntries = Object.entries(s.habitTally).map(([word, count]) => ({ word, count })).sort((a, b) => b.count - a.count);
+    const maxHabit = habitEntries.length ? habitEntries[0].count : 1;
+    const habitTallyEntries = habitEntries.map(h => ({ ...h, pct: Math.round((h.count / maxHabit) * 100) }));
+
+    const gestureEntries = Object.entries(s.gestureTally).map(([word, count]) => ({ word, count })).sort((a, b) => b.count - a.count);
+    const maxGesture = gestureEntries.length ? gestureEntries[0].count : 1;
+    const gestureTallyEntries = gestureEntries.map(g => ({ ...g, pct: Math.round((g.count / maxGesture) * 100) }));
+
+    const slideIdx = Math.min(activeSlidesArr.length - 1, Math.floor((effectiveSentenceIndex / activeSentences.length) * activeSlidesArr.length));
+    const slideItems = activeSlidesArr.map((sl, i) => ({
+      n: sl.n, title: sl.title, isActive: i === slideIdx,
+      border: i === slideIdx ? '#E85D3D' : '#e3d9c4',
+      borderWidth: i === slideIdx ? 3 : 2,
+      numColor: i === slideIdx ? '#E85D3D' : '#a89d8c',
+      numWeight: i === slideIdx ? 800 : 600,
+    }));
+    const suggestedSlide = activeSlidesArr[slideIdx];
+
+    const designSlideNavItems = s.designSlides.map((sl, i) => ({
+      n: sl.order || sl.n, title: sl.title, slideN: sl.slideN, slideTitle: sl.slideTitle,
+      script: sl.script, time: sl.time,
+      select: () => this.selectDesignSlide(i),
+      isSelected: i === s.selectedDesignSlideIndex,
+      bg: i === s.selectedDesignSlideIndex ? '#FFD166' : '#fff',
+    }));
+    const dsIdx = s.selectedDesignSlideIndex;
+    const ds = s.designSlides[dsIdx];
+    const designKeyPointItems = ds.keyPoints.map(kp => ({ text: kp, remove: () => this.removeDesignKeyPoint(kp) }));
+    const designKeywordItems = ds.keywords.map(kw => ({ text: kw, remove: () => this.removeDesignKeyword(kw) }));
+    const designGoalItems = this.goalOptions.map(g => ({ label: g, select: () => this.setDesignGoal(g), bg: s.designGoal === g ? '#1a1a1a' : '#fff', color: s.designGoal === g ? '#fff' : '#1a1a1a' }));
+    const designSlideChoiceItems = this.slides.map((sl, i) => ({
+      n: sl.n, title: sl.title, assign: () => this.assignDesignItemSlide(i),
+      bg: sl.n === ds.slideN ? '#FFD166' : '#fff',
+      border: sl.n === ds.slideN ? '#E85D3D' : '#1a1a1a',
+    }));
+    const plannedTotalSec = s.designSlides.reduce((sum, item) => sum + Number(item.time || 0), 0);
+    const targetDurationSec = Math.max(0, Number(s.targetDurationMin || 0) * 60);
+    const timeGapSec = plannedTotalSec - targetDurationSec;
+    const hasOriginalScript = s.scriptMethod !== 'none';
+
+    const connectSentenceItems = s.connectSentences.map((text, i) => {
+      const mapped = s.sentenceSlideMap[i];
+      const connected = mapped >= 0;
+      const selected = i === s.selectedConnectIndex;
+      return {
+        order: i + 1, text, select: () => this.selectConnectSentence(i), isSelected: selected,
+        slideLabel: connected ? `슬라이드 ${mapped + 1}` : '미연결',
+        shortSlideLabel: connected ? `S${mapped + 1}` : '미연결',
+        bg: selected ? '#FFD166' : (connected ? '#FBE9C7' : '#F6C9BC'),
+        shadow: selected ? '0 0 0 2px #1a1a1a' : 'none',
+        labelColor: connected ? '#6b6258' : '#E85D3D',
+      };
+    });
+    const hasConnectSelection = s.selectedConnectIndex != null;
+    const selectedConnectSlideIdx = hasConnectSelection ? s.sentenceSlideMap[s.selectedConnectIndex] : -1;
+    const connectSlideItems = this.buildDefaultDesignSlides().map((sl, i) => ({
+      n: sl.n, title: sl.title, assign: () => this.assignConnectSentenceToSlide(i),
+      border: i === selectedConnectSlideIdx ? '#E85D3D' : '#e3d9c4',
+      borderWidth: i === selectedConnectSlideIdx ? 3 : 2,
+    }));
+    const hasUnconnectedSentences = s.sentenceSlideMap.some(v => v < 0);
+
+    const lastForbiddenWord = s.lastDetected;
+    const showForbiddenToast = s.isRecording && (s.elapsed - s.lastDetectedAt) < 1.6 && s.lastDetectedAt >= s.lastHabitAt;
+    const lastHabitWord = s.lastHabitWord;
+    const showHabitToast = s.isRecording && (s.elapsed - s.lastHabitAt) < 1.6 && s.lastHabitAt > s.lastDetectedAt;
+    const videoDisplay = s.cameraState === 'live' ? 'block' : 'none';
+    const showCameraPlaceholder = s.cameraState !== 'live';
+    const cameraPlaceholderLabel = s.cameraState === 'error' ? '카메라 접근이 거부됐어요. 브라우저 권한을 확인해주세요.' : (s.cameraState === 'starting' ? '카메라 연결 중...' : '카메라를 켜면 내 화면이 표시돼요');
+    const isCameraLive = s.cameraState === 'live';
+    const showCameraStartButton = s.cameraState === 'idle' || s.cameraState === 'error';
+    const transcriptCombined = `${s.transcriptFinal} ${s.transcriptInterim}`.replace(/\s+/g, ' ').trim();
+    const transcriptWordCount = this.countWords(transcriptCombined);
+    const liveTranscriptText = transcriptCombined || (s.isRecording ? '마이크가 열렸어요. 말을 시작하면 여기에 텍스트가 표시됩니다.' : '녹음을 시작하면 음성이 실시간 텍스트로 표시됩니다.');
+    const transcriptTextColor = transcriptCombined ? '#1a1a1a' : '#a89d8c';
+    const speechStatusLabelMap = { idle: '대기', starting: '마이크 준비', listening: '듣는 중', unsupported: '미지원', denied: '권한 필요', error: '오류' };
+    const speechStatusLabel = speechStatusLabelMap[s.speechState] || '대기';
+    const speechStatusColor = s.speechState === 'listening' ? '#2C8C5A' : (s.speechState === 'denied' || s.speechState === 'error' || s.speechState === 'unsupported' ? '#8c2f1c' : '#6b6258');
+    const speechStatusBg = s.speechState === 'listening' ? '#E8F4EE' : '#fff';
+    const showListeningDot = s.speechState === 'listening';
+    const speechErrorVisible = !!s.speechError;
+    const speechErrorLabel = s.speechError;
+    const interviewerStageClass = s.interviewerSpeaking ? 'ai-interviewer-stage ai-interviewer-speaking' : 'ai-interviewer-stage';
+    const interviewerStatusLabel = s.interviewerStatus;
+    const landmarkStatusMap = { idle: '대기', loading: '로딩', live: '분석 중', noFace: '얼굴 미감지', error: '오류', unsupported: '미지원' };
+    const toneStatusMap = { idle: '대기', loading: '준비', live: '분석 중', error: '오류', unsupported: '미지원' };
+    const landmarkStatusLabel = landmarkStatusMap[s.landmarkState] || '대기';
+    const toneStatusLabel = toneStatusMap[s.audioToneState] || '대기';
+    const landmarkStatusColor = s.landmarkState === 'live' ? '#2C8C5A' : (s.landmarkState === 'error' || s.landmarkState === 'noFace' ? '#8c2f1c' : '#6b6258');
+    const toneStatusColor = s.audioToneState === 'live' ? '#2C8C5A' : (s.audioToneState === 'error' ? '#8c2f1c' : '#6b6258');
+    const landmarkStatusBg = s.landmarkState === 'live' ? '#E8F4EE' : (s.landmarkState === 'error' || s.landmarkState === 'noFace' ? '#F6C9BC' : '#fff');
+    const toneStatusBg = s.audioToneState === 'live' ? '#E8F4EE' : (s.audioToneState === 'error' ? '#F6C9BC' : '#fff');
+    const faceMetrics = s.landmarkMetrics || null;
+    const audioMetrics = s.audioToneMetrics || null;
+    const attentionScoreLabel = faceMetrics ? `${Math.round(faceMetrics.attentionScore * 100)}%` : '--';
+    const attentionHint = faceMetrics ? (faceMetrics.attentionScore >= 0.75 ? '정면 유지 좋음' : '시선/고개 보완') : '분석 대기';
+    const gazeLabelMap = { center: '정면', left: '왼쪽', right: '오른쪽', up: '위쪽', down: '아래쪽' };
+    const gazeLabel = faceMetrics ? (gazeLabelMap[faceMetrics.gazeDirection] || faceMetrics.gazeDirection) : '--';
+    const headLabelMap = { center: '고개 정면', left: '고개 왼쪽', right: '고개 오른쪽', up: '고개 위쪽', down: '고개 아래쪽', tilted: '고개 기울어짐' };
+    const headPoseLabel = faceMetrics ? (headLabelMap[faceMetrics.headDirection] || faceMetrics.headDirection) : 'landmark 대기';
+    const toneLabelMap = { high: '높은 톤', normal: '보통 톤', low: '낮은 톤', unknown: '톤 대기' };
+    const toneMetricLabel = audioMetrics ? (toneLabelMap[audioMetrics.toneLabel] || '톤 대기') : '--';
+    const pitchMetricLabel = audioMetrics && audioMetrics.pitchHz ? `${Math.round(audioMetrics.pitchHz)}Hz` : '피치 대기';
+    const speechRateLabelMap = { fast: '빠름', normal: '보통', slow: '느림' };
+    const speechFlowLabel = audioMetrics ? `${speechRateLabelMap[audioMetrics.speechRateLabel] || '대기'} · ${Math.round(audioMetrics.speechRate || 0)}/분` : '--';
+    const volumeMetricLabel = audioMetrics ? `${Math.round(audioMetrics.volumeDb)}dB · ${audioMetrics.isSpeaking ? '발화' : '침묵'}` : '마이크 대기';
+    const showLandmarkError = !!s.landmarkError;
+    const landmarkErrorLabel = s.landmarkError;
+    const realtimeFeedbackItems = s.realtimeFeedbackItems && s.realtimeFeedbackItems.length
+      ? s.realtimeFeedbackItems
+      : this.buildRealtimeFeedbackItems(faceMetrics, audioMetrics);
+
+    const ringPct = Math.round(wpmPercent);
+    const ringColor = isGood ? '#2C8C5A' : isFast ? '#E85D3D' : '#FFD166';
+    const ringGradient = `conic-gradient(${ringColor} ${ringPct}%, #F3ECDF 0)`;
+    const ringGradientSm = ringGradient;
+
+    // report
+    const rep = s.lastReport || this.sampleReports[0];
+    const reportTranscript = String(rep.transcript || '').trim();
+    const reportTranscriptWordCount = this.countWords(reportTranscript);
+    const repHabitEntries = Object.entries(rep.habitTally || {}).map(([word, count]) => ({ word, count })).sort((a, b) => b.count - a.count);
+    const repMaxHabit = repHabitEntries.length ? repHabitEntries[0].count : 1;
+    const reportHabitEntries = repHabitEntries.map(h => ({ ...h, pct: Math.round((h.count / repMaxHabit) * 100) }));
+    const reportForbiddenEntries = (rep.forbiddenLog || []).map(f => ({ word: f.word, at: this.formatTime(f.at) }));
+    const repGestureEntries = Object.entries(rep.gestureTally || {}).map(([word, count]) => ({ word, count })).sort((a, b) => b.count - a.count);
+    const repMaxGesture = repGestureEntries.length ? repGestureEntries[0].count : 1;
+    const reportGestureEntries = repGestureEntries.map(g => ({ ...g, pct: Math.round((g.count / repMaxGesture) * 100) }));
+    const samples = rep.wpmSamples && rep.wpmSamples.length ? rep.wpmSamples : [rep.avgWpm];
+    const bucketCount = 20;
+    const chunk = Math.max(1, Math.ceil(samples.length / bucketCount));
+    const chartBars = [];
+    for (let i = 0; i < samples.length; i += chunk) {
+      const slice = samples.slice(i, i + chunk);
+      const avg = slice.reduce((a, b) => a + b, 0) / slice.length;
+      const good = Math.abs(avg - rep.target) <= 15;
+      chartBars.push({ pct: Math.max(8, Math.min(100, ((avg - 50) / (200 - 50)) * 100)), good, notGood: !good });
+    }
+
+    const aiFeedbackFor = (r) => {
+      if (r.mode === '발표') return '발표 흐름에 영향을 주는 보완 지점은 2곳이에요. 슬라이드 3의 설명 속도와 슬라이드 4의 근거 자료를 우선 고쳐보세요.';
+      const parts = [];
+      if (r.mode === '면접') parts.push('답변의 경험 설명은 구체적이지만 행동의 결과와 배운 점이 짧았어요. 아래 질문별 첨삭에서 질문 의도에 맞는 답변 구조를 확인해보세요.');
+      if (r.forbiddenLog && r.forbiddenLog.length) parts.push(`이번 연습에서 금지어를 ${r.forbiddenLog.length}회 사용했어요. 특히 금지어 "${r.forbiddenLog[0].word}" 사용이 눈에 띄었어요.`);
+      else parts.push('금지어를 전혀 사용하지 않았어요. 훌륭해요!');
+      if (r.avgWpm > r.target + 15) parts.push(`평균 속도가 목표보다 빨랐어요. 문장 사이에 짧게 숨을 쉬어보세요.`);
+      else if (r.avgWpm < r.target - 15) parts.push(`평균 속도가 목표보다 느렸어요. 조금 더 힘있게 말해보세요.`);
+      else parts.push('말 속도는 목표 범위 안에서 안정적으로 유지됐어요.');
+      const habitList = Object.entries(r.habitTally || {}).sort((a, b) => b[1] - a[1]);
+      if (habitList.length) parts.push(`"${habitList[0][0]}"를 ${habitList[0][1]}회 반복해서 썼어요. 다음엔 의식적으로 줄여보세요.`);
+      const gestureList = Object.entries(r.gestureTally || {}).sort((a, b) => b[1] - a[1]);
+      if (r.mode === '면접' && gestureList.length) parts.push(`비언어적으로는 "${gestureList[0][0]}"가 자주 관찰됐어요.`);
+      if (r.maxWpm - r.minWpm > 60) parts.push('속도 기복이 큰 편이에요 — 문장마다 리듬을 일정하게 가져가 보세요.');
+      return parts.join(' ');
+    };
+
+    const feedbackSlideItems = [
+      {
+        n: 3, title: '핵심 문제 3가지', category: '전달 속도', time: '01:46~02:08',
+        issue: '세 가지 문제를 한 번에 빠르게 설명했어요.',
+        evidence: '문제는 세 가지인데 일단 피드백이 늦고, 습관을 잘 모르고, 실시간으로 뭔가가 없습니다.',
+        action: '각 문제를 한 문장씩 나누고, 항목 사이에서 1초씩 멈춰보세요.',
+      },
+      {
+        n: 4, title: '솔루션 소개', category: '근거 부족', time: '02:09~02:37',
+        issue: '기능은 설명했지만 기존 방식과 달라진 효과를 보여주는 자료가 없어요.',
+        evidence: '기존에는 영상을 직접 돌려봤지만, 저희 서비스는 말하는 순간 습관을 보여줍니다.',
+        action: '기능 설명 직후 기존 방식과 AI 코칭을 비교하는 슬라이드를 추가해 차이를 한눈에 보여주세요.',
+      },
+    ];
+    const transcriptAnswerPreview = reportTranscript
+      ? (reportTranscript.length > 180 ? `${reportTranscript.slice(0, 180)}...` : reportTranscript)
+      : '';
+    const interviewAnswerItems = [
+      {
+        question: 'Q1. 협업 중 어려웠던 경험을 말씀해주세요.',
+        actual: transcriptAnswerPreview || '의견이 잘 안 맞았는데 회의를 많이 해서 결국 해결했습니다.',
+        recommended: '상황: 기능 우선순위 충돌 → 행동: 사용자 근거로 기준 합의 → 결과: 일정 내 핵심 기능 완성 → 배운 점: 의견보다 판단 기준을 먼저 맞춘다.',
+        reason: '단순히 “회의했다”보다 본인의 행동과 결과가 보여야 협업 역량을 판단할 수 있어요.',
+      },
+      {
+        question: 'Q2. 본인의 강점은 무엇인가요?',
+        actual: '저는 책임감이 있고 맡은 일은 끝까지 하는 편입니다.',
+        recommended: '강점 한 문장 → 이를 증명하는 최근 사례 → 지원 직무에서 어떻게 활용할지 순서로 답해보세요.',
+        reason: '추상적인 장점만 말하면 다른 지원자와 구분되기 어려워요. 짧은 증거가 필요합니다.',
+      },
+    ];
+    const reportPriorityItems = (rep.mode === '발표'
+      ? [
+          '슬라이드 3에서 문제 세 가지를 설명할 때 말이 빨라졌어요.',
+          '슬라이드 4의 기능 설명에 효과를 뒷받침하는 근거가 부족해요.',
+          '02:31 구간에서 시선이 화면 쪽에 오래 머물렀어요.',
+        ]
+      : [
+          '협업 경험 답변에서 본인이 한 행동과 결과가 분명하지 않아요.',
+          '강점 답변에 이를 증명하는 구체적인 사례가 부족해요.',
+          '답변 시작 전 긴 침묵이 두 차례 감지됐어요.',
+        ]).map((text, i) => ({ n: i + 1, text }));
+    const speechEventItems = rep.mode === '발표'
+      ? [
+          { time: '01:46', issue: '평균보다 약 1.2배 빨라졌어요.', action: '세 항목 사이에서 1초씩 멈춰보세요.' },
+          { time: '02:31', issue: '시선이 화면 쪽에 오래 머물렀어요.', action: '핵심 문장을 말할 때 정면을 바라보세요.' },
+        ]
+      : [
+          { time: '00:18', issue: '답변 시작 전 2.8초간 멈췄어요.', action: '첫 문장을 짧게 정해두고 바로 답변을 시작해보세요.' },
+          { time: '01:12', issue: '문장 후반부의 음량이 작아졌어요.', action: '결과 문장까지 같은 크기로 마무리해보세요.' },
+        ];
+    const styleProfiles = {
+      '냉정': { code: 'ESTJ · 직진형 브리퍼', name: '결론부터 쏘는 확성기형', review: '핵심 도착 속도는 빠르지만 청중이 따라올 틈도 같이 잘라냈어요. 문장 사이 한 박자와 근거 한 줄이 필요합니다.' },
+      '유쾌': { code: 'ENTP · 로켓 토커', name: '슬라이드보다 입이 빠른 로켓형', review: '아이디어는 이미 다음 장에 도착했는데 청중은 아직 이전 장에 있어요. 재미는 살리고 전환 문장으로 길을 놓아주세요.' },
+      '다정': { code: 'ENFJ · 친절한 가이드', name: '분위기를 끌어주는 안내자형', review: '전달력과 에너지가 좋아요. 핵심 문장 뒤에 잠깐 멈추면 청중이 내용을 더 오래 기억할 수 있어요.' },
+    };
+    const presentationStyle = styleProfiles[s.presentationStyleTone] || styleProfiles['냉정'];
+    const styleToneItems = ['냉정', '유쾌', '다정'].map(tone => ({
+      label: `${tone} 모드`, select: () => this.setPresentationStyleTone(tone),
+      bg: s.presentationStyleTone === tone ? '#1a1a1a' : '#fff',
+      color: s.presentationStyleTone === tone ? '#fff' : '#1a1a1a',
+    }));
+
+    return {
+      isHome: s.screen === 'home', isSettings: s.screen === 'settings', isPractice: s.screen === 'practice', isReport: s.screen === 'report',
+      isModeSelect: s.screen === 'modeSelect', isArchive: s.screen === 'archive', isScriptReview: s.screen === 'scriptReview',
+      isDesign: s.screen === 'design', isBasicSetup: s.screen === 'basicSetup', isDesignConnect: s.screen === 'designConnect',
+      goBasicSetup: this.goBasicSetup, onSessionNameChangeBasic: this.onSessionNameChangeBasic,
+      materialUploaded: s.materialUploaded, materialFileName: s.materialFileName, onMaterialUpload: this.onMaterialUpload, resetMaterial: this.resetMaterial,
+      targetDurationMin: s.targetDurationMin, onTargetDurationChange: this.onTargetDurationChange,
+      feedbackRequest: s.feedbackRequest, onFeedbackRequestChange: this.onFeedbackRequestChange,
+      startPresentationPractice: this.startPresentationPractice,
+      cannotStartPresentation: !s.materialUploaded,
+      startPresentationBg: s.materialUploaded ? '#E85D3D' : '#a89d8c',
+      scriptMethod: s.scriptMethod, setScriptMethod: this.setScriptMethod,
+      setScriptMethodUpload: () => this.setScriptMethod('upload'), setScriptMethodType: () => this.setScriptMethod('type'), setScriptMethodNone: () => this.setScriptMethod('none'),
+      scriptMethodUploadBg: s.scriptMethod === 'upload' ? '#1a1a1a' : '#fff', scriptMethodUploadColor: s.scriptMethod === 'upload' ? '#fff' : '#1a1a1a',
+      scriptMethodTypeBg: s.scriptMethod === 'type' ? '#1a1a1a' : '#fff', scriptMethodTypeColor: s.scriptMethod === 'type' ? '#fff' : '#1a1a1a',
+      scriptMethodNoneBg: s.scriptMethod === 'none' ? '#1a1a1a' : '#fff', scriptMethodNoneColor: s.scriptMethod === 'none' ? '#fff' : '#1a1a1a',
+      isScriptMethodUpload: s.scriptMethod === 'upload', isScriptMethodType: s.scriptMethod === 'type',
+      typedScript: s.typedScript, onTypedScriptChange: this.onTypedScriptChange,
+      analyzeAndDesign: this.analyzeAndDesign, reviseAfterReport: this.reviseAfterReport,
+      // breadcrumb (4-step, speech flow)
+      bc1Color: (s.screen === 'basicSetup') ? '#E85D3D' : '#a89d8c',
+      bc2Color: (s.screen === 'designConnect' || s.screen === 'design') ? '#E85D3D' : '#a89d8c',
+      bc3Color: (s.screen === 'practice') ? '#E85D3D' : '#a89d8c',
+      bc4Color: (s.screen === 'report') ? '#E85D3D' : '#a89d8c',
+      chooseModeSpeech: this.chooseModeSpeech, chooseModeInterview: this.chooseModeInterview,
+      designSlideNavItems, dsTitle: ds.title, dsN: ds.order || ds.n,
+      dsSlideN: ds.slideN, dsSlideTitle: ds.slideTitle, dsSourceText: ds.sourceText,
+      designSlideChoiceItems,
+      flowItemCountLabel: `${s.designSlides.length}개 발화`,
+      hasOriginalScript,
+      designScriptHeading: hasOriginalScript ? 'AI가 다듬은 리허설 대본' : 'AI가 생성한 발표 대본',
+      designScriptBadge: hasOriginalScript ? '원본 기반' : '슬라이드 기반',
+      transitionHeading: dsIdx === s.designSlides.length - 1 ? '마무리 문장' : '다음 구간 연결 문장',
+      globalSettingsSummary: `${s.targetDurationMin}분 · ${s.presentationAudience} · ${s.presentationTone}`,
+      plannedTotalLabel: this.formatTime(plannedTotalSec), targetDurationLabel: this.formatTime(targetDurationSec),
+      timeGapLabel: timeGapSec === 0 ? '목표 시간에 맞음' : (timeGapSec > 0 ? `${this.formatTime(timeGapSec)} 초과` : `${this.formatTime(Math.abs(timeGapSec))} 여유`),
+      plannedTimeColor: Math.abs(timeGapSec) <= 10 ? '#2C8C5A' : '#8c2f1c',
+      showGlobalSettings: s.showGlobalSettings, toggleGlobalSettings: this.toggleGlobalSettings,
+      globalSettingsButtonLabel: s.showGlobalSettings ? '설정 접기' : '전체 설정 수정',
+      presentationAudience: s.presentationAudience, onPresentationAudienceChange: this.onPresentationAudienceChange,
+      presentationPurpose: s.presentationPurpose, onPresentationPurposeChange: this.onPresentationPurposeChange,
+      presentationTone: s.presentationTone, onPresentationToneChange: this.onPresentationToneChange,
+      feedbackFocus: s.feedbackFocus, onFeedbackFocusChange: this.onFeedbackFocusChange,
+      dsScript: ds.script, dsScriptEdited: ds.scriptEdited,
+      dsTransition: ds.transition, dsTransitionEdited: ds.transitionEdited,
+      dsTime: ds.time, dsTimeEdited: ds.timeEdited,
+      dsKeyPointsEdited: ds.keyPointsEdited, dsKeywordsEdited: ds.keywordsEdited,
+      dsScriptEditedNo: !ds.scriptEdited, dsTransitionEditedNo: !ds.transitionEdited,
+      dsKeyPointsEditedNo: !ds.keyPointsEdited, dsKeywordsEditedNo: !ds.keywordsEdited,
+      designKeyPointItems, designKeywordItems,
+      designNewKeyPoint: s.designNewKeyPoint, onDesignNewKeyPointChange: this.onDesignNewKeyPointChange, onDesignNewKeyPointKeyDown: this.onDesignNewKeyPointKeyDown, submitDesignNewKeyPoint: this.submitDesignNewKeyPoint,
+      designNewKeyword: s.designNewKeyword, onDesignNewKeywordChange: this.onDesignNewKeywordChange, onDesignNewKeywordKeyDown: this.onDesignNewKeywordKeyDown, submitDesignNewKeyword: this.submitDesignNewKeyword,
+      onDesignScriptChange: this.onDesignScriptChange, onDesignTransitionChange: this.onDesignTransitionChange, onDesignTimeChange: this.onDesignTimeChange,
+      designInstruction: s.designInstruction, onDesignInstructionChange: this.onDesignInstructionChange,
+      regenerateDesignSlide: this.regenerateDesignSlide, isRegeneratingDesign: s.isRegeneratingDesign,
+      cancelDesignChanges: this.cancelDesignChanges, confirmDesignPlan: this.confirmDesignPlan,
+      designGoalItems, designGoalCustom: s.designGoalCustom, onDesignGoalCustomChange: this.onDesignGoalCustomChange,
+      regenerateLabel: s.isRegeneratingDesign ? 'AI가 다시 쓰는 중...' : 'AI 다시 추천',
+      connectSentenceItems, hasConnectSelection, connectSlideItems, hasUnconnectedSentences,
+      connectedCountLabel: `${s.sentenceSlideMap.filter(v => v >= 0).length}/${s.connectSentences.length} 연결`,
+      selectConnectSentence: this.selectConnectSentence, assignConnectSentenceToSlide: this.assignConnectSentenceToSlide, completeConnect: this.completeConnect,
+      hasScriptForConnect: s.scriptMethod !== 'none',
+      goDesignConnectFromPlan: () => this.setState({ screen: 'designConnect' }),
+      materialNotUploaded: !s.materialUploaded,
+      goScriptReview: this.goScriptReview, goReportFromScriptReview: this.goReportFromScriptReview,
+      showTopNav: s.screen === 'home' || s.screen === 'archive',
+      navHomeColor: '#1a1a1a', navArchiveColor: '#1a1a1a',
+      navHomeBg: s.screen === 'home' ? '#FFD166' : '#fff', navArchiveBg: s.screen === 'archive' ? '#FFD166' : '#fff',
+      navHomeWeight: 800, navArchiveWeight: 800,
+      goHome: this.goHome, goArchive: this.goArchive, goModeSelect: this.goModeSelect, startNewSession: this.startNewSession, selectMode: this.selectMode,
+      selectModeSpeech: () => this.selectMode('발표'), selectModeInterview: () => this.selectMode('면접'),
+      goSettings: this.goSettings, startPractice: this.startPractice, practiceBack: this.practiceBack, retryPractice: this.retryPractice,
+
+      settings: s.settings, settingsNewWord: s.settingsNewWord,
+      sessionName: s.sessionName, onSessionNameChange: this.onSessionNameChange,
+      scriptNotUploaded: !s.settings.scriptUploaded,
+      isSpeechMode, isInterviewMode,
+      questionItems, settingsNewQuestion: s.settingsNewQuestion,
+      onNewQuestionChange: this.onNewQuestionChange, onNewQuestionKeyDown: this.onNewQuestionKeyDown, addInterviewQuestion: this.addInterviewQuestion,
+      jobCompany: s.jobCompany, jobRole: s.jobRole, onJobCompanyChange: this.onJobCompanyChange, onJobRoleChange: this.onJobRoleChange,
+      generateQuestions: this.generateQuestions, isGeneratingQuestions: s.isGeneratingQuestions, generateError: s.generateError,
+      canGenerate: s.jobRole.trim().length > 0 && !s.isGeneratingQuestions,
+      cannotGenerateQuestions: s.jobRole.trim().length === 0 || s.isGeneratingQuestions,
+      generateButtonBg: s.jobRole.trim().length > 0 && !s.isGeneratingQuestions ? '#E85D3D' : '#a89d8c',
+      interviewMaterialUploaded: s.interviewMaterialUploaded, interviewMaterialNotUploaded: !s.interviewMaterialUploaded,
+      interviewMaterialFileName: s.interviewMaterialFileName, uploadInterviewMaterial: this.uploadInterviewMaterial, resetInterviewMaterial: this.resetInterviewMaterial,
+      generateButtonLabel: s.isGeneratingQuestions ? '질문을 만들고 있어요...' : '맞춤 질문 만들기',
+      questionCountLabel: `${questionItems.length}개`,
+      toggleAdvancedSettings: this.toggleAdvancedSettings, showAdvancedSettings: s.showAdvancedSettings,
+      advancedSettingsLabel: s.showAdvancedSettings ? '추가 설정 접기' : '말 속도·습관어 추가 설정',
+      currentQuestionText, questionProgressLabel, canPrevQuestion, canNextQuestion, nextQuestion: this.nextQuestion, prevQuestion: this.prevQuestion, speakQuestion: this.speakQuestion,
+      interviewerStageClass, interviewerStatusLabel,
+      modeSpeechBg: s.settings.mode === '발표' ? '#fff' : 'transparent', modeSpeechColor: s.settings.mode === '발표' ? '#E85D3D' : '#6b6258',
+      modeInterviewBg: s.settings.mode === '면접' ? '#fff' : 'transparent', modeInterviewColor: s.settings.mode === '면접' ? '#E85D3D' : '#6b6258',
+      modeSpeechSelBg: s.settings.mode === '발표' ? '#1a1a1a' : 'transparent', modeSpeechSelColor: s.settings.mode === '발표' ? '#fff' : '#a89d8c',
+      modeInterviewSelBg: s.settings.mode === '면접' ? '#1a1a1a' : 'transparent', modeInterviewSelColor: s.settings.mode === '면접' ? '#fff' : '#a89d8c',
+      setModeSpeech: this.setModeSpeech, setModeInterview: this.setModeInterview,
+      uploadScript: this.uploadScript, resetScript: this.resetScript,
+      onTargetWpmChange: this.onTargetWpmChange, onNewWordChange: this.onNewWordChange, onNewWordKeyDown: this.onNewWordKeyDown,
+      addForbiddenWord: this.addForbiddenWord, forbiddenWordItems, suggestionItems,
+
+      practiceVariant: s.practiceVariant,
+      isVariantA: s.practiceVariant === 'a', isVariantB: s.practiceVariant === 'b', isVariantC: s.practiceVariant === 'c', isVariantD: s.practiceVariant === 'd',
+      setVariantA: this.setVariantA, setVariantB: this.setVariantB, setVariantC: this.setVariantC, setVariantD: this.setVariantD,
+
+      elapsedLabel: this.formatTime(s.elapsed), durationLabel: this.formatTime(s.duration),
+      attemptLabel: `${s.attemptNo}차 시도`,
+      isRecording: s.isRecording, isNotRecording: !s.isRecording,
+      recordStatusLabel: s.isRecording ? '녹화 중' : '시작하기',
+      startRecording: this.startRecording, stopRecording: this.stopRecording,
+
+      wpmRounded: Math.round(s.wpm), wpmPercent, isGood, isFast, isSlow,
+      moodLabel: moodLabelMap[s.characterMood], moodColor: moodColorMap[s.characterMood],
+      showForbiddenToast, lastForbiddenWord, showHabitToast, lastHabitWord,
+      videoRef: this.videoRef, videoDisplay, showCameraPlaceholder, cameraPlaceholderLabel,
+      isCameraLive, showCameraStartButton, startCameraPreview: this.startCameraPreview,
+      liveTranscriptText, transcriptWordCount, transcriptTextColor,
+      speechStatusLabel, speechStatusColor, speechStatusBg, showListeningDot, speechErrorVisible, speechErrorLabel,
+      landmarkStatusLabel, landmarkStatusColor, landmarkStatusBg,
+      toneStatusLabel, toneStatusColor, toneStatusBg,
+      attentionScoreLabel, attentionHint, gazeLabel, headPoseLabel,
+      toneMetricLabel, pitchMetricLabel, speechFlowLabel, volumeMetricLabel,
+      showLandmarkError, landmarkErrorLabel,
+      realtimeFeedbackItems,
+      currentPracticeSlideN: currentPracticeSlide.n, currentPracticeSlideTitle: currentPracticeSlide.title,
+      practiceSlideCount: this.slides.length, prevPracticeSlide: this.prevPracticeSlide, nextPracticeSlide: this.nextPracticeSlide,
+      ringGradient, ringGradientSm,
+      characterEl: this.buildCharacter(120), characterElSmall: this.buildCharacter(84), characterElTiny: this.buildCharacter(20),
+
+      sentenceItems, scriptRef: this.scriptRef, scriptRef2: this.scriptRef, scriptRef3: this.scriptRef, scriptRef4: this.scriptRef,
+      hasHabitTally: habitTallyEntries.length > 0, noHabitTally: habitTallyEntries.length === 0, habitTallyEntries,
+      hasGestureTally: gestureTallyEntries.length > 0, noGestureTally: gestureTallyEntries.length === 0, gestureTallyEntries,
+      slideItems, suggestedSlideLabel: `슬라이드 ${suggestedSlide.n}`, suggestedSlideTitle: suggestedSlide.title,
+
+      streakDays: 7,
+      weeklyBars: [58, 72, 50, 88, 63, 79, 95].map(v => ({ pct: v, opacity: v > 80 ? 1 : 0.55 })),
+      totalSessions: 12, avgWpmAll: 128, wpmTrendLabel: '지난주 대비 +8 WPM', wpmTrendUp: true,
+      topHabitWords: [{ word: '음...', count: 34, pct: 100 }, { word: '그니까', count: 21, pct: 62 }, { word: '약간', count: 15, pct: 44 }],
+      recentSessions: this.sampleReports.map((r, i) => ({ name: r.name, date: r.date, mode: r.mode, durationLabel: this.formatTime(r.durationSec), avgWpm: r.avgWpm, open: () => this.openSample(i) })),
+      archiveFilter: s.archiveFilter, setArchiveFilter: this.setArchiveFilter,
+      archiveFilterAllBg: s.archiveFilter === '전체' ? '#FFD166' : 'transparent',
+      archiveFilterSpeechBg: s.archiveFilter === '발표' ? '#FFD166' : 'transparent',
+      archiveFilterInterviewBg: s.archiveFilter === '면접' ? '#FFD166' : 'transparent',
+      setArchiveFilterAll: () => this.setArchiveFilter('전체'), setArchiveFilterSpeech: () => this.setArchiveFilter('발표'), setArchiveFilterInterview: () => this.setArchiveFilter('면접'),
+      archiveSessions: this.sampleReports.map((r, i) => ({ name: r.name, date: r.date, mode: r.mode, durationLabel: this.formatTime(r.durationSec), avgWpm: r.avgWpm, open: () => this.openSample(i) })).filter(sess => s.archiveFilter === '전체' || sess.mode === s.archiveFilter),
+      hasArchiveSessions: this.sampleReports.filter(r => s.archiveFilter === '전체' || r.mode === s.archiveFilter).length > 0,
+      noArchiveSessions: this.sampleReports.filter(r => s.archiveFilter === '전체' || r.mode === s.archiveFilter).length === 0,
+
+      report: {
+        name: rep.name || `${rep.mode} 연습`,
+        date: rep.date, mode: rep.mode, attemptLabel: rep.attemptNo ? `${rep.attemptNo}차 시도` : '기존 기록', durationLabel: this.formatTime(rep.durationSec),
+        metricSectionTitle: rep.mode === '발표' ? '발표 전달 지표' : '면접 답변 전달 지표',
+        avgWpm: rep.avgWpm, maxWpm: rep.maxWpm, target: rep.target,
+        forbiddenCount: (rep.forbiddenLog || []).length,
+        hasHabit: reportHabitEntries.length > 0, noHabit: reportHabitEntries.length === 0, habitEntries: reportHabitEntries,
+        hasForbidden: reportForbiddenEntries.length > 0, noForbidden: reportForbiddenEntries.length === 0, forbiddenEntries: reportForbiddenEntries,
+        isInterview: rep.mode === '면접', isSpeechReport: rep.mode === '발표',
+        hasGesture: reportGestureEntries.length > 0, noGesture: reportGestureEntries.length === 0, gestureEntries: reportGestureEntries,
+        summaryTitle: rep.mode === '발표' ? '보완이 필요한 슬라이드 2개' : 'AI 면접 피드백',
+        aiFeedback: aiFeedbackFor(rep),
+        hasTranscript: !!reportTranscript, transcript: reportTranscript, transcriptWordCount: reportTranscriptWordCount,
+      },
+      feedbackRequestLabel: s.feedbackRequest.trim() || '전달력, 슬라이드 연관성, 빠진 핵심 내용 중심으로 분석',
+      feedbackSlideItems, interviewAnswerItems, reportPriorityItems, speechEventItems,
+      feedbackSlideCountLabel: `${feedbackSlideItems.length}개 발견`,
+      toggleDetailAnalysis: this.toggleDetailAnalysis, showDetailAnalysis: s.showDetailAnalysis,
+      detailAnalysisButtonLabel: s.showDetailAnalysis ? '상세 분석 접기' : '말하기·시선 상세보기',
+      styleToneItems, revealPresentationStyle: this.revealPresentationStyle,
+      showPresentationStyle: s.showPresentationStyle,
+      styleButtonLabel: s.showPresentationStyle ? '다시 분석하기' : '내 발표 MBTI 확인하기',
+      presentationStyleCode: presentationStyle.code,
+      presentationStyleName: presentationStyle.name,
+      presentationStyleReview: presentationStyle.review,
+      chartBars,
+    };
+  }
+}
+
+</script>
+</body>
+</html>
