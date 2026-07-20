@@ -38,6 +38,12 @@
   .ai-interviewer-body::before { content:""; position:absolute; top:0; left:43px; width:42px; height:62px; background:#fff; clip-path:polygon(0 0,100% 0,50% 100%); border-left:2px solid #1a1a1a; border-right:2px solid #1a1a1a; }
   .ai-interviewer-body::after { content:""; position:absolute; top:27px; left:59px; width:12px; height:42px; background:#E85D3D; border:2px solid #1a1a1a; transform:rotate(2deg); }
   .ai-interviewer-status { position:absolute; z-index:2; right:14px; top:14px; max-width:185px; background:#fff; border:2px solid #1a1a1a; border-radius:12px; padding:9px 11px; font-size:11px; line-height:1.4; font-weight:800; }
+  .candidate-avatar-stage { position:absolute; inset:0; z-index:2; background:radial-gradient(circle at 50% 28%,#F8EFE3 0%,#D9E8EF 46%,#A7C6C2 100%); overflow:hidden; }
+  .candidate-avatar-stage::before { content:""; position:absolute; left:9%; right:9%; bottom:76px; height:50px; border:2px solid rgba(26,26,26,0.16); border-left:none; border-right:none; }
+  .candidate-avatar-stage::after { content:""; position:absolute; left:-12%; right:-12%; bottom:-44px; height:112px; background:#2C8C5A; border-top:3px solid #1a1a1a; transform:rotate(-2deg); }
+  .candidate-avatar-canvas { position:absolute; inset:0; z-index:2; width:100%; height:100%; display:block; }
+  .candidate-avatar-caption { position:absolute; z-index:3; left:12px; bottom:12px; max-width:calc(100% - 150px); background:#fff; border:2px solid #1a1a1a; border-radius:10px; padding:8px 10px; font-size:10px; line-height:1.35; font-weight:800; color:#1a1a1a; }
+  .candidate-avatar-tense .candidate-avatar-caption { background:#F6C9BC; color:#8c2f1c; }
   .ai-listening-dot { width:8px; height:8px; border-radius:50%; background:#2C8C5A; animation:listenGlow 1.2s infinite; }
   .live-feedback-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
   .live-feedback-metric { background:#FFF6EC; border:2px solid #1a1a1a; border-radius:12px; padding:11px 12px; min-width:0; }
@@ -48,6 +54,7 @@
     .practice-stage-grid { grid-template-columns:minmax(0,1fr) !important; }
     .feedback-slide-card { grid-template-columns:minmax(0,1fr) !important; }
     .ai-interviewer-status { left:12px; right:12px; max-width:none; }
+    .candidate-avatar-caption { max-width:calc(100% - 24px); right:12px; bottom:64px; }
     .live-feedback-grid, .live-feedback-list { grid-template-columns:minmax(0,1fr) !important; }
   }
 </style>
@@ -536,11 +543,18 @@
         </sc-if>
       </div>
       <div style="position:relative; background:#1a1a1a; border:3px solid #1a1a1a; border-radius:20px; min-height:390px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
-        <video ref="{{ videoRef }}" autoPlay="{{ true }}" muted="{{ true }}" playsInline="{{ true }}" style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1); display:{{ videoDisplay }};"></video>
+        <video ref="{{ videoRef }}" autoPlay="{{ true }}" muted="{{ true }}" playsInline="{{ true }}" style="position:absolute; inset:0; z-index:1; width:100%; height:100%; object-fit:cover; transform:scaleX(-1); display:{{ videoDisplay }}; opacity:{{ videoOpacity }}; pointer-events:none; transition:opacity 0.2s ease;"></video>
+        <sc-if value="{{ showAvatarPreview }}">
+          <div class="{{ avatarStageClass }}">
+            <canvas ref="{{ avatarCanvasRef }}" class="candidate-avatar-canvas"></canvas>
+            <div class="candidate-avatar-caption">{{ avatarCaptionLabel }}</div>
+          </div>
+        </sc-if>
         <sc-if value="{{ showCameraPlaceholder }}"><div style="color:#cfc7ba; font-size:12px; text-align:center; padding:0 20px; font-weight:600;">{{ cameraPlaceholderLabel }}</div></sc-if>
         <sc-if value="{{ showCameraStartButton }}"><button onClick="{{ startCameraPreview }}" style="position:absolute; bottom:14px; left:50%; transform:translateX(-50%); border:2px solid #1a1a1a; background:#FFD166; color:#1a1a1a; border-radius:999px; padding:9px 15px; font-size:12px; font-weight:800; cursor:pointer;">카메라 켜기</button></sc-if>
-        <sc-if value="{{ isCameraLive }}"><div style="position:absolute; top:12px; right:12px; display:flex; align-items:center; gap:6px; background:#fff; border:2px solid #1a1a1a; border-radius:999px; padding:5px 10px;"><div style="width:8px; height:8px; border-radius:50%; background:#2C8C5A;"></div><div style="font-size:11px; font-weight:800;">CAM</div></div></sc-if>
-        <sc-if value="{{ isRecording }}"><div style="position:absolute; top:12px; left:12px; display:flex; align-items:center; gap:6px; background:#fff; border:2px solid #1a1a1a; border-radius:999px; padding:5px 10px;"><div style="width:8px; height:8px; border-radius:50%; background:#E85D3D; animation:pulseRing 1.2s infinite;"></div><div style="font-size:11px; font-weight:800;">REC</div></div></sc-if>
+        <sc-if value="{{ isCameraLive }}"><div style="position:absolute; z-index:4; top:12px; right:12px; display:flex; align-items:center; gap:6px; background:#fff; border:2px solid #1a1a1a; border-radius:999px; padding:5px 10px;"><div style="width:8px; height:8px; border-radius:50%; background:#2C8C5A;"></div><div style="font-size:11px; font-weight:800;">{{ cameraPreviewModeLabel }}</div></div></sc-if>
+        <sc-if value="{{ isRecording }}"><div style="position:absolute; z-index:4; top:12px; left:12px; display:flex; align-items:center; gap:6px; background:#fff; border:2px solid #1a1a1a; border-radius:999px; padding:5px 10px;"><div style="width:8px; height:8px; border-radius:50%; background:#E85D3D; animation:pulseRing 1.2s infinite;"></div><div style="font-size:11px; font-weight:800;">REC</div></div></sc-if>
+        <sc-if value="{{ showPrivacyToggle }}"><button onClick="{{ toggleAvatarPreview }}" style="position:absolute; z-index:4; right:12px; bottom:12px; border:2px solid #1a1a1a; background:{{ privacyToggleBg }}; color:#1a1a1a; border-radius:999px; padding:8px 12px; font-size:11px; line-height:1; font-weight:800; cursor:pointer; box-shadow:2px 2px 0 #1a1a1a;">{{ privacyToggleLabel }}</button></sc-if>
       </div>
     </div>
 
@@ -838,6 +852,7 @@ class Component extends DCLogic {
 
   scriptRef = React.createRef();
   videoRef = React.createRef();
+  avatarCanvasRef = React.createRef();
   slides = [
     { n: 1, title: '인트로 · 문제 제기' },
     { n: 2, title: '사용자 인터뷰 결과' },
@@ -972,6 +987,9 @@ class Component extends DCLogic {
       lastHabitWord: null,
       lastHabitAt: -99,
       cameraState: 'idle',
+      useAvatarPreview: false,
+      vrmAvatarState: 'idle',
+      vrmAvatarError: '',
       speechState: 'idle',
       speechError: '',
       transcriptFinal: '',
@@ -981,6 +999,7 @@ class Component extends DCLogic {
       landmarkState: 'idle',
       landmarkError: '',
       landmarkMetrics: null,
+      poseMetrics: null,
       audioToneState: 'idle',
       audioToneError: '',
       audioToneMetrics: null,
@@ -993,19 +1012,27 @@ class Component extends DCLogic {
     };
   }
 
-  componentDidMount() { this._lastScreen = this.state.screen; }
+  componentDidMount() {
+    this._lastScreen = this.state.screen;
+    try {
+      const savedAvatarPreview = window.localStorage && window.localStorage.getItem('candidateAvatarPreview');
+      if (savedAvatarPreview != null) this.setState({ useAvatarPreview: savedAvatarPreview === '1' });
+    } catch (e) {}
+  }
   componentDidUpdate() {
     const prevScreen = this._lastScreen;
     const currentScreen = this.state.screen;
-    if (prevScreen === currentScreen) return;
-    this._lastScreen = currentScreen;
-    if (currentScreen === 'practice') this.startCamera();
-    if (prevScreen === 'practice' && currentScreen !== 'practice') {
-      this.stopCamera();
-      this.stopSpeechRecognition();
-      this.stopSpeechSynthesis();
-      this.stopRealtimeInterviewAnalysis();
+    if (prevScreen !== currentScreen) {
+      this._lastScreen = currentScreen;
+      if (currentScreen === 'practice') this.startCamera();
+      if (prevScreen === 'practice' && currentScreen !== 'practice') {
+        this.stopCamera();
+        this.stopSpeechRecognition();
+        this.stopSpeechSynthesis();
+        this.stopRealtimeInterviewAnalysis();
+      }
     }
+    this.syncCandidateAvatarRenderer();
   }
   componentWillUnmount() {
     this.stopTimer();
@@ -1013,6 +1040,7 @@ class Component extends DCLogic {
     this.stopSpeechRecognition();
     this.stopSpeechSynthesis();
     this.stopRealtimeInterviewAnalysis();
+    this.disposeCandidateAvatarRenderer();
   }
   stopTimer() { if (this._handle) { clearInterval(this._handle); this._handle = null; } }
 
@@ -1057,11 +1085,403 @@ class Component extends DCLogic {
     });
   };
   startCameraPreview = () => this.startCamera();
+  toggleAvatarPreview = () => {
+    this.setState(s => {
+      const useAvatarPreview = !s.useAvatarPreview;
+      try {
+        if (window.localStorage) window.localStorage.setItem('candidateAvatarPreview', useAvatarPreview ? '1' : '0');
+      } catch (e) {}
+      return { useAvatarPreview };
+    });
+  };
   stopCamera = () => {
     if (this._stream) { this._stream.getTracks().forEach(t => t.stop()); this._stream = null; }
     if (this.videoRef.current) this.videoRef.current.srcObject = null;
     this.setState({ cameraState: 'idle' });
   };
+
+  ensureThree = () => {
+    if (!this._threePromise) {
+      this._threePromise = Promise.all([
+        import('https://esm.sh/three@0.185.1'),
+        import('https://esm.sh/three@0.185.1/examples/jsm/loaders/GLTFLoader.js'),
+        import('https://esm.sh/@pixiv/three-vrm@3.5.5?deps=three@0.185.1'),
+      ]).then(([THREE, gltfModule, vrmModule]) => ({ THREE, ...gltfModule, ...vrmModule }));
+    }
+    return this._threePromise;
+  };
+  syncCandidateAvatarRenderer = () => {
+    const canvas = this.avatarCanvasRef.current;
+    const shouldRender = this.state.screen === 'practice'
+      && this.state.cameraState === 'live'
+      && this.state.useAvatarPreview
+      && !!canvas;
+    if (!shouldRender) {
+      this.disposeCandidateAvatarRenderer();
+      return;
+    }
+    if (this._candidateAvatar && this._candidateAvatar.canvas === canvas) {
+      this.resizeCandidateAvatarRenderer();
+      this.startBrowserLandmarkAnalysis();
+      return;
+    }
+    if (this._avatarInitPromise && this._avatarInitCanvas === canvas) return;
+    this._avatarInitCanvas = canvas;
+    this._avatarInitPromise = this.ensureThree().then(modules => {
+      if (this.avatarCanvasRef.current !== canvas || !this.state.useAvatarPreview || this.state.cameraState !== 'live') return;
+      this.disposeCandidateAvatarRenderer();
+      this._candidateAvatar = this.createCandidateAvatarModel(modules, canvas);
+      this.resizeCandidateAvatarRenderer();
+      this.startCandidateAvatarLoop();
+      this.startBrowserLandmarkAnalysis();
+    }).catch(e => {
+      console.warn('3D avatar renderer failed', e);
+    }).finally(() => {
+      this._avatarInitPromise = null;
+      this._avatarInitCanvas = null;
+    });
+  };
+  createCandidateAvatarModel(modules, canvas) {
+    const { THREE, GLTFLoader, VRMLoaderPlugin, VRMUtils, VRMHumanBoneName, VRMExpressionPresetName } = modules;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+    camera.position.set(0, 1.18, 3.35);
+    camera.lookAt(0, 1.08, 0);
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, preserveDrawingBuffer: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setClearColor(0x000000, 0);
+    if (THREE.SRGBColorSpace) renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x6e8f98, 2.6));
+    const key = new THREE.DirectionalLight(0xffffff, 3.2);
+    key.position.set(2.6, 4.2, 3.4);
+    scene.add(key);
+    const fill = new THREE.DirectionalLight(0xd9e8ef, 1.5);
+    fill.position.set(-2.4, 2.3, 2.6);
+    scene.add(fill);
+    const rim = new THREE.DirectionalLight(0xffd166, 1.0);
+    rim.position.set(0, 2.2, -3);
+    scene.add(rim);
+
+    const shadowMaterial = new THREE.MeshBasicMaterial({ color: 0x1a1a1a, transparent: true, opacity: 0.16, depthWrite: false });
+    const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.78, 56), shadowMaterial);
+    shadow.rotation.x = -Math.PI / 2;
+    shadow.position.set(0, -0.84, -0.05);
+    shadow.scale.set(1.4, 0.5, 1);
+    scene.add(shadow);
+
+    const avatar = {
+      THREE, canvas, scene, camera, renderer, shadow,
+      VRMHumanBoneName, VRMExpressionPresetName,
+      vrm: null,
+      bones: {},
+      baseRotations: new Map(),
+      expressionNames: [],
+      current: {
+        yaw: 0, pitch: 0, roll: 0, gazeX: 0, gazeY: 0, blink: 0, mouth: 0, smile: 0, tension: 0, speaking: 0,
+        bodyYaw: 0, bodyPitch: 0, bodyRoll: 0, torsoLean: 0,
+        leftArmRaise: 0, leftArmOut: 0, leftArmForward: 0, leftElbowBend: 0,
+        rightArmRaise: 0, rightArmOut: 0, rightArmForward: 0, rightElbowBend: 0,
+        leftUpperArmZ: 76, leftUpperArmY: 0, leftLowerArmZ: -10,
+        rightUpperArmZ: -76, rightUpperArmY: 0, rightLowerArmZ: 10,
+      },
+      startedAt: performance.now(),
+      lastFrameAt: performance.now(),
+    };
+
+    this.setState({ vrmAvatarState: 'loading', vrmAvatarError: '' });
+    const loader = new GLTFLoader();
+    loader.register(parser => new VRMLoaderPlugin(parser));
+    loader.load(
+      new URL('assets/avatar.vrm', window.location.href).href,
+      gltf => {
+        if (!this._candidateAvatar || this._candidateAvatar.canvas !== canvas) return;
+        const vrm = gltf.userData && gltf.userData.vrm;
+        if (!vrm) {
+          this.setState({ vrmAvatarState: 'error', vrmAvatarError: 'VRM 데이터를 찾지 못했어요.' });
+          return;
+        }
+        if (VRMUtils && VRMUtils.removeUnnecessaryVertices) VRMUtils.removeUnnecessaryVertices(vrm.scene);
+        if (VRMUtils && VRMUtils.removeUnnecessaryJoints) VRMUtils.removeUnnecessaryJoints(vrm.scene);
+        this.fitCandidateVrmToCamera(avatar, vrm);
+        avatar.vrm = vrm;
+        avatar.expressionNames = this.getVrmExpressionNames(vrm);
+        avatar.bones = this.getCandidateVrmBones(vrm, VRMHumanBoneName);
+        Object.values(avatar.bones).forEach(bone => {
+          if (bone && !avatar.baseRotations.has(bone)) avatar.baseRotations.set(bone, bone.quaternion.clone());
+        });
+        scene.add(vrm.scene);
+        this.setState({ vrmAvatarState: 'live', vrmAvatarError: '' });
+      },
+      undefined,
+      error => {
+        console.warn('VRM model load failed', error);
+        this.setState({ vrmAvatarState: 'error', vrmAvatarError: error && error.message ? error.message : String(error) });
+      }
+    );
+
+    return avatar;
+  }
+  fitCandidateVrmToCamera(avatar, vrm) {
+    const THREE = avatar.THREE;
+    vrm.scene.rotation.y = Math.PI;
+    vrm.scene.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(vrm.scene);
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    const height = size.y || 1.7;
+    const scale = Math.max(0.45, Math.min(1.45, 1.72 / height));
+    vrm.scene.scale.setScalar(scale);
+    vrm.scene.updateMatrixWorld(true);
+
+    const headBoneName = avatar.VRMHumanBoneName && avatar.VRMHumanBoneName.Head ? avatar.VRMHumanBoneName.Head : 'head';
+    const head = vrm.humanoid && vrm.humanoid.getNormalizedBoneNode
+      ? vrm.humanoid.getNormalizedBoneNode(headBoneName)
+      : null;
+    const headPosition = new THREE.Vector3();
+    if (head) head.getWorldPosition(headPosition);
+    else new THREE.Box3().setFromObject(vrm.scene).getCenter(headPosition);
+
+    vrm.scene.position.x -= headPosition.x;
+    vrm.scene.position.y += 1.24 - headPosition.y;
+    vrm.scene.position.z -= headPosition.z;
+    vrm.scene.updateMatrixWorld(true);
+    avatar.baseScenePosition = vrm.scene.position.clone();
+  }
+  getCandidateVrmBones(vrm, Bone) {
+    const get = (name) => {
+      const boneName = Bone && Bone[name] ? Bone[name] : name.charAt(0).toLowerCase() + name.slice(1);
+      if (!vrm.humanoid) return null;
+      if (vrm.humanoid.getNormalizedBoneNode) return vrm.humanoid.getNormalizedBoneNode(boneName);
+      if (vrm.humanoid.getRawBoneNode) return vrm.humanoid.getRawBoneNode(boneName);
+      if (vrm.humanoid.getBoneNode) return vrm.humanoid.getBoneNode(boneName);
+      return null;
+    };
+    return {
+      hips: get('Hips'),
+      spine: get('Spine'),
+      head: get('Head'),
+      neck: get('Neck'),
+      chest: get('Chest'),
+      upperChest: get('UpperChest'),
+      leftShoulder: get('LeftShoulder'),
+      rightShoulder: get('RightShoulder'),
+      leftUpperArm: get('LeftUpperArm'),
+      rightUpperArm: get('RightUpperArm'),
+      leftLowerArm: get('LeftLowerArm'),
+      rightLowerArm: get('RightLowerArm'),
+      leftHand: get('LeftHand'),
+      rightHand: get('RightHand'),
+      leftEye: get('LeftEye'),
+      rightEye: get('RightEye'),
+      jaw: get('Jaw'),
+    };
+  }
+  getVrmExpressionNames(vrm) {
+    const manager = vrm && vrm.expressionManager;
+    if (!manager) return [];
+    if (Array.isArray(manager.expressions)) return manager.expressions.map(exp => exp.expressionName).filter(Boolean);
+    if (manager.expressionMap) return Object.keys(manager.expressionMap);
+    return [];
+  }
+  startCandidateAvatarLoop = () => {
+    if (this._avatarRaf) cancelAnimationFrame(this._avatarRaf);
+    const frame = () => {
+      const avatar = this._candidateAvatar;
+      if (!avatar) {
+        this._avatarRaf = null;
+        return;
+      }
+      this.resizeCandidateAvatarRenderer();
+      this.applyCandidateAvatarPose(avatar);
+      avatar.renderer.render(avatar.scene, avatar.camera);
+      this._avatarRaf = requestAnimationFrame(frame);
+    };
+    this._avatarRaf = requestAnimationFrame(frame);
+  };
+  resizeCandidateAvatarRenderer = () => {
+    const avatar = this._candidateAvatar;
+    if (!avatar) return;
+    const rect = avatar.canvas.getBoundingClientRect();
+    const width = Math.max(1, Math.floor(rect.width));
+    const height = Math.max(1, Math.floor(rect.height));
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const targetWidth = Math.floor(width * dpr);
+    const targetHeight = Math.floor(height * dpr);
+    if (avatar.canvas.width !== targetWidth || avatar.canvas.height !== targetHeight) {
+      avatar.renderer.setPixelRatio(dpr);
+      avatar.renderer.setSize(width, height, false);
+      avatar.camera.aspect = width / height;
+      avatar.camera.updateProjectionMatrix();
+    }
+  };
+  disposeCandidateAvatarRenderer = () => {
+    if (this._avatarRaf) cancelAnimationFrame(this._avatarRaf);
+    this._avatarRaf = null;
+    const avatar = this._candidateAvatar;
+    if (!avatar) return;
+    avatar.scene.traverse(obj => {
+      if (obj.geometry && obj.geometry.dispose) obj.geometry.dispose();
+      const materials = Array.isArray(obj.material) ? obj.material : (obj.material ? [obj.material] : []);
+      materials.forEach(material => material.dispose && material.dispose());
+    });
+    avatar.renderer.dispose();
+    this._candidateAvatar = null;
+  };
+  getCandidateAvatarPose(time) {
+    const face = this.state.landmarkMetrics;
+    const body = this.state.poseMetrics;
+    const audio = this.state.audioToneMetrics;
+    const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value) || 0));
+    const gazeX = face && Number.isFinite(face.gazeX) ? (face.gazeX - 0.5) * 2 : 0;
+    const gazeY = face && Number.isFinite(face.gazeY) ? (face.gazeY - 0.5) * 2 : 0;
+    const mouthOpen = face ? clamp((face.mouthOpen - 0.08) / 0.32, 0, 1) : 0;
+    const speakingPulse = audio && audio.isSpeaking ? 0.36 + (Math.sin(time * 18) + 1) * 0.18 : 0;
+    const idleBlinkPhase = time % 5.4;
+    const idleBlink = idleBlinkPhase > 5.18 ? 1 : 0;
+    const leftArm = body && body.leftArm ? body.leftArm : {};
+    const rightArm = body && body.rightArm ? body.rightArm : {};
+    const finite = (value, fallback) => Number.isFinite(Number(value)) ? Number(value) : fallback;
+    return {
+      yaw: face ? clamp(-face.yaw * 0.9, -20, 20) : Math.sin(time * 0.7) * 1.6,
+      pitch: face ? clamp(face.pitch * 0.72, -13, 13) : Math.sin(time * 0.9) * 1.2,
+      roll: face ? clamp(-face.roll * 0.58, -9, 9) : 0,
+      bodyYaw: body ? clamp(body.torsoYaw, -18, 18) : 0,
+      bodyPitch: body ? clamp(body.torsoPitch, -16, 16) : 0,
+      bodyRoll: body ? clamp(-body.shoulderRoll * 0.55, -16, 16) : 0,
+      torsoLean: body ? clamp(body.torsoLean, -0.8, 0.8) : 0,
+      leftArmRaise: clamp(leftArm.raise || 0, -0.75, 1.25),
+      leftArmOut: clamp(leftArm.out || 0, -1.2, 1.6),
+      leftArmForward: clamp(leftArm.forward || 0, -1.2, 1.2),
+      leftElbowBend: clamp(leftArm.bend || 0, 0, 1),
+      rightArmRaise: clamp(rightArm.raise || 0, -0.75, 1.25),
+      rightArmOut: clamp(rightArm.out || 0, -1.2, 1.6),
+      rightArmForward: clamp(rightArm.forward || 0, -1.2, 1.2),
+      rightElbowBend: clamp(rightArm.bend || 0, 0, 1),
+      leftUpperArmZ: clamp(finite(leftArm.upperZ, 76), -115, 120),
+      leftUpperArmY: clamp(finite(leftArm.upperY, 0), -24, 24),
+      leftLowerArmZ: clamp(finite(leftArm.lowerZ, -10), -74, 74),
+      rightUpperArmZ: clamp(finite(rightArm.upperZ, -76), -120, 115),
+      rightUpperArmY: clamp(finite(rightArm.upperY, 0), -24, 24),
+      rightLowerArmZ: clamp(finite(rightArm.lowerZ, 10), -74, 74),
+      gazeX: clamp(gazeX, -1, 1),
+      gazeY: clamp(gazeY, -1, 1),
+      blink: face && face.eyeClosed ? 1 : idleBlink,
+      mouth: clamp(Math.max(mouthOpen, speakingPulse), 0, 1),
+      smile: face ? clamp(face.joyScore, 0, 1) : 0.08,
+      tension: face ? clamp(face.expressionTension, 0, 1) : 0,
+      speaking: audio && audio.isSpeaking ? 1 : 0,
+    };
+  }
+  applyCandidateAvatarPose(avatar) {
+    const THREE = avatar.THREE;
+    const time = (performance.now() - avatar.startedAt) / 1000;
+    const now = performance.now();
+    const delta = Math.min(0.05, Math.max(0.001, (now - (avatar.lastFrameAt || now)) / 1000));
+    avatar.lastFrameAt = now;
+    const target = this.getCandidateAvatarPose(time);
+    const smooth = (key, amount = 0.15) => {
+      avatar.current[key] = THREE.MathUtils.lerp(avatar.current[key], target[key], amount);
+      return avatar.current[key];
+    };
+    const yaw = smooth('yaw');
+    const pitch = smooth('pitch');
+    const roll = smooth('roll');
+    const gazeX = smooth('gazeX', 0.22);
+    const gazeY = smooth('gazeY', 0.22);
+    const blink = smooth('blink', 0.38);
+    const mouth = smooth('mouth', 0.24);
+    const smile = smooth('smile', 0.16);
+    const tension = smooth('tension', 0.18);
+    const speaking = smooth('speaking', 0.2);
+    const bodyYaw = smooth('bodyYaw', 0.13);
+    const bodyPitch = smooth('bodyPitch', 0.13);
+    const bodyRoll = smooth('bodyRoll', 0.13);
+    const torsoLean = smooth('torsoLean', 0.13);
+    const leftArmRaise = smooth('leftArmRaise', 0.18);
+    const leftArmOut = smooth('leftArmOut', 0.18);
+    const leftArmForward = smooth('leftArmForward', 0.18);
+    const leftElbowBend = smooth('leftElbowBend', 0.18);
+    const rightArmRaise = smooth('rightArmRaise', 0.18);
+    const rightArmOut = smooth('rightArmOut', 0.18);
+    const rightArmForward = smooth('rightArmForward', 0.18);
+    const rightElbowBend = smooth('rightElbowBend', 0.18);
+    const leftUpperArmZ = smooth('leftUpperArmZ', 0.2);
+    const leftUpperArmY = smooth('leftUpperArmY', 0.18);
+    const leftLowerArmZ = smooth('leftLowerArmZ', 0.22);
+    const rightUpperArmZ = smooth('rightUpperArmZ', 0.2);
+    const rightUpperArmY = smooth('rightUpperArmY', 0.18);
+    const rightLowerArmZ = smooth('rightLowerArmZ', 0.22);
+
+    if (!avatar.vrm) return;
+
+    const applyBoneRotation = (bone, pitchDeg, yawDeg, rollDeg) => {
+      if (!bone) return;
+      const base = avatar.baseRotations.get(bone);
+      if (!base) return;
+      const pose = new THREE.Quaternion().setFromEuler(new THREE.Euler(
+        THREE.MathUtils.degToRad(pitchDeg),
+        THREE.MathUtils.degToRad(yawDeg),
+        THREE.MathUtils.degToRad(rollDeg),
+        'XYZ'
+      ));
+      bone.quaternion.copy(base).multiply(pose);
+    };
+
+    applyBoneRotation(avatar.bones.head, pitch, yaw, roll);
+    applyBoneRotation(avatar.bones.neck, pitch * 0.35, yaw * 0.38, roll * 0.35);
+    applyBoneRotation(avatar.bones.hips, 0, bodyYaw * 0.12, torsoLean * 4);
+    applyBoneRotation(avatar.bones.spine, bodyPitch * 0.25, bodyYaw * 0.25, torsoLean * 5);
+    applyBoneRotation(avatar.bones.chest, bodyPitch * 0.45, bodyYaw * 0.45, bodyRoll * 0.35 + torsoLean * 7);
+    applyBoneRotation(
+      avatar.bones.upperChest || avatar.bones.chest,
+      pitch * 0.12 + bodyPitch * 0.75,
+      yaw * 0.16 + bodyYaw * 0.65,
+      roll * 0.18 + bodyRoll * 0.55 + torsoLean * 9
+    );
+    const applyArm = (side, upper, lower, hand, shoulder, upperZ, upperY, lowerZ, forward, bend) => {
+      const mirror = side === 'left' ? 1 : -1;
+      const softBend = bend * 14;
+      applyBoneRotation(shoulder, forward * 4, mirror * upperY * 0.18, upperZ * 0.08);
+      applyBoneRotation(upper, -forward * 18, upperY, upperZ);
+      applyBoneRotation(lower, 0, mirror * softBend, lowerZ);
+      applyBoneRotation(hand, 0, mirror * softBend * 0.25, lowerZ * 0.18);
+    };
+    applyArm('left', avatar.bones.leftUpperArm, avatar.bones.leftLowerArm, avatar.bones.leftHand, avatar.bones.leftShoulder, leftUpperArmZ, leftUpperArmY, leftLowerArmZ, leftArmForward, leftElbowBend);
+    applyArm('right', avatar.bones.rightUpperArm, avatar.bones.rightLowerArm, avatar.bones.rightHand, avatar.bones.rightShoulder, rightUpperArmZ, rightUpperArmY, rightLowerArmZ, rightArmForward, rightElbowBend);
+    applyBoneRotation(avatar.bones.leftEye, -gazeY * 8, -gazeX * 9, 0);
+    applyBoneRotation(avatar.bones.rightEye, -gazeY * 8, -gazeX * 9, 0);
+    applyBoneRotation(avatar.bones.jaw, mouth * 9, 0, 0);
+
+    const expressions = avatar.vrm.expressionManager;
+    const preset = avatar.VRMExpressionPresetName || {};
+    const safeSet = (name, value) => {
+      if (!expressions || !name) return;
+      try {
+        if (expressions.getExpression && !expressions.getExpression(name)) return;
+        expressions.setValue(name, Math.max(0, Math.min(1, value)));
+      } catch (e) {}
+    };
+    if (expressions && expressions.resetValues) expressions.resetValues();
+    safeSet(preset.Blink || 'blink', blink);
+    safeSet(preset.Happy || 'happy', Math.max(smile, 0.08 + speaking * 0.04));
+    safeSet(preset.Aa || 'aa', mouth);
+    safeSet(preset.Oh || 'oh', Math.max(0, mouth - 0.45) * 0.55);
+    safeSet(preset.Surprised || 'surprised', Math.max(0, mouth - 0.58) * 0.65);
+    safeSet(preset.Relaxed || 'relaxed', Math.max(0, 0.2 - tension * 0.16));
+    safeSet(preset.Angry || 'angry', Math.max(0, tension - 0.55) * 0.22);
+    safeSet(preset.LookLeft || 'lookLeft', Math.max(0, -gazeX));
+    safeSet(preset.LookRight || 'lookRight', Math.max(0, gazeX));
+    safeSet(preset.LookUp || 'lookUp', Math.max(0, -gazeY));
+    safeSet(preset.LookDown || 'lookDown', Math.max(0, gazeY));
+
+    if (avatar.baseScenePosition) {
+      avatar.vrm.scene.position.copy(avatar.baseScenePosition);
+      avatar.vrm.scene.position.y += Math.sin(time * 1.8) * 0.018 + speaking * 0.018;
+    }
+    avatar.vrm.update(delta);
+  }
 
   getSpeechRecognitionCtor() {
     return window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1219,10 +1639,19 @@ class Component extends DCLogic {
     this.startBrowserLandmarkAnalysis();
     this.startAudioToneAnalysis();
   };
+  shouldRunVisualLandmarkAnalysis() {
+    const avatarTracking = this.state.screen === 'practice'
+      && this.state.cameraState === 'live'
+      && this.state.useAvatarPreview;
+    const interviewTracking = this.state.isRecording && this.state.settings.mode === '면접';
+    return avatarTracking || interviewTracking;
+  }
   stopRealtimeInterviewAnalysis = () => {
     if (this._landmarkRaf) cancelAnimationFrame(this._landmarkRaf);
     this._landmarkRaf = null;
     this._landmarkStopRequested = true;
+    this._lastPoseDetectAt = null;
+    this._lastPoseMetricsAt = null;
     if (this._audioToneTimer) clearTimeout(this._audioToneTimer);
     this._audioToneTimer = null;
     if (this._audioToneSource) {
@@ -1237,7 +1666,7 @@ class Component extends DCLogic {
       this._audioToneStream.getTracks().forEach(track => track.stop());
       this._audioToneStream = null;
     }
-    this.setState({ landmarkState: 'idle', audioToneState: 'idle' });
+    this.setState({ landmarkState: 'idle', poseMetrics: null, audioToneState: 'idle' });
   };
   ensureFaceLandmarker = async () => {
     if (this._faceLandmarker) return this._faceLandmarker;
@@ -1270,18 +1699,60 @@ class Component extends DCLogic {
     }
     return this._faceLandmarkerPromise;
   };
+  ensurePoseLandmarker = async () => {
+    if (this._poseLandmarker) return this._poseLandmarker;
+    if (!this._poseLandmarkerPromise) {
+      this._poseLandmarkerPromise = import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14').then(async vision => {
+        const fileset = await vision.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');
+        const modelCandidates = [
+          'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task',
+          new URL('landmark/models/pose_landmarker_lite.task', window.location.href).href,
+        ];
+        let landmarker = null;
+        let lastError = null;
+        for (const modelAssetPath of modelCandidates) {
+          try {
+            landmarker = await vision.PoseLandmarker.createFromOptions(fileset, {
+              baseOptions: { modelAssetPath, delegate: 'CPU' },
+              runningMode: 'VIDEO',
+              numPoses: 1,
+              minPoseDetectionConfidence: 0.45,
+              minPosePresenceConfidence: 0.45,
+              minTrackingConfidence: 0.45,
+            });
+            break;
+          } catch (e) {
+            lastError = e;
+          }
+        }
+        if (!landmarker) throw lastError || new Error('PoseLandmarker 모델 생성 실패');
+        this._poseLandmarker = landmarker;
+        return landmarker;
+      });
+    }
+    return this._poseLandmarkerPromise;
+  };
   startBrowserLandmarkAnalysis = async () => {
     if (this._landmarkRaf || this.state.landmarkState === 'loading') return;
+    if (!this.shouldRunVisualLandmarkAnalysis()) return;
     this._landmarkStopRequested = false;
     this._landmarkErrorCount = 0;
     this._lastLandmarkTimestamp = null;
+    this._lastPoseDetectAt = null;
+    this._lastPoseMetricsAt = null;
     this.setState({ landmarkState: 'loading', landmarkError: '' });
     try {
       await this.startCamera();
       const landmarker = await this.ensureFaceLandmarker();
+      let poseLandmarker = this._poseLandmarker || null;
+      this.ensurePoseLandmarker().then(instance => {
+        poseLandmarker = instance;
+      }).catch(e => {
+        console.warn('Pose landmark model load failed', e);
+      });
       this.setState({ landmarkState: 'live', landmarkError: '' });
       const loop = () => {
-        if (this._landmarkStopRequested || !this.state.isRecording || this.state.settings.mode !== '면접') {
+        if (this._landmarkStopRequested || !this.shouldRunVisualLandmarkAnalysis()) {
           this._landmarkRaf = null;
           return;
         }
@@ -1294,10 +1765,27 @@ class Component extends DCLogic {
           const timestampMs = this.nextLandmarkTimestamp(video);
           const result = landmarker.detectForVideo(video, timestampMs);
           const metrics = this.buildLandmarkMetrics(result);
+          let poseMetrics = this.state.poseMetrics || null;
+          const activePoseLandmarker = poseLandmarker || this._poseLandmarker;
+          if (activePoseLandmarker && (this._lastPoseDetectAt == null || timestampMs - this._lastPoseDetectAt >= 66)) {
+            this._lastPoseDetectAt = timestampMs;
+            try {
+              const nextPoseMetrics = this.buildPoseMetrics(activePoseLandmarker.detectForVideo(video, timestampMs));
+              if (nextPoseMetrics) {
+                poseMetrics = nextPoseMetrics;
+                this._lastPoseMetricsAt = performance.now();
+              } else if (!this._lastPoseMetricsAt || performance.now() - this._lastPoseMetricsAt > 900) {
+                poseMetrics = null;
+              }
+            } catch (poseError) {
+              if (!this._lastPoseMetricsAt || performance.now() - this._lastPoseMetricsAt > 900) poseMetrics = null;
+              console.warn('Pose landmark analysis failed', poseError);
+            }
+          }
           this._landmarkErrorCount = 0;
           const statePatch = metrics
-            ? { landmarkState: 'live', landmarkError: '', landmarkMetrics: metrics, realtimeFeedbackItems: this.buildRealtimeFeedbackItems(metrics, this.state.audioToneMetrics) }
-            : { landmarkState: 'noFace', landmarkError: '', landmarkMetrics: null, realtimeFeedbackItems: this.buildRealtimeFeedbackItems(null, this.state.audioToneMetrics) };
+            ? { landmarkState: 'live', landmarkError: '', landmarkMetrics: metrics, poseMetrics, realtimeFeedbackItems: this.buildRealtimeFeedbackItems(metrics, this.state.audioToneMetrics) }
+            : { landmarkState: 'noFace', landmarkError: '', landmarkMetrics: null, poseMetrics, realtimeFeedbackItems: this.buildRealtimeFeedbackItems(null, this.state.audioToneMetrics) };
           this.setState(statePatch);
         } catch (e) {
           this._landmarkErrorCount = (this._landmarkErrorCount || 0) + 1;
@@ -1416,8 +1904,102 @@ class Component extends DCLogic {
     if (blinkRate >= 30) negativeBehaviors.push('눈깜빡임 많음');
     return {
       attentionScore, gazeDirection, headDirection,
-      yaw, pitch, roll, blinkRate, lipPress, expressionTension, joyScore,
+      yaw, pitch, roll, gazeX, gazeY, blinkRate, eyeClosed, mouthOpen, lipPress, expressionTension, joyScore,
       negativeBehaviors,
+    };
+  }
+  buildPoseMetrics(result) {
+    const poses = result && (result.landmarks || result.poseLandmarks || result.pose_landmarks || result.worldLandmarks || result.poseWorldLandmarks);
+    const landmarks = Array.isArray(poses) && Array.isArray(poses[0]) ? poses[0] : poses;
+    if (!landmarks || !landmarks.length) return null;
+    const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value) || 0));
+    const validPoint = (p) => p && Number.isFinite(p.x) && Number.isFinite(p.y);
+    const visiblePoint = (p, threshold = 0.24) => {
+      if (!validPoint(p)) return null;
+      const visibilityOk = p.visibility == null || p.visibility >= threshold;
+      const presenceOk = p.presence == null || p.presence >= threshold;
+      return visibilityOk && presenceOk ? p : null;
+    };
+    const at = (index, threshold) => visiblePoint(landmarks[index], threshold);
+    const z = (p) => p && Number.isFinite(p.z) ? p.z : 0;
+    const dist = (a, b) => Math.hypot((a.x || 0) - (b.x || 0), (a.y || 0) - (b.y || 0), z(a) - z(b));
+    const average = (a, b) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, z: (z(a) + z(b)) / 2 });
+    const leftShoulder = at(11);
+    const rightShoulder = at(12);
+    if (!leftShoulder || !rightShoulder) return null;
+    const leftElbow = at(13, 0.2);
+    const rightElbow = at(14, 0.2);
+    const leftWrist = at(15, 0.18);
+    const rightWrist = at(16, 0.18);
+    const leftHip = at(23, 0.18);
+    const rightHip = at(24, 0.18);
+    const shoulderCenter = average(leftShoulder, rightShoulder);
+    const shoulderWidth = Math.max(0.001, dist(leftShoulder, rightShoulder));
+    const hipCenter = leftHip && rightHip
+      ? average(leftHip, rightHip)
+      : { x: shoulderCenter.x, y: shoulderCenter.y + shoulderWidth * 1.55, z: shoulderCenter.z + 0.04 };
+    const shoulderRoll = clamp(Math.atan2(rightShoulder.y - leftShoulder.y, rightShoulder.x - leftShoulder.x) * 180 / Math.PI, -24, 24);
+    const torsoLean = clamp((shoulderCenter.x - hipCenter.x) / shoulderWidth, -0.8, 0.8);
+    const torsoYaw = clamp((z(rightShoulder) - z(leftShoulder)) * 95, -18, 18);
+    const torsoPitch = clamp((shoulderCenter.z - hipCenter.z) * 75, -16, 16);
+    const vector = (from, to) => ({ x: to.x - from.x, y: to.y - from.y, z: z(to) - z(from) });
+    const angle = (a, b) => {
+      const aLen = Math.hypot(a.x, a.y, a.z);
+      const bLen = Math.hypot(b.x, b.y, b.z);
+      if (!aLen || !bLen) return 180;
+      const dot = (a.x * b.x + a.y * b.y + a.z * b.z) / (aLen * bLen);
+      return Math.acos(clamp(dot, -1, 1)) * 180 / Math.PI;
+    };
+    const armMetrics = (shoulder, elbow, wrist, side) => {
+      const sideSign = side === 'left' ? -1 : 1;
+      const idleUpperZ = side === 'left' ? 76 : -76;
+      const idleLowerZ = side === 'left' ? -10 : 10;
+      if (!shoulder || !elbow) {
+        return { tracked: false, raise: 0, out: 0, forward: 0, bend: 0, upperZ: idleUpperZ, upperY: 0, lowerZ: idleLowerZ };
+      }
+      const toArmVector = (from, to, minSide = 0.12) => {
+        const rawX = Math.abs((to.x || 0) - (from.x || 0));
+        const x = sideSign * Math.max(minSide, rawX);
+        const y = (from.y || 0) - (to.y || 0);
+        const len = Math.max(0.001, Math.hypot(x, y));
+        return { x: x / len, y: y / len, z: clamp(-(z(to) - z(from)) * 1.7, -0.7, 0.7) };
+      };
+      const angleFromT = (v) => {
+        const restX = sideSign;
+        const cross = restX * v.y;
+        const dot = restX * v.x;
+        return Math.atan2(cross, dot) * 180 / Math.PI;
+      };
+      const upperVec = toArmVector(shoulder, elbow, 0.16);
+      const lowerVec = wrist ? toArmVector(elbow, wrist, 0.08) : upperVec;
+      const upperZ = clamp(angleFromT(upperVec), -115, 120);
+      const lowerZ = wrist ? clamp(angleFromT(lowerVec) - upperZ, -74, 74) : idleLowerZ;
+      const elbowAngle = wrist ? angle(vector(elbow, shoulder), vector(elbow, wrist)) : 165;
+      const bend = clamp((165 - elbowAngle) / 95, 0, 1);
+      const forward = clamp((upperVec.z + lowerVec.z * 0.45), -1.1, 1.1);
+      const upperY = clamp(forward * 22, -24, 24);
+      const armCenter = wrist ? average(elbow, wrist) : elbow;
+      return {
+        tracked: true,
+        raise: clamp(upperVec.y, -0.95, 0.95),
+        out: clamp(Math.abs((armCenter.x || 0) - (shoulder.x || 0)) / shoulderWidth, 0, 1.4),
+        forward,
+        bend,
+        upperZ,
+        upperY,
+        lowerZ,
+      };
+    };
+    const visibleCount = [leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist, leftHip, rightHip].filter(Boolean).length;
+    return {
+      detected: true,
+      presence: visibleCount / 8,
+      shoulderRoll,
+      torsoYaw,
+      torsoPitch,
+      torsoLean,
+      leftArm: armMetrics(leftShoulder, leftElbow, leftWrist, 'left'),
+      rightArm: armMetrics(rightShoulder, rightElbow, rightWrist, 'right'),
     };
   }
   startAudioToneAnalysis = async () => {
@@ -1589,7 +2171,7 @@ class Component extends DCLogic {
       forbiddenLog: [], habitTally: {}, gestureTally: {}, wpmSamples: [], showPresentationStyle: false, showDetailAnalysis: false, showAdvancedSettings: false,
       speechState: 'idle', speechError: '', transcriptFinal: '', transcriptInterim: '',
       interviewerSpeaking: false, interviewerStatus: '면접관이 질문을 준비하고 있어요.',
-      landmarkState: 'idle', landmarkError: '', landmarkMetrics: null,
+      landmarkState: 'idle', landmarkError: '', landmarkMetrics: null, poseMetrics: null,
       audioToneState: 'idle', audioToneError: '', audioToneMetrics: null,
       realtimeFeedbackItems: this.buildRealtimeFeedbackItems(null, null),
     }));
@@ -1757,7 +2339,7 @@ class Component extends DCLogic {
       characterScale: 1, characterMood: 'neutral', showPresentationStyle: false, showDetailAnalysis: false,
       speechState: 'idle', speechError: '', transcriptFinal: '', transcriptInterim: '',
       interviewerSpeaking: false, interviewerStatus: '면접관이 질문을 준비하고 있어요.',
-      landmarkState: 'idle', landmarkError: '', landmarkMetrics: null,
+      landmarkState: 'idle', landmarkError: '', landmarkMetrics: null, poseMetrics: null,
       audioToneState: 'idle', audioToneError: '', audioToneMetrics: null,
       realtimeFeedbackItems: this.buildRealtimeFeedbackItems(null, null),
     }));
@@ -1859,7 +2441,7 @@ class Component extends DCLogic {
       lastDetected: null, lastDetectedAt: -99, lastHabitWord: null, lastHabitAt: -99, selectedSentenceIndex: null,
       speechState: 'starting', speechError: '', transcriptFinal: '', transcriptInterim: '',
       interviewerSpeaking: false, interviewerStatus: '면접관이 질문을 준비하고 있어요.',
-      landmarkState: 'idle', landmarkError: '', landmarkMetrics: null,
+      landmarkState: 'idle', landmarkError: '', landmarkMetrics: null, poseMetrics: null,
       audioToneState: 'idle', audioToneError: '', audioToneMetrics: null,
       realtimeFeedbackItems: this.buildRealtimeFeedbackItems(null, null),
     }, () => {
@@ -1995,6 +2577,23 @@ class Component extends DCLogic {
     return React.createElement('div', { style: faceStyle }, eyeRow, mouth);
   }
 
+  buildCandidateAvatar(face, audio, body) {
+    const isSpeaking = !!(audio && audio.isSpeaking);
+    const isTense = !!(face && face.expressionTension > 0.6);
+    let caption = 'VRM 모델 로딩 중';
+    if (this.state.vrmAvatarState === 'error') caption = `VRM 로딩 오류 · ${this.state.vrmAvatarError || '모델 파일을 확인해주세요'}`;
+    else if (this.state.vrmAvatarState === 'live') {
+      if (face && body) caption = 'VRM 아바타 구동 중 · 얼굴/몸동작 반영';
+      else if (face) caption = 'VRM 아바타 구동 중 · 얼굴 반영, 몸 감지 대기';
+      else if (body) caption = 'VRM 아바타 구동 중 · 몸동작 반영, 얼굴 감지 대기';
+      else caption = 'VRM 아바타 구동 중 · 얼굴/몸 감지 대기';
+    }
+    return {
+      avatarStageClass: `candidate-avatar-stage${isSpeaking ? ' candidate-avatar-speaking' : ''}${isTense || this.state.vrmAvatarState === 'error' ? ' candidate-avatar-tense' : ''}`,
+      avatarCaptionLabel: caption,
+    };
+  }
+
   renderVals() {
     const s = this.state;
     const target = s.settings.targetWpm;
@@ -2105,6 +2704,12 @@ class Component extends DCLogic {
     const lastHabitWord = s.lastHabitWord;
     const showHabitToast = s.isRecording && (s.elapsed - s.lastHabitAt) < 1.6 && s.lastHabitAt > s.lastDetectedAt;
     const videoDisplay = s.cameraState === 'live' ? 'block' : 'none';
+    const videoOpacity = s.useAvatarPreview ? 0 : 1;
+    const showAvatarPreview = s.cameraState === 'live' && s.useAvatarPreview;
+    const showPrivacyToggle = s.cameraState === 'live';
+    const privacyToggleLabel = s.useAvatarPreview ? '내 화면 보기' : '3D 캐릭터 보기';
+    const privacyToggleBg = s.useAvatarPreview ? '#FFD166' : '#fff';
+    const cameraPreviewModeLabel = s.useAvatarPreview ? '3D' : 'CAM';
     const showCameraPlaceholder = s.cameraState !== 'live';
     const cameraPlaceholderLabel = s.cameraState === 'error' ? '카메라 접근이 거부됐어요. 브라우저 권한을 확인해주세요.' : (s.cameraState === 'starting' ? '카메라 연결 중...' : '카메라를 켜면 내 화면이 표시돼요');
     const isCameraLive = s.cameraState === 'live';
@@ -2131,7 +2736,9 @@ class Component extends DCLogic {
     const landmarkStatusBg = s.landmarkState === 'live' ? '#E8F4EE' : (s.landmarkState === 'error' || s.landmarkState === 'noFace' ? '#F6C9BC' : '#fff');
     const toneStatusBg = s.audioToneState === 'live' ? '#E8F4EE' : (s.audioToneState === 'error' ? '#F6C9BC' : '#fff');
     const faceMetrics = s.landmarkMetrics || null;
+    const poseMetrics = s.poseMetrics || null;
     const audioMetrics = s.audioToneMetrics || null;
+    const avatarPreview = this.buildCandidateAvatar(faceMetrics, audioMetrics, poseMetrics);
     const attentionScoreLabel = faceMetrics ? `${Math.round(faceMetrics.attentionScore * 100)}%` : '--';
     const attentionHint = faceMetrics ? (faceMetrics.attentionScore >= 0.75 ? '정면 유지 좋음' : '시선/고개 보완') : '분석 대기';
     const gazeLabelMap = { center: '정면', left: '왼쪽', right: '오른쪽', up: '위쪽', down: '아래쪽' };
@@ -2371,8 +2978,13 @@ class Component extends DCLogic {
       wpmRounded: Math.round(s.wpm), wpmPercent, isGood, isFast, isSlow,
       moodLabel: moodLabelMap[s.characterMood], moodColor: moodColorMap[s.characterMood],
       showForbiddenToast, lastForbiddenWord, showHabitToast, lastHabitWord,
-      videoRef: this.videoRef, videoDisplay, showCameraPlaceholder, cameraPlaceholderLabel,
-      isCameraLive, showCameraStartButton, startCameraPreview: this.startCameraPreview,
+      videoRef: this.videoRef, avatarCanvasRef: this.avatarCanvasRef,
+      videoDisplay, videoOpacity, showAvatarPreview, showPrivacyToggle,
+      privacyToggleLabel, privacyToggleBg, cameraPreviewModeLabel,
+      avatarStageClass: avatarPreview.avatarStageClass,
+      avatarCaptionLabel: avatarPreview.avatarCaptionLabel,
+      showCameraPlaceholder, cameraPlaceholderLabel,
+      isCameraLive, showCameraStartButton, startCameraPreview: this.startCameraPreview, toggleAvatarPreview: this.toggleAvatarPreview,
       liveTranscriptText, transcriptWordCount, transcriptTextColor,
       speechStatusLabel, speechStatusColor, speechStatusBg, showListeningDot, speechErrorVisible, speechErrorLabel,
       landmarkStatusLabel, landmarkStatusColor, landmarkStatusBg,

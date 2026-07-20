@@ -6,15 +6,6 @@ import time
 import urllib.request
 from pathlib import Path
 
-import cv2
-import mediapipe as mp
-from mediapipe.tasks import python
-from mediapipe.tasks.python import vision
-
-from interview_landmark.audio_analyzer import RealTimeAudioAnalyzer
-from interview_landmark.analyzer import InterviewFaceAnalyzer
-from interview_landmark.overlay import draw_overlay
-
 MODEL_URL = (
     "https://storage.googleapis.com/mediapipe-models/face_landmarker/"
     "face_landmarker/float16/latest/face_landmarker.task"
@@ -39,6 +30,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--speech-db-threshold", type=float, default=-42.0, help="Speech volume threshold in dBFS")
     parser.add_argument("--min-detection-confidence", type=float, default=0.6)
     parser.add_argument("--min-tracking-confidence", type=float, default=0.6)
+    parser.add_argument("--ppt", type=Path, default=None, help="PPT/PPTX path. Defaults to sample.pptx then sample.ppt")
+    parser.add_argument("--audio", type=Path, default=None, help="Presentation audio file for STT analysis")
+    parser.add_argument("--slide-events", type=Path, default=None, help="CSV with slide_index,start_time,end_time")
+    parser.add_argument("--target-minutes", type=float, default=None, help="Target presentation length in minutes")
+    parser.add_argument("--analyze-ppt-only", action="store_true", help="Analyze PPT without STT/audio")
+    parser.add_argument("--whisper-model", type=str, default=None, help="Whisper model name for optional audio STT")
+    parser.add_argument("--live-mic", action="store_true", help="Analyze presentation from the microphone in real time")
+    parser.add_argument("--live-chunk-seconds", type=float, default=None, help="Seconds of microphone audio per STT chunk")
+    parser.add_argument("--live-max-seconds", type=float, default=None, help="Optional maximum live analysis duration")
     return parser.parse_args()
 
 
@@ -54,6 +54,47 @@ def ensure_model(model_path: Path) -> Path:
 
 def main() -> int:
     args = parse_args()
+    if args.live_mic:
+        from presentation_analysis.live_mic import run_live_mic_presentation_analysis
+
+        result = run_live_mic_presentation_analysis(
+            root=Path.cwd(),
+            ppt_path=args.ppt,
+            slide_events_path=args.slide_events,
+            target_minutes=args.target_minutes,
+            whisper_model=args.whisper_model,
+            audio_device=args.audio_device,
+            sample_rate=None if args.auto_sample_rate else args.sample_rate,
+            auto_sample_rate=args.auto_sample_rate,
+            speech_db_threshold=args.speech_db_threshold,
+            live_chunk_seconds=args.live_chunk_seconds,
+            live_max_seconds=args.live_max_seconds,
+        )
+        return 0 if result is not None else 1
+
+    if should_run_presentation_analysis(args):
+        from presentation_analysis import run_presentation_analysis
+
+        result = run_presentation_analysis(
+            root=Path.cwd(),
+            ppt_path=args.ppt,
+            audio_path=args.audio,
+            slide_events_path=args.slide_events,
+            target_minutes=args.target_minutes,
+            analyze_ppt_only=args.analyze_ppt_only,
+            whisper_model=args.whisper_model,
+        )
+        return 0 if result is not None else 1
+
+    import cv2
+    import mediapipe as mp
+    from mediapipe.tasks import python
+    from mediapipe.tasks.python import vision
+
+    from interview_landmark.audio_analyzer import RealTimeAudioAnalyzer
+    from interview_landmark.analyzer import InterviewFaceAnalyzer
+    from interview_landmark.overlay import draw_overlay
+
     model_path = ensure_model(args.model)
     capture = cv2.VideoCapture(args.camera)
     if not capture.isOpened():
@@ -136,6 +177,19 @@ def main() -> int:
         if not args.no_preview:
             cv2.destroyAllWindows()
     return 0
+
+
+def should_run_presentation_analysis(args: argparse.Namespace) -> bool:
+    return any(
+        [
+            args.ppt is not None,
+            args.audio is not None,
+            args.slide_events is not None,
+            args.target_minutes is not None,
+            args.analyze_ppt_only,
+            args.live_mic,
+        ]
+    )
 
 
 def resize_for_display(frame, display_width: int):
