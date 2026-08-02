@@ -1,0 +1,94 @@
+export const presentationRoutes = [
+  {
+    path: '/presentation/setup',
+    name: 'presentation-setup',
+    component: () => import('../../views/presentation/PresentationSetupView.vue'),
+    meta: {
+      layout: 'default',
+      flow: 'presentation',
+      area: 'practice',
+      title: '발표 설정',
+      bodyClass: 'practice-flow-page presentation-flow-page presentation-setup-page',
+    },
+  },
+  {
+    path: '/presentation/slides',
+    name: 'presentation-slides',
+    component: () => import('../../views/presentation/PresentationSlidesView.vue'),
+    meta: {
+      layout: 'default',
+      flow: 'presentation',
+      area: 'practice',
+      title: '발표 슬라이드 설정',
+      bodyClass: 'practice-flow-page presentation-flow-page presentation-slides-page',
+    },
+  },
+  {
+    path: '/presentation/check',
+    name: 'presentation-check',
+    component: () => import('../../views/presentation/PresentationCheckView.vue'),
+    meta: {
+      layout: 'default',
+      flow: 'presentation',
+      area: 'practice',
+      title: '발표 카메라·마이크 확인',
+      bodyClass: 'practice-flow-page presentation-flow-page presentation-check-page',
+    },
+  },
+  {
+    path: '/presentation/ready',
+    name: 'presentation-ready',
+    component: () => import('../../views/presentation/PresentationReadyView.vue'),
+    meta: {
+      layout: 'default',
+      flow: 'presentation',
+      area: 'practice',
+      title: '발표 설정 확인',
+      bodyClass: 'practice-flow-page presentation-flow-page presentation-ready-page',
+    },
+  },
+  {
+    path: '/presentation/record',
+    name: 'presentation-record',
+    component: () => import('../../views/presentation/PresentationRecordView.vue'),
+    meta: {
+      layout: 'immersive',
+      area: 'practice',
+      title: '발표 녹화',
+      bodyClass: 'immersive-record-page',
+    },
+  },
+  {
+    path: '/presentation/qna',
+    name: 'presentation-qna',
+    component: () => import('../../views/presentation/PresentationQnaView.vue'),
+    meta: {
+      layout: 'default',
+      area: 'practice',
+      title: '청중 질문',
+      bodyClass: 'presentation-qna-page',
+    },
+  },
+  {
+    path: '/presentation/artifacts',
+    name: 'presentation-artifacts',
+    component: () => import('../../views/presentation/PresentationArtifactsView.vue'),
+    meta: {
+      layout: 'default',
+      area: 'practice',
+      title: '발표 종료 데이터 확인',
+      bodyClass: 'presentation-artifacts-page',
+    },
+  },
+  {
+    path: '/presentation/report',
+    name: 'presentation-report',
+    component: () => import('../../views/presentation/PresentationReportView.vue'),
+    meta: {
+      layout: 'default',
+      area: 'practice',
+      title: '발표 리포트',
+      bodyClass: 'presentation-result-page',
+    },
+  },
+]

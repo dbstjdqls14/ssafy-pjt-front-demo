@@ -1,0 +1,38 @@
+.presentation-check-page [hidden] {
+  display: none !important;
+}
+
+.presentation-check-page .confirm-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.presentation-check-page .confirm-row > span,
+.presentation-check-page .confirm-row > b {
+  min-width: 0;
+  /* 13px면 'Default Microphone' 등 장치명이 한 줄에 들어가, 장치 연결 후 값이
+     길어져도 줄바꿈으로 아래 항목이 밀려 내려가는(레이아웃 이동) 문제가 없다. */
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.presentation-check-page .confirm-row > b {
+  width: auto;
+  max-width: none;
+  text-align: right;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .presentation-check-page .confirm-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .presentation-check-page .confirm-row > b {
+    text-align: left;
+  }
+}

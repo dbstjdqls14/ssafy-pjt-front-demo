@@ -1,0 +1,56 @@
+html,
+body,
+#app {
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  margin: 0;
+}
+
+#app {
+  display: contents;
+}
+
+/* Keep the document element (window) as the scroll container. Putting
+   overflow-x:hidden on <body> would compute its overflow-y to `auto`, turning
+   <body> into the scroller — which breaks window.scrollY-based scroll logic
+   (e.g. the home cinematic-scroll engine). Clipping horizontally on <html>
+   keeps window scrolling intact. */
+html {
+  overflow-x: hidden;
+}
+
+/* Sticky-footer shell: because #app is display:contents, the header, routed
+   viewport, and footer are laid out as <body>'s own children. Making <body> a
+   column that is at least the viewport tall pins the shared footer to the
+   bottom instead of letting it float with empty space beneath it on short pages. */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Only recording experiences intentionally lock the document viewport. */
+body.immersive-record-page,
+body.immersive-interview-page {
+  overflow: hidden;
+}
+
+/* The routed area grows to fill the leftover height (but never shrinks its
+   content), which is what pushes the footer to the bottom. */
+.aivo-route-viewport {
+  min-height: 0;
+  flex: 1 0 auto;
+}
+
+.aivo-route-scene {
+  min-width: 0;
+}
+
+/* DOM ownership is handled by Vue's out-in transition. The compositor fade in
+   page-transition.css remains the single visual animation and is gated on the
+   destination's legacy styles being ready. */
+.aivo-route-swap-enter-active,
+.aivo-route-swap-leave-active {
+  transition: none;
+}

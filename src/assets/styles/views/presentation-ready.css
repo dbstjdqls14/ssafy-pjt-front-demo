@@ -1,0 +1,159 @@
+body.presentation-ready-page {
+  height: auto;
+  min-height: 100svh;
+  overflow-y: auto;
+}
+
+.presentation-ready-page [hidden] {
+  display: none !important;
+}
+
+.presentation-ready-page .workflow-stage {
+  min-height: 0;
+  margin-top: 0;
+  align-items: start;
+}
+
+.presentation-ready-page .workflow-stage-content.ready-flow-content {
+  width: min(760px, 100%);
+  height: auto;
+  min-height: 0;
+  margin: 48px auto 0;
+  place-items: start center;
+  transform: none;
+}
+
+.presentation-ready-page .ready-confirm-card {
+  width: min(600px, 100%);
+  margin: 0 auto;
+}
+
+.presentation-ready-page .ready-slide-review[hidden],
+.presentation-ready-page .ready-confirm-card[hidden] {
+  display: none !important;
+}
+
+.presentation-ready-page .ready-slide-review.is-visible {
+  display: grid;
+  width: min(760px, 100%);
+  max-height: none;
+  gap: 14px;
+  align-content: start;
+  padding-bottom: 0;
+  overflow: visible;
+}
+
+.presentation-ready-page .ready-slide-panel,
+.presentation-ready-page .ready-slide-preview {
+  width: 100%;
+}
+
+.presentation-ready-page .ready-slide-preview {
+  aspect-ratio: 16 / 9;
+  min-height: 0;
+}
+
+.presentation-ready-page .ready-slide-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+}
+
+.presentation-ready-page .ready-slide-unavailable {
+  display: grid;
+  height: 100%;
+  place-content: center;
+  text-align: center;
+}
+
+.presentation-ready-page .ready-slide-error {
+  margin: 16px 0 0;
+  color: #c2415d;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.presentation-ready-page .ready-review-actions {
+  display: flex;
+  visibility: visible;
+  justify-content: center;
+  gap: 12px;
+  margin: 18px 0 72px;
+}
+
+.presentation-ready-page .ready-review-actions :is(a, button) {
+  min-width: 220px;
+  min-height: 56px;
+  padding: 0 30px;
+  font-size: 16px;
+}
+
+.presentation-ready-page .ready-key-content {
+  display: grid;
+  gap: 8px;
+  padding: 16px 0;
+  border-top: 1px solid #dfe5f0;
+  border-bottom: 1px solid #dfe5f0;
+}
+
+.presentation-ready-page .ready-key-label {
+  color: #172346;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.presentation-ready-page .ready-key-content .ready-note-plain {
+  margin: 0;
+  color: #74809b;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.presentation-ready-page .ready-review-actions {
+  margin: 0;
+  padding-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .presentation-ready-page .workflow-stage {
+    margin-top: 0;
+  }
+
+  .presentation-ready-page .workflow-stage-content.ready-flow-content {
+    margin-top: 32px;
+  }
+}
+
+/* ── 슬라이드 핵심 내용 '확인' 화면: 넘김 버튼을 '작성' 페이지와 동일한 UI로 ──────
+   기존엔 미리보기 위에 떠 있는 알약형(.ready-slide-control) 버튼이었으나, 작성
+   페이지(슬라이드별 핵심 내용)의 상단 헤더 컨트롤(.slide-page-control: ‹ N 슬라이드 ›)과
+   동일하게 맞춘다. 제목도 작성 페이지와 같은 .slide-key-head 헤더로 복원. */
+.presentation-ready-page .ready-review-head {
+  width: 100%;
+  justify-self: stretch;
+  align-items: end;
+}
+
+/* .slide-counter 기본값은 position:absolute(우하단)라 헤더에서 어긋난다. 작성
+   페이지(.presentation-slides-page)와 동일하게 인라인 정적 배치로 되돌린다. */
+.presentation-ready-page .slide-page-control .slide-counter {
+  position: static;
+  inset: auto;
+  display: block;
+  min-width: 68px;
+  margin: 0;
+  text-align: center;
+  transform: none;
+  color: #5271c8;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+/* 넘김 버튼이 헤더(제목 줄)로 이동했으므로, 우상단 알약을 피하려 두었던 큰 상단
+   여백을 줄여 제목이 진행 바 아래 자연스럽게 오도록 한다. */
+.presentation-ready-page .ready-slide-review.is-visible {
+  margin-top: 16px;
+}

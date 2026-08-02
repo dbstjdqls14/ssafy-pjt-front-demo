@@ -1,0 +1,324 @@
+/* Shared navigation contract for the folder and presentation wizard. */
+:root {
+  scrollbar-gutter: auto;
+}
+
+.workflow-stage {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.workflow-stage-content {
+  width: 100%;
+  min-width: 0;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 180ms ease, transform 180ms ease;
+  will-change: opacity, transform;
+}
+
+.workflow-stage-content.is-flow-leaving {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.workflow-stage-content.is-flow-entering {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* Pill-shaped prev/next controls. Kept at their fixed vertical-center anchor
+   (see the media-query offsets below); only the shape/labels changed from the
+   old circular arrows. The visible label is supplied via ::after so all flow
+   views share one markup contract without per-view edits. */
+.workflow-side-button {
+  position: absolute;
+  top: 50%;
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 108px;
+  height: 48px;
+  min-height: 48px;
+  padding: 0 30px;
+  border: 1.5px solid #1c2333;
+  border-radius: 999px;
+  background: #fff;
+  color: #1c2333;
+  box-shadow: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  white-space: nowrap;
+  transform: translateY(-50%);
+  transition: border-color .18s ease, background-color .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+/* Old arrow glyphs are replaced by text labels. */
+.workflow-side-button svg {
+  display: none;
+}
+
+.workflow-side-prev::after {
+  content: '이전';
+}
+
+.workflow-side-next::after {
+  content: '다음';
+}
+
+/* Left button: outlined, neutral ink. Soft gray border(진한 테두리 완화). */
+.workflow-side-prev {
+  right: calc(100% + 24px);
+  border-color: #d2d8e4;
+  background: #fff;
+  color: #1c2333;
+}
+
+.workflow-side-prev:hover,
+.workflow-side-prev:focus-visible {
+  background: #f4f5f8;
+  border-color: #b9c1d2;
+  color: #1c2333;
+}
+
+/* Right button: flat filled CTA — 서비스 포인트 색상(#5276df), 그라데이션·그림자 없음. */
+.workflow-side-next {
+  left: calc(100% + 24px);
+  border-color: transparent;
+  background: #5276df;
+  color: #fff;
+  box-shadow: none;
+}
+
+.workflow-side-next:hover,
+.workflow-side-next:focus-visible {
+  border-color: transparent;
+  background: #4265c9;
+  color: #fff;
+  box-shadow: none;
+}
+
+.workflow-side-button:focus-visible {
+  outline: 3px solid rgba(130, 122, 240, .3);
+  outline-offset: 3px;
+}
+
+.workflow-side-button:disabled {
+  cursor: not-allowed;
+  opacity: .42;
+  box-shadow: none;
+  transform: translateY(-50%);
+}
+
+.workflow-side-next:disabled:hover {
+  background: var(--aivo-blue, #928af7);
+  transform: translateY(-50%);
+  box-shadow: none;
+}
+
+.workflow-side-slot {
+  position: absolute;
+  top: 50%;
+  z-index: 30;
+  width: 48px;
+  height: 48px;
+  transform: translateY(-50%);
+}
+
+.workflow-side-slot.is-prev {
+  right: calc(100% + 24px);
+}
+
+.workflow-side-slot.is-next {
+  left: calc(100% + 24px);
+}
+
+.workflow-side-slot .workflow-side-button {
+  position: static;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  transform: none;
+}
+
+@media (min-width: 901px) {
+  .practice-flow-page .workflow-stage > .workflow-side-button,
+  .practice-flow-page .workflow-side-slot {
+    position: fixed;
+    top: 50%;
+    z-index: 60;
+  }
+
+  .practice-flow-page .workflow-stage > .workflow-side-prev,
+  .practice-flow-page .workflow-side-slot.is-prev {
+    right: auto;
+    left: max(24px, calc(50vw - 800px));
+  }
+
+  .practice-flow-page .workflow-stage > .workflow-side-next,
+  .practice-flow-page .workflow-side-slot.is-next {
+    right: max(24px, calc(50vw - 800px));
+    left: auto;
+  }
+
+  .presentation-flow-page .workflow-side-slot {
+    position: fixed;
+    top: 50%;
+    z-index: 60;
+    transform: translateY(-50%);
+  }
+
+  .presentation-flow-page .workflow-stage > .workflow-side-prev,
+  .presentation-flow-page .workflow-side-slot.is-prev {
+    right: auto;
+    left: clamp(56px, 5vw, 96px);
+  }
+
+  .presentation-flow-page .workflow-stage > .workflow-side-next,
+  .presentation-flow-page .workflow-side-slot.is-next {
+    right: clamp(56px, 5vw, 96px);
+    left: auto;
+  }
+
+  .folder-picker-page .workflow-stage > .workflow-side-prev,
+  .folder-picker-page .workflow-side-slot.is-prev {
+    right: auto;
+    left: clamp(56px, 5vw, 96px);
+  }
+
+  .folder-picker-page .workflow-stage > .workflow-side-next,
+  .folder-picker-page .workflow-side-slot.is-next {
+    right: clamp(56px, 5vw, 96px);
+    left: auto;
+  }
+
+  .workflow-side-slot .workflow-side-button {
+    position: static;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    transform: none;
+  }
+}
+
+/* Legacy actions remain available for the ready page and non-wizard screens. */
+.workflow-actions {
+  display: flex;
+  min-height: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 0;
+  padding: 0;
+}
+
+.workflow-action {
+  display: inline-flex;
+  width: 140px;
+  height: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  border-radius: 10px;
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+@media (max-width: 900px) {
+  .workflow-stage {
+    padding-bottom: 68px;
+  }
+
+  .workflow-side-button {
+    top: auto;
+    bottom: 0;
+    transform: none;
+  }
+
+  .workflow-side-prev {
+    right: auto;
+    left: 0;
+  }
+
+  .workflow-side-next {
+    right: 0;
+    left: auto;
+  }
+
+  .workflow-side-slot {
+    top: auto;
+    bottom: 0;
+    transform: none;
+  }
+
+  .workflow-side-slot.is-prev {
+    right: auto;
+    left: 0;
+  }
+
+  .workflow-side-slot.is-next {
+    right: 0;
+    left: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workflow-side-button,
+  .workflow-stage-content {
+    transition: none;
+  }
+}
+
+/* 2026-07 flow footer: 이전/다음을 좌우 고정 위치가 아니라 콘텐츠 카드 아래
+   가운데 한 줄(이전=아웃라인, 다음=파란 채움)로 배치한다. 버튼을
+   .workflow-footer-actions로 감싼 플로우 뷰에만 적용되며, 감싸지 않은
+   ready 뷰(사이드 버튼 유지)에는 영향을 주지 않는다. */
+.workflow-stage:has(.workflow-footer-actions) {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.workflow-stage:has(.workflow-footer-actions) > .workflow-stage-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  width: 100%;
+}
+
+.workflow-footer-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+/* 감싼 버튼은 절대/고정 위치를 버리고 정적 흐름으로 나란히 선다. 데스크톱의
+   position:fixed 규칙은 `.workflow-stage > .workflow-side-*` 직계 선택자라
+   래퍼로 이동한 순간 더 이상 매칭되지 않는다. */
+.workflow-footer-actions .workflow-side-button {
+  position: static;
+  inset: auto;
+  transform: none;
+}
+
+.workflow-footer-actions .workflow-side-button:disabled {
+  transform: none;
+}
+
+.workflow-footer-actions .workflow-side-next:disabled:hover {
+  transform: none;
+}
