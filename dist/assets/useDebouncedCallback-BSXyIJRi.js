@@ -1,1 +1,0 @@
-import{a0 as u,a1 as a}from"./index-BI4M8dpd.js";const r=(o,t=250)=>{let e=null;const l=()=>{e!=null&&(globalThis.clearTimeout(e),e=null)},n=(...s)=>{l(),e=globalThis.setTimeout(()=>{e=null,o(...s)},t)};return u()&&a(l),{schedule:n,cancel:l}};export{r as u};
