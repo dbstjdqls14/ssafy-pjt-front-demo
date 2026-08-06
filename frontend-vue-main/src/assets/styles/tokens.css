@@ -1,0 +1,44 @@
+/* AIVO design tokens — canonical source of the current pastel-glass look.
+   Values mirror the legacy `app.css :root` so migrated Vue components can rely
+   on tokens instead of hard-coded colors. (The palette evolved from the early
+   navy spec into this lavender-glass system; these are the values in use.) */
+:root {
+  /* palette */
+  --aivo-navy: #2d3436;
+  --aivo-ink: #1e1b4b;
+  --aivo-blue: #928af7;
+  --aivo-blue-strong: #4338ca;
+  --aivo-blue-soft: #eeecff;
+  --aivo-lavender: #a29bfe;
+  --aivo-periwinkle: #8ea5f8;
+  --aivo-canvas: #fafafc;
+  --aivo-surface: rgba(255, 255, 255, 0.82);
+  --aivo-muted: #73778f;
+  --aivo-border: rgba(255, 255, 255, 0.9);
+  --aivo-line: #edeef7;
+  --aivo-success: #209e66;
+  --aivo-success-strong: #16a34a;
+  --aivo-danger: #ef4444;
+
+  /* glass surfaces */
+  --aivo-glass: rgba(255, 255, 255, 0.8);
+  --aivo-glass-soft: rgba(255, 255, 255, 0.66);
+  --aivo-glass-border: rgba(255, 255, 255, 0.9);
+  --aivo-glass-shadow: 0 15px 35px rgba(160, 150, 230, 0.1);
+  --aivo-shadow-card: var(--aivo-glass-shadow);
+
+  /* radii */
+  --aivo-radius-sm: 10px;
+  --aivo-radius-md: 12px;
+  --aivo-radius-lg: 18px;
+  --aivo-radius-xl: 20px;
+  --aivo-radius-pill: 999px;
+
+  /* layout widths (per PROJECT_CONTEXT §5) */
+  --aivo-max-common: 1440px;
+  --aivo-max-presentation: 1600px;
+
+  /* typography */
+  --aivo-font-sans: 'Noto Sans KR', 'Pretendard', -apple-system, BlinkMacSystemFont,
+    'Malgun Gothic', sans-serif;
+}

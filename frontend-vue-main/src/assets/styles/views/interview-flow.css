@@ -1,0 +1,1456 @@
+/* ============================================================
+   Interview flow — content styling layered on top of the shared
+   presentation flow shell (presentation-flow.css / workflow-controls.css).
+   Palette: blue accent #4e6fc2, navy ink #172346, muted #8b94a7.
+   ============================================================ */
+
+.interview-flow-page {
+  --iv-blue: #4e6fc2;
+  --iv-blue-dark: #405fbd;
+  --iv-blue-soft: #f4f7ff;
+  --iv-ink: #172346;
+  --iv-muted: #8b94a7;
+  --iv-border: #e4e9f2;
+  --iv-surface: #f7f8fb;
+}
+
+/* ---- Layout: two-column grids (setup / resume) ---- */
+.interview-flow-page .iv-setup-grid {
+  width: min(1040px, 100%);
+  height: 440px;
+  max-height: 100%;
+  margin-inline: auto;
+  align-self: center;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.64fr);
+  gap: 26px;
+}
+
+/* ---- Single-panel pages (style / questions) ---- */
+.interview-flow-page .iv-style-panel,
+.interview-flow-page .iv-questions-panel {
+  width: min(940px, 100%);
+  height: 440px;
+  max-height: 100%;
+  margin-inline: auto;
+  align-self: center;
+}
+
+/* ---- Panels ---- */
+.interview-flow-page .iv-form-panel,
+.interview-flow-page .iv-preview-panel {
+  gap: 14px;
+  padding: 24px 26px;
+  border: 1px solid var(--iv-border);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(23, 35, 70, 0.03);
+}
+
+.interview-flow-page .iv-form-panel {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 134, 194, .32) transparent;
+}
+
+.interview-flow-page .iv-form-panel::-webkit-scrollbar {
+  width: 6px;
+}
+.interview-flow-page .iv-form-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+.interview-flow-page .iv-form-panel::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(120, 134, 194, .32);
+}
+.interview-flow-page .iv-form-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 134, 194, .5);
+}
+
+.interview-flow-page .presentation-panel-head strong {
+  font-size: 20px;
+}
+
+.interview-flow-page .iv-panel-head-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ---- Single-column setup / resume (title lives outside the card) ---- */
+/* Match the presentation setup content width so both flows line up
+   (presentation .setup-single-column resolves to min(760px, 100%)). */
+.interview-flow-page .iv-single-column {
+  width: min(760px, 100%);
+  height: auto;
+  max-height: none;
+  align-self: start;
+  margin-inline: auto;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+
+.interview-flow-page .iv-setup-column {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.interview-flow-page .iv-page-title {
+  margin: 0;
+  color: var(--iv-ink);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.interview-flow-page .iv-page-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.interview-flow-page .iv-page-subcount {
+  flex: 0 0 auto;
+  color: var(--iv-muted);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+/* ---- 지원 자료 (설정 카드 내부: 기존 선택 / 새 등록) ---- */
+.interview-flow-page .iv-docs-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.interview-flow-page .iv-doc-choice {
+  flex: 1;
+  height: 42px;
+  border: 1px solid #d7deea;
+  border-radius: 9px;
+  background: #fff;
+  color: #4b5873;
+  font-size: 12.5px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.interview-flow-page .iv-doc-choice:hover {
+  border-color: var(--iv-blue);
+  color: var(--iv-blue-dark);
+  background: var(--iv-blue-soft);
+}
+
+.interview-flow-page .iv-doc-upload-choice {
+  position: relative;
+  padding-inline: 58px;
+}
+
+.interview-flow-page .iv-doc-upload-choice > span {
+  display: block;
+  text-align: center;
+}
+
+.interview-flow-page .iv-doc-upload-choice > small {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: #9aa3b5;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .interview-flow-page .iv-doc-upload-choice {
+    padding-inline: 48px;
+  }
+
+  .interview-flow-page .iv-doc-upload-choice > small {
+    right: 7px;
+    font-size: 9px;
+  }
+}
+
+.interview-flow-page .iv-docs-chosen {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.interview-flow-page .iv-docs-chosen li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--iv-blue);
+  border-radius: 10px;
+  background: var(--iv-blue-soft);
+}
+
+.interview-flow-page .iv-docs-chosen li > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.interview-flow-page .iv-docs-chosen strong {
+  display: block;
+  overflow: hidden;
+  color: var(--iv-ink);
+  font-size: 13px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.interview-flow-page .iv-docs-chosen small {
+  display: block;
+  margin-top: 2px;
+  color: var(--iv-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.interview-flow-page .iv-docs-chosen li button {
+  flex: 0 0 auto;
+  border: 0;
+  background: transparent;
+  color: #8ba0c8;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.interview-flow-page .iv-docs-chosen li button:hover {
+  color: #e0607a;
+}
+
+.interview-flow-page .iv-docs-empty {
+  margin: 10px 0 0;
+  padding: 14px 12px;
+  border: 1px dashed var(--iv-border);
+  border-radius: 10px;
+  color: var(--iv-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ---- 기존 자료 선택 모달 ---- */
+.iv-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(17, 24, 45, 0.44);
+}
+
+.iv-modal {
+  width: min(460px, 100%);
+  max-height: min(560px, 88vh);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 22px 18px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(17, 24, 45, 0.28);
+}
+
+.iv-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.iv-modal-head h3 {
+  margin: 0;
+  color: #172346;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.iv-modal-close {
+  border: 0;
+  background: transparent;
+  color: #8b94a7;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.iv-modal-doc-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 2px;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.iv-modal-doc {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e4e9f2;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.iv-modal-doc:hover {
+  border-color: #c7d2ea;
+}
+
+.iv-modal-doc.selected {
+  border-color: #4e6fc2;
+  background: #f4f7ff;
+}
+
+.iv-modal-doc-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.iv-modal-doc-meta strong {
+  display: block;
+  overflow: hidden;
+  color: #172346;
+  font-size: 13px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.iv-modal-doc-meta small {
+  display: block;
+  margin-top: 2px;
+  color: #8b94a7;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.iv-modal-doc-delete {
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border: 0;
+  background: transparent;
+  color: #d14343;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.iv-modal-doc-delete:hover {
+  text-decoration: underline;
+}
+
+.iv-modal-doc-delete:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.iv-modal-check {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  border: 1.5px solid #cdd6e6;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.iv-modal-doc.selected .iv-modal-check {
+  border-color: #4e6fc2;
+  background: #4e6fc2;
+}
+
+.iv-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.iv-modal-actions .iv-ghost-btn,
+.iv-modal-actions .iv-solid-btn {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.iv-modal-actions .iv-ghost-btn {
+  border: 1px solid #d7deea;
+  background: #fff;
+  color: #4b5873;
+}
+
+.iv-modal-actions .iv-solid-btn {
+  border: 0;
+  background: #4e6fc2;
+  color: #fff;
+}
+
+.iv-modal-actions .iv-solid-btn:hover {
+  background: #405fbd;
+}
+
+/* 연습 이름 sits outside the card, so style its bare input directly. */
+.interview-flow-page .iv-loose-field > label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--iv-ink);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.interview-flow-page .iv-loose-field input,
+.interview-flow-page .iv-loose-field textarea {
+  width: 100%;
+  padding: 0 12px;
+  border: 1px solid #dbe1ec;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--iv-ink);
+  font: inherit;
+  font-size: 13px;
+}
+
+.interview-flow-page .iv-loose-field input {
+  height: 42px;
+}
+
+/* 연습 설명(100자)이 스크롤 없이 다 보이도록 4줄 높이를 주고, 아래쪽 26px은
+   입력칸 내부 우측 아래 글자 수 카운터 자리로 비워 둔다. */
+.interview-flow-page .iv-loose-field textarea {
+  height: 104px;
+  min-height: 104px;
+  padding-top: 10px;
+  padding-bottom: 26px;
+  line-height: 1.45;
+  resize: none;
+}
+
+.interview-flow-page .iv-loose-field input:focus,
+.interview-flow-page .iv-loose-field textarea:focus {
+  border-color: var(--iv-blue);
+  outline: 3px solid rgba(78, 111, 194, 0.14);
+}
+
+/* Kill the legacy inset highlight / soft drop-shadow on flow inputs — flat fields. */
+.interview-flow-page .iv-loose-field input,
+.interview-flow-page .iv-loose-field textarea,
+.interview-flow-page .iv-form-panel :is(input, select) {
+  box-shadow: none;
+}
+
+/* Card wrapping 회사명·직군·지원 직무·경력 구분. overflow visible so the
+   searchable-select popups aren't clipped by the card. Flat (no shadow) per design. */
+.interview-flow-page .iv-field-card {
+  gap: 16px;
+  overflow: visible;
+  box-shadow: none;
+}
+
+/* ---- Form rows / fields / selects ---- */
+.interview-flow-page .iv-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.interview-flow-page .iv-form-panel .form-field > label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--iv-ink);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.interview-flow-page .iv-form-panel :is(input, select) {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #dbe1ec;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--iv-ink);
+  box-shadow: none;
+  font: inherit;
+  font-size: 13px;
+}
+
+.interview-flow-page .iv-form-panel select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%238b94a7' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' d='m1 1.5 5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 13px center;
+  cursor: pointer;
+}
+
+.interview-flow-page .iv-form-panel :is(input, select):focus {
+  border-color: var(--iv-blue);
+  outline: 3px solid rgba(78, 111, 194, 0.14);
+}
+
+/* ---- Keyword chips ---- */
+.interview-flow-page .iv-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.interview-flow-page .option-chip {
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid #d7deea;
+  border-radius: 999px;
+  background: #fff;
+  color: #5a637a;
+  box-shadow: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.interview-flow-page .option-chip.active {
+  border-color: var(--iv-blue);
+  background: var(--iv-blue-soft);
+  color: var(--iv-blue-dark);
+}
+
+/* ---- Preview aside ---- */
+.interview-flow-page .iv-preview-panel {
+  background: linear-gradient(160deg, #fbfcff, #f4f7ff);
+}
+
+.interview-flow-page .iv-preview-eyebrow {
+  color: var(--iv-blue-dark);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.interview-flow-page .iv-preview-panel h3 {
+  margin-top: 6px;
+  color: var(--iv-ink);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.interview-flow-page .iv-preview-panel > p {
+  margin-top: 4px;
+  color: var(--iv-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.interview-flow-page .iv-preview-box {
+  margin-top: 16px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--iv-border);
+}
+
+.interview-flow-page .iv-preview-box strong {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--iv-ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.interview-flow-page .iv-preview-box ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.interview-flow-page .iv-preview-box li {
+  position: relative;
+  padding-left: 16px;
+  color: #4b5873;
+  font-size: 12.5px;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.interview-flow-page .iv-preview-box li::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--iv-blue);
+}
+
+.interview-flow-page .iv-preview-note {
+  margin-top: auto;
+  padding-top: 14px;
+  color: var(--iv-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+/* ---- Ghost / solid buttons ---- */
+.interview-flow-page .iv-ghost-btn,
+.interview-flow-page .iv-solid-btn {
+  height: 36px;
+  padding: 0 15px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.interview-flow-page .iv-ghost-btn {
+  border: 1px solid #d7deea;
+  background: #fff;
+  color: #4b5873;
+}
+
+.interview-flow-page .iv-ghost-btn:hover {
+  border-color: var(--iv-blue);
+  color: var(--iv-blue-dark);
+}
+
+.interview-flow-page .iv-solid-btn {
+  border: 0;
+  background: var(--iv-blue);
+  color: #fff;
+}
+
+.interview-flow-page .iv-solid-btn:hover {
+  background: var(--iv-blue-dark);
+}
+
+.interview-flow-page .iv-head-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ---- Document list (resume) ---- */
+.interview-flow-page .iv-doc-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 2px;
+  list-style: none;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.interview-flow-page .iv-doc-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--iv-border);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.interview-flow-page .iv-doc-row:hover {
+  border-color: #c7d2ea;
+}
+
+.interview-flow-page .iv-doc-row.selected {
+  border-color: var(--iv-blue);
+  background: var(--iv-blue-soft);
+}
+
+.interview-flow-page .iv-doc-row.is-dragging {
+  opacity: 0.55;
+  border-color: var(--iv-blue);
+  border-style: dashed;
+}
+
+/* Drag handle replacing the old 이/자/포 type badge. */
+.interview-flow-page .iv-doc-grip {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 40px;
+  flex-shrink: 0;
+  color: #c2cadb;
+  cursor: grab;
+}
+
+.interview-flow-page .iv-doc-grip svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.interview-flow-page .iv-doc-row:hover .iv-doc-grip {
+  color: #97a2ba;
+}
+
+.interview-flow-page .iv-doc-row.is-dragging .iv-doc-grip {
+  cursor: grabbing;
+}
+
+.interview-flow-page .iv-doc-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.interview-flow-page .iv-doc-meta strong {
+  display: block;
+  overflow: hidden;
+  color: var(--iv-ink);
+  font-size: 13.5px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.interview-flow-page .iv-doc-meta small {
+  display: block;
+  margin-top: 3px;
+  color: var(--iv-muted);
+  font-size: 11.5px;
+  font-weight: 650;
+}
+
+.interview-flow-page .iv-doc-badge {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #eef1f7;
+  color: #6b7591;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.interview-flow-page .iv-doc-row.selected .iv-doc-badge {
+  background: var(--iv-blue);
+  color: #fff;
+}
+
+/* ---- Section heads (style page) ---- */
+.interview-flow-page .iv-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.interview-flow-page .iv-section-head p {
+  margin: 0;
+  color: var(--iv-ink);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.interview-flow-page .iv-section-head small {
+  color: var(--iv-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.interview-flow-page .iv-accent {
+  color: var(--iv-blue-dark);
+}
+
+/* ---- Persona cards (style page) ---- */
+.interview-flow-page .iv-persona-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.interview-flow-page .iv-persona-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 16px;
+  border: 1.5px solid var(--iv-border);
+  border-radius: 14px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.interview-flow-page .iv-persona-card:hover {
+  border-color: #c7d2ea;
+}
+
+.interview-flow-page .iv-persona-card.active {
+  border-color: var(--iv-blue);
+  background: var(--iv-blue-soft);
+  box-shadow: 0 4px 14px rgba(78, 111, 194, 0.12);
+}
+
+.interview-flow-page .iv-persona-avatar {
+  font-size: 26px;
+}
+
+.interview-flow-page .iv-persona-card strong {
+  color: var(--iv-ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.interview-flow-page .iv-persona-card small {
+  color: var(--iv-muted);
+  font-size: 11.5px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+/* ---- Pager (style page) ---- */
+.interview-flow-page .iv-pager {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.interview-flow-page .iv-pager small {
+  color: var(--iv-muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.interview-flow-page .iv-pager-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #d7deea;
+  border-radius: 8px;
+  background: #fff;
+  color: #6b7591;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.interview-flow-page .iv-pager-btn:hover {
+  border-color: var(--iv-blue);
+  color: var(--iv-blue-dark);
+}
+
+/* ---- Expected-question preview cards (style page) ---- */
+.interview-flow-page .iv-question-preview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.interview-flow-page .iv-preview-card {
+  padding: 14px 15px;
+  border: 1px solid var(--iv-border);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.interview-flow-page .iv-preview-card.active {
+  border-color: var(--iv-blue);
+  background: var(--iv-blue-soft);
+}
+
+.interview-flow-page .iv-preview-card-cat {
+  color: var(--iv-blue-dark);
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.interview-flow-page .iv-preview-card p {
+  margin: 8px 0;
+  color: var(--iv-ink);
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+.interview-flow-page .iv-preview-card-tag {
+  color: var(--iv-muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* ============================================================
+   면접관 스타일 선택 — 3인 원형 카드 + 예상 질문 가로 스크롤 선택
+   ============================================================ */
+/* 카드 없이 3열 원형 면접관. 선택 시 원에 흰 테두리 링. */
+.interview-flow-page .iv-persona-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.interview-flow-page .iv-persona {
+  --tone: #4e6fc2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.interview-flow-page .iv-persona-face {
+  display: grid;
+  place-items: center;
+  width: 124px;
+  height: 124px;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--tone) 16%, #eef1f8);
+  font-size: 52px;
+  line-height: 1;
+  box-shadow: 0 0 0 2px transparent;
+  transition: box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.interview-flow-page .iv-persona-face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.interview-flow-page .iv-persona:hover .iv-persona-face {
+  transform: translateY(-2px);
+}
+
+/* 선택: 흰 테두리 + 톤 컬러 외곽 링으로 명확히 구분 */
+.interview-flow-page .iv-persona.active .iv-persona-face {
+  box-shadow: 0 0 0 4px #fff, 0 0 0 7px var(--tone);
+}
+
+.interview-flow-page .iv-persona strong {
+  color: var(--iv-ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.interview-flow-page .iv-persona.active strong {
+  color: var(--tone);
+}
+
+.interview-flow-page .iv-persona small {
+  color: var(--iv-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+}
+
+/* 면접관 선택 안내 문구 */
+.interview-flow-page .iv-persona-guide {
+  margin: 6px 0 22px;
+  color: var(--iv-muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* 각 면접관이 어떤 느낌의 질문을 하는지 예시 문구(설명) */
+.interview-flow-page .iv-persona-example {
+  max-width: 230px;
+  margin-top: 10px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--tone) 8%, #f4f6fb);
+  color: var(--iv-muted);
+  font-size: 11px;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.5;
+  text-align: center;
+  transition: background-color .16s ease, color .16s ease;
+}
+
+.interview-flow-page .iv-persona.active .iv-persona-example {
+  background: color-mix(in srgb, var(--tone) 14%, #fff);
+  color: var(--tone);
+}
+
+.interview-flow-page .iv-qsel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.interview-flow-page .iv-qsel-head h3 {
+  margin: 0;
+  color: var(--iv-ink);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.interview-flow-page .iv-qsel-count {
+  margin-left: 6px;
+  color: var(--iv-blue-dark);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* 한 문항씩 보는 단일 카드 + 좌우 네비게이션 + 선택 체크 */
+.interview-flow-page .iv-qsel-single {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 질문·체크를 카드 세로 중앙에 */
+  gap: 10px;
+  min-height: 168px;
+  padding: 20px 22px;
+  border: 2px solid var(--iv-border);
+  border-radius: 16px;
+  background: #fff;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+/* 선택 시 체크뿐 아니라 카드 테두리·배경도 강조 */
+.interview-flow-page .iv-qsel-single.selected {
+  border-color: var(--iv-blue);
+  background: var(--iv-blue-soft);
+}
+
+/* 카테고리 라벨은 좌상단에 고정 → 질문·체크 버튼이 카드 세로 정중앙에 오도록. */
+.interview-flow-page .iv-qsel-cat {
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  color: var(--iv-blue-dark);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.interview-flow-page .iv-qsel-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.interview-flow-page .iv-qsel-nav button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid #d7deea;
+  border-radius: 50%;
+  background: #fff;
+  color: #5a637a;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.interview-flow-page .iv-qsel-nav button:hover {
+  border-color: var(--iv-blue);
+  color: var(--iv-blue-dark);
+}
+
+.interview-flow-page .iv-qsel-nav span {
+  min-width: 26px;
+  color: var(--iv-ink);
+  font-size: 12.5px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.interview-flow-page .iv-qsel-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.interview-flow-page .iv-qsel-text {
+  flex: 1;
+  margin: 0;
+  color: var(--iv-ink);
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.interview-flow-page .iv-qsel-text b {
+  margin-right: 5px;
+  color: var(--iv-blue-dark);
+  font-weight: 900;
+}
+
+.interview-flow-page .iv-qsel-toggle {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid #cdd6e6;
+  border-radius: 50%;
+  background: #fff;
+  color: transparent;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.interview-flow-page .iv-qsel-toggle:hover {
+  border-color: var(--iv-blue);
+}
+
+.interview-flow-page .iv-qsel-toggle.selected {
+  border-color: var(--iv-blue);
+  background: var(--iv-blue);
+  color: #fff;
+}
+
+/* ---- Question list (questions page) ---- */
+.interview-flow-page .iv-question-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 2px;
+  list-style: none;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  /* 얇은 스크롤바(녹화 화면 .ivr-qlist와 동일 톤) */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 134, 194, .32) transparent;
+}
+
+.interview-flow-page .iv-question-list::-webkit-scrollbar {
+  width: 6px;
+}
+.interview-flow-page .iv-question-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.interview-flow-page .iv-question-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(120, 134, 194, .32);
+}
+.interview-flow-page .iv-question-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 134, 194, .5);
+}
+
+.interview-flow-page .iv-question-item {
+  display: flex;
+  /* 질문이 여러 줄이어도 카테고리·삭제 버튼은 첫 줄에 맞춘다. */
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--iv-border);
+  border-radius: 12px;
+  background: #fff;
+}
+
+/* Add-question field: same footprint as a question row, sits at the top. */
+.interview-flow-page .iv-question-add {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  height: 50px;
+  border: 1px dashed #c9d3e6;
+  border-radius: 12px;
+  background: #fbfcff;
+  cursor: text;
+}
+
+.interview-flow-page .iv-question-add:focus-within {
+  border-color: var(--iv-blue);
+  border-style: solid;
+  background: #fff;
+}
+
+.interview-flow-page .iv-question-add-plus {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  color: var(--iv-blue);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.interview-flow-page .iv-question-add input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--iv-ink);
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+  box-shadow: none;
+}
+
+/* 전역 input:focus 규칙이 남기는 안쪽 테두리/아웃라인 제거 */
+.interview-flow-page .iv-question-add input:focus {
+  border: 0;
+  outline: none;
+  box-shadow: none;
+}
+
+.interview-flow-page .iv-question-add-ok {
+  flex: 0 0 auto;
+  height: 32px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--iv-blue);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.interview-flow-page .iv-question-add-ok:hover {
+  background: var(--iv-blue-dark);
+}
+
+.interview-flow-page .iv-question-add-ok:disabled {
+  background: #cdd6e6;
+  cursor: not-allowed;
+}
+
+/* 질문 추가 입력칸의 글자 수 카운터 — 입력칸 안쪽, '추가' 버튼 왼쪽에 둔다. */
+.interview-flow-page .iv-question-add .field-counter {
+  flex: 0 0 auto;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.interview-flow-page .iv-question-empty {
+  padding: 22px 16px;
+  border: 1px dashed var(--iv-border);
+  border-radius: 12px;
+  color: var(--iv-muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* 설정 확인(ready)의 질문 리뷰 패널 — '질문 확인하러가기'로 진입, 확인 완료 시 체크 */
+.interview-flow-page .iv-question-review {
+  /* 면접 정보 설정(iv-single-column) 페이지와 같은 가로 폭으로 맞춘다. */
+  width: min(760px, 100%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.interview-flow-page .iv-review-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.interview-flow-page .iv-review-head strong {
+  color: var(--iv-ink);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.interview-flow-page .iv-review-head small {
+  color: var(--iv-muted);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.interview-flow-page .iv-review-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 2px;
+  list-style: none;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.interview-flow-page .iv-review-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+  border: 1px solid var(--iv-border);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.interview-flow-page .iv-review-q {
+  color: var(--iv-ink);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.interview-flow-page .iv-review-q b {
+  margin-right: 6px;
+  color: var(--iv-blue-dark);
+  font-weight: 900;
+}
+
+.interview-flow-page .iv-review-item small {
+  flex: 0 0 auto;
+  color: var(--iv-muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* 질문 확인 카드: 높이를 고정해 질문이 적어도 카드가 줄지 않는다(빈 공간으로 둠).
+   질문 개수·길이에 상관없이 목록 안에서 스크롤한다(페이지네이션 없음). */
+.interview-flow-page .iv-questions-card {
+  height: 520px;
+}
+
+.interview-flow-page .iv-questions-card .iv-question-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  align-content: start; /* 문항이 적으면 위에서부터 채우고 아래는 비워둔다 */
+}
+
+/* 질문은 길이에 상관없이 전문을 보여준다(예전에는 2줄에서 잘렸다). */
+.interview-flow-page .iv-question-text {
+  min-width: 0;
+  color: var(--iv-ink);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.interview-flow-page .iv-question-text b {
+  margin-right: 6px;
+  color: var(--iv-blue-dark);
+  font-weight: 900;
+}
+
+.interview-flow-page .iv-question-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.interview-flow-page .iv-question-meta small {
+  color: var(--iv-muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* 카테고리(공통·직무 적합성 등) 강조 */
+.interview-flow-page .iv-question-cat {
+  color: var(--iv-blue-dark) !important;
+}
+
+.interview-flow-page .iv-question-remove {
+  border: 0;
+  background: transparent;
+  color: #c3cbdb;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.interview-flow-page .iv-question-remove:hover {
+  color: #e0607a;
+}
+
+.interview-flow-page .iv-question-detail {
+  padding: 12px 16px;
+  border-top: 1px solid var(--iv-border);
+  background: var(--iv-blue-soft);
+  color: #4b5873;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.7;
+}
+
+/* ============================================================
+   Interview record — retint the shared record chrome to the
+   flow blue (was indigo/violet). Structure unchanged.
+   ============================================================ */
+.immersive-interview-page {
+  --aivo-blue: #4e6fc2;
+}
+
+.interview-flow-page .iv-flow-error {
+  position: fixed;
+  z-index: 20;
+  right: 28px;
+  bottom: 28px;
+  max-width: 380px;
+  padding: 12px 16px;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  color: #b91c1c;
+  background: #fff7f7;
+  box-shadow: 0 12px 30px rgba(126, 30, 30, .12);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.interview-flow-page .workflow-side-button:disabled {
+  cursor: wait;
+  opacity: .5;
+}
+
+.immersive-interview-page .record-question-tag {
+  color: #4e6fc2;
+}
+
+.immersive-interview-page .record-main-dots span.active {
+  background: #4e6fc2;
+}
+
+.immersive-interview-page .record-bottom-actions button.primary {
+  background: linear-gradient(135deg, #5f7fd0, #4e6fc2);
+}
+
+.immersive-interview-page .interviewer-card.current {
+  border-color: #4e6fc2;
+}
+
+.immersive-interview-page .interview-side-progress span {
+  background: #4e6fc2;
+}

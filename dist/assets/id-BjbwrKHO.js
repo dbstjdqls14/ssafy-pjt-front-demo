@@ -1,0 +1,1 @@
+const l=()=>`${Date.now()}-${Math.random().toString(16).slice(2)}`,r=(c="local")=>{var a,t;const o=((t=(a=globalThis.crypto)==null?void 0:a.randomUUID)==null?void 0:t.call(a))??l();return`${c}-${o}`},n=(c="local")=>{var o,a;return((a=(o=globalThis.crypto)==null?void 0:o.randomUUID)==null?void 0:a.call(o))??`${c}-${l()}`};export{r as a,n as c};

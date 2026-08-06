@@ -1,0 +1,1087 @@
+/* ============================================================
+   면접 답변 녹화 — 스크롤 없는 단일 화면 스튜디오 레이아웃.
+   최신 · 심플 · 블루 포인트. app.css 이후에 로드되어 기록 화면을
+   독립적으로 소유한다(공유 .record-* 규칙과 분리된 .ivr-* 네임스페이스).
+   ============================================================ */
+.immersive-interview-page {
+  --ivr-blue: #3b6ef5;
+  --ivr-blue-dark: #2f5fe0;
+  --ivr-blue-soft: #eef3ff;
+  --ivr-ink: #18213b;
+  --ivr-muted: #7c869c;
+  --ivr-border: #e7ecf5;
+  --ivr-surface: #f5f7fc;
+  --ivr-danger: #e0526b;
+  background: var(--ivr-surface);
+}
+
+/* 전체 화면, 스크롤 없음 */
+.immersive-interview-page .page-shell.wide.ivr-shell-wrap {
+  width: 100%;
+  height: 100svh;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.immersive-interview-page .ivr-shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr) 300px;
+  height: 100svh;
+  background: var(--ivr-surface);
+  overflow: hidden;
+}
+
+/* 좌/우 컬럼: 아래가 잘려도 무방 */
+.immersive-interview-page .ivr-rail,
+.immersive-interview-page .ivr-side {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ---------------- 좌측: 면접 질문 리스트 ---------------- */
+.immersive-interview-page .ivr-rail {
+  gap: 14px;
+  padding: 26px 22px;
+  background: #fff;
+  border-right: 1px solid var(--ivr-border);
+}
+
+.immersive-interview-page .ivr-rail-head {
+  flex-shrink: 0;
+  color: var(--ivr-ink);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.immersive-interview-page .ivr-qlist {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 2px;
+  list-style: none;
+  overflow-y: auto;
+  /* 얇은 스크롤바 (Firefox) */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 134, 194, .32) transparent;
+}
+
+/* 얇은 스크롤바 (WebKit/Chrome) */
+.immersive-interview-page .ivr-qlist::-webkit-scrollbar {
+  width: 6px;
+}
+.immersive-interview-page .ivr-qlist::-webkit-scrollbar-track {
+  background: transparent;
+}
+.immersive-interview-page .ivr-qlist::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(120, 134, 194, .32);
+}
+.immersive-interview-page .ivr-qlist::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 134, 194, .5);
+}
+
+.immersive-interview-page .ivr-qitem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 13px;
+  border: 1px solid var(--ivr-border);
+  border-radius: 13px;
+  background: #fff;
+  transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease, opacity .15s ease;
+}
+
+.immersive-interview-page .ivr-qitem.current {
+  border-color: var(--ivr-blue);
+  background: var(--ivr-blue-soft);
+  box-shadow: 0 6px 18px rgba(59, 110, 245, .12);
+}
+
+/* 답변 완료: 테두리(초록)로 구분, 살짝 흐리게 */
+.immersive-interview-page .ivr-qitem.done {
+  border-color: #8bc79a;
+  background: #f4faf5;
+  opacity: .85;
+}
+
+.immersive-interview-page .ivr-qitem-no {
+  flex: 0 0 auto;
+  color: var(--ivr-muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.immersive-interview-page .ivr-qitem.current .ivr-qitem-no {
+  color: var(--ivr-blue-dark);
+}
+
+.immersive-interview-page .ivr-qitem.done .ivr-qitem-no {
+  color: #3f9d64;
+}
+
+.immersive-interview-page .ivr-qitem-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.immersive-interview-page .ivr-qitem-body small {
+  display: block;
+  color: var(--ivr-muted);
+  font-size: 10.5px;
+  font-weight: 800;
+}
+
+.immersive-interview-page .ivr-qitem-body strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--ivr-ink);
+  font-size: 12.5px;
+  font-weight: 650;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.immersive-interview-page .ivr-qitem-check {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #3f9d64;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.immersive-interview-page .ivr-interviewers {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.immersive-interview-page .ivr-interviewer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--ivr-border);
+  border-radius: 14px;
+  background: #fff;
+  transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+}
+
+.immersive-interview-page .ivr-interviewer.current {
+  border-color: var(--ivr-blue);
+  background: var(--ivr-blue-soft);
+  box-shadow: 0 6px 18px rgba(59, 110, 245, .12);
+}
+
+.immersive-interview-page .ivr-interviewer .avatar {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 12px;
+  background: #eef2fb;
+  font-size: 22px;
+}
+
+.immersive-interview-page .ivr-interviewer.current .avatar {
+  background: #fff;
+}
+
+.immersive-interview-page .ivr-interviewer .meta {
+  min-width: 0;
+}
+
+.immersive-interview-page .ivr-interviewer .tag {
+  display: inline-block;
+  color: var(--ivr-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.immersive-interview-page .ivr-interviewer.current .tag {
+  color: var(--ivr-blue-dark);
+}
+
+.immersive-interview-page .ivr-interviewer strong {
+  display: block;
+  margin-top: 2px;
+  color: var(--ivr-ink);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.immersive-interview-page .ivr-interviewer small {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  color: var(--ivr-muted);
+  font-size: 11.5px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------------- 중앙: 질문 · 영상 · 컨트롤 ---------------- */
+.immersive-interview-page .ivr-stage {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  gap: 18px;
+  padding: 30px 44px 26px;
+}
+
+.immersive-interview-page .ivr-question {
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.immersive-interview-page .ivr-q-tag {
+  display: inline-block;
+  color: var(--ivr-blue-dark);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+
+.immersive-interview-page .ivr-q-text {
+  margin: 10px 0 0;
+  color: var(--ivr-ink);
+  font-size: clamp(20px, 1.9vw, 26px);
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.immersive-interview-page .ivr-q-dots {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.immersive-interview-page .ivr-q-dots span {
+  width: 22px;
+  height: 4px;
+  border-radius: 999px;
+  background: #dbe2ef;
+}
+
+.immersive-interview-page .ivr-q-dots span.active {
+  background: var(--ivr-blue);
+}
+
+/* 영상 영역: 남은 세로 공간을 차지하고 그 안에서 가로형 프레임을 중앙 정렬 */
+.immersive-interview-page .ivr-video-area {
+  display: grid;
+  width: 100%;
+  min-height: 0;
+  flex: 1 1 auto;
+  place-items: center;
+}
+
+/* 영상 프레임: 장치 확인 미리보기와 같은 가로형(랜드스케이프) 비율로 맞춘다.
+   남는 세로 공간을 다 채우면(정사각에 가까운 틀) 웹캠(가로형)이 위아래로 크게
+   잘리므로, 16:9 가로 프레임으로 고정하고 영역 중앙에 배치한다. */
+.immersive-interview-page .ivr-video {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  aspect-ratio: var(--ivr-camera-ratio, 16 / 9);
+  max-height: 100%;
+  place-items: center;
+  border-radius: 18px;
+  background: #0e1530;
+  overflow: hidden;
+}
+
+.immersive-interview-page .ivr-video video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: inherit;
+  background: transparent;
+  transform: scaleX(-1) scale(var(--camera-zoom, 1));
+  transition: transform .18s ease;
+}
+
+.immersive-interview-page .ivr-video-ph {
+  color: rgba(255, 255, 255, .42);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.immersive-interview-page .ivr-rec-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(14, 21, 48, .55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.immersive-interview-page .ivr-rec-badge i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff5a5f;
+  animation: ivrPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes ivrPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .3; }
+}
+
+/* 영상 아래 컨트롤 */
+.immersive-interview-page .ivr-controls {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.immersive-interview-page .ivr-toggle {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--ivr-border);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ivr-ink);
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .2s ease, border-color .15s ease, color .15s ease;
+}
+
+.immersive-interview-page .ivr-toggle svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.immersive-interview-page .ivr-toggle:hover,
+.immersive-interview-page .ivr-toggle:focus-visible {
+  transform: translateY(-1px);
+  border-color: #c8d3ec;
+  box-shadow: 0 8px 18px rgba(24, 33, 59, .1);
+  outline: none;
+}
+
+.immersive-interview-page .ivr-toggle:disabled {
+  cursor: not-allowed;
+  opacity: .62;
+  transform: none;
+  box-shadow: none;
+}
+
+.immersive-interview-page .ivr-pause-toggle {
+  min-width: 92px;
+  height: 52px;
+  padding: 0 18px;
+  border: 1px solid var(--ivr-border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ivr-ink);
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.immersive-interview-page .ivr-pause-toggle.is-paused {
+  border-color: var(--ivr-blue);
+  background: var(--ivr-blue-soft);
+  color: var(--ivr-blue);
+}
+
+.immersive-interview-page .ivr-toggle.is-off {
+  position: relative;
+  border-color: #f3d4da;
+  color: var(--ivr-danger);
+}
+
+.immersive-interview-page .ivr-toggle.is-off::after {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 2.5px;
+  border-radius: 99px;
+  background: var(--ivr-danger);
+  transform: rotate(-45deg);
+}
+
+.immersive-interview-page .ivr-next {
+  height: 52px;
+  padding: 0 34px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ivr-blue);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background-color .15s ease, transform .15s ease, box-shadow .2s ease;
+}
+
+.immersive-interview-page .ivr-next:hover,
+.immersive-interview-page .ivr-next:focus-visible {
+  background: var(--ivr-blue-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(59, 110, 245, .3);
+  outline: none;
+}
+
+/* 중앙: 답변하기 → 답변 완료 → 답변 완료됨 */
+.immersive-interview-page .ivr-answer {
+  height: 52px;
+  min-width: 150px;
+  padding: 0 34px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ivr-blue);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background-color .15s ease, transform .15s ease, box-shadow .2s ease;
+}
+
+.immersive-interview-page .ivr-answer:hover:not(:disabled),
+.immersive-interview-page .ivr-answer:focus-visible:not(:disabled) {
+  background: var(--ivr-blue-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(59, 110, 245, .3);
+  outline: none;
+}
+
+/* 답변 중: 완료 유도(레드 톤) */
+.immersive-interview-page .ivr-answer.is-answering {
+  background: var(--ivr-danger);
+}
+
+.immersive-interview-page .ivr-answer.is-answering:hover {
+  background: #cf4560;
+}
+
+/* 답변 완료됨: 비활성 */
+.immersive-interview-page .ivr-answer.is-done {
+  background: #e2e8f4;
+  color: #9aa5bd;
+  cursor: default;
+}
+
+/* 비활성(자동 모드 실행 중 등): 회색으로 명확히 구분 + 클릭 불가 커서 */
+.immersive-interview-page .ivr-answer:disabled {
+  background: #e2e8f4;
+  color: #9aa5bd;
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+/* ---------------- 우측: 정보 · 액션 ---------------- */
+.immersive-interview-page .ivr-side {
+  gap: 16px;
+  padding: 26px 22px;
+  background: #fff;
+  border-left: 1px solid var(--ivr-border);
+}
+
+.immersive-interview-page .ivr-end {
+  flex-shrink: 0;
+  height: 44px;
+  border: 1px solid #ecd6dc;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ivr-danger);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+
+.immersive-interview-page .ivr-end:hover,
+.immersive-interview-page .ivr-end:focus-visible {
+  background: #fdeef1;
+  border-color: var(--ivr-danger);
+  outline: none;
+}
+
+.immersive-interview-page .ivr-end:disabled,
+.immersive-interview-page .ivr-next-side:disabled {
+  cursor: wait;
+  opacity: .65;
+  transform: none;
+}
+
+.immersive-interview-page .ivr-recording-error {
+  margin: -8px 0 0;
+  color: var(--ivr-danger);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.immersive-interview-page .ivr-info {
+  flex-shrink: 0;
+  padding: 20px;
+  border: 1px solid var(--ivr-border);
+  border-radius: 16px;
+  background: var(--ivr-surface);
+}
+
+.immersive-interview-page .ivr-info-eyebrow {
+  color: var(--ivr-blue-dark);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+
+.immersive-interview-page .ivr-info dl {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 0;
+}
+
+.immersive-interview-page .ivr-info dl > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.immersive-interview-page .ivr-info dt {
+  color: var(--ivr-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.immersive-interview-page .ivr-info dd {
+  margin: 0;
+  color: var(--ivr-ink);
+  font-size: 13px;
+  font-weight: 750;
+  text-align: right;
+}
+
+.immersive-interview-page .ivr-progress {
+  height: 6px;
+  margin-top: 16px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f4;
+}
+
+.immersive-interview-page .ivr-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ivr-blue);
+  transition: width .2s ease;
+}
+
+.immersive-interview-page .ivr-timer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ivr-border);
+  color: var(--ivr-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.immersive-interview-page .ivr-timer strong {
+  color: var(--ivr-ink);
+  font-size: 18px;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 우측 하단 액션 묶음: 자동 모드 · 다음 질문 · 질문 다시 듣기 */
+.immersive-interview-page .ivr-side-actions {
+  margin-top: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.immersive-interview-page .ivr-auto-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.immersive-interview-page .ivr-auto {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 50px;
+  padding: 0 16px;
+  border: 1px solid var(--ivr-border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ivr-ink);
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.immersive-interview-page .ivr-auto:hover {
+  border-color: #c8d3ec;
+}
+
+.immersive-interview-page .ivr-auto .ivr-auto-label {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+/* 토글 스위치 */
+.immersive-interview-page .ivr-auto-switch {
+  position: relative;
+  flex: 0 0 auto;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  background: #d3dae8;
+  transition: background-color .15s ease;
+}
+
+.immersive-interview-page .ivr-auto-switch i {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
+  transition: transform .16s ease;
+}
+
+.immersive-interview-page .ivr-auto.active {
+  border-color: var(--ivr-blue);
+  background: var(--ivr-blue-soft);
+}
+
+.immersive-interview-page .ivr-auto.active .ivr-auto-label {
+  color: var(--ivr-blue-dark);
+}
+
+.immersive-interview-page .ivr-auto.active .ivr-auto-switch {
+  background: var(--ivr-blue);
+}
+
+.immersive-interview-page .ivr-auto.active .ivr-auto-switch i {
+  transform: translateX(18px);
+}
+
+.immersive-interview-page .ivr-auto-desc {
+  margin: 0;
+  padding: 0 2px;
+  color: var(--ivr-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  /* 안내 문구는 자동 모드 ON/OFF에 따라 1~2줄로 길이가 바뀐다. 2줄 높이만큼
+     공간을 고정해 두어, 문구가 바뀌어도 위쪽 '자동 모드' 카드가 움직이지 않게 한다.
+     (카드는 고정, 문구만 이 영역 안에서 달라진다.) */
+  min-height: 35px;
+}
+
+.immersive-interview-page .ivr-auto-desc b {
+  color: var(--ivr-blue-dark);
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.immersive-interview-page .ivr-next-side {
+  height: 50px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--ivr-blue);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background-color .15s ease, transform .15s ease, box-shadow .2s ease;
+}
+
+.immersive-interview-page .ivr-next-side:hover,
+.immersive-interview-page .ivr-next-side:focus-visible {
+  background: var(--ivr-blue-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(59, 110, 245, .28);
+  outline: none;
+}
+
+.immersive-interview-page .ivr-replay {
+  flex-shrink: 0;
+  height: 46px;
+  border: 1px solid var(--ivr-border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ivr-blue-dark);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+
+.immersive-interview-page .ivr-replay:hover,
+.immersive-interview-page .ivr-replay:focus-visible {
+  background: var(--ivr-blue-soft);
+  border-color: var(--ivr-blue);
+  outline: none;
+}
+
+/* ---------------- 좁은 화면 폴백 (데모는 데스크톱 기준) ---------------- */
+@media (max-width: 1024px) {
+  .immersive-interview-page,
+  body.immersive-interview-page {
+    overflow: auto;
+  }
+
+  .immersive-interview-page .page-shell.wide.ivr-shell-wrap,
+  .immersive-interview-page .ivr-shell {
+    height: auto;
+    min-height: 100svh;
+  }
+
+  .immersive-interview-page .ivr-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .immersive-interview-page .ivr-rail,
+  .immersive-interview-page .ivr-side {
+    overflow: visible;
+  }
+
+  .immersive-interview-page .ivr-video-area {
+    flex: 0 0 auto;
+  }
+
+  .immersive-interview-page .ivr-video {
+    max-height: none;
+  }
+}
+
+/* ============================================================
+   좌측 하단 실시간 자막 · 실시간 분석 (발표 녹화 화면과 동일 구성)
+   ============================================================ */
+.immersive-interview-page .ivr-rail-live {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ivr-border);
+}
+
+.immersive-interview-page .ivr-live-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--ivr-ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.immersive-interview-page .ivr-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #eafaf0;
+  color: #1f9d57;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.immersive-interview-page .ivr-live-badge i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #23c26b;
+  animation: ivrPulse 1.4s ease-in-out infinite;
+}
+
+.immersive-interview-page .ivr-transcript {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 92px;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--ivr-border);
+  border-radius: 12px;
+  background: var(--ivr-surface);
+  overflow: hidden;
+}
+
+.immersive-interview-page .ivr-transcript p {
+  margin: 0;
+  color: #8b95aa;
+  font-size: 12.5px;
+  line-height: 1.5;
+  transition: color .2s ease;
+}
+
+.immersive-interview-page .ivr-transcript p.is-latest {
+  color: var(--ivr-ink);
+  font-weight: 700;
+}
+
+.immersive-interview-page .ivr-transcript-ph {
+  color: #aeb6c6 !important;
+  font-weight: 500 !important;
+}
+
+.immersive-interview-page .ivr-analysis {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.immersive-interview-page .ivr-analysis div {
+  padding: 9px 12px;
+  border: 1px solid var(--ivr-border);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.immersive-interview-page .ivr-analysis strong {
+  display: block;
+  color: var(--ivr-blue);
+  font-size: 19px;
+  font-weight: 850;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.immersive-interview-page .ivr-analysis small {
+  color: var(--ivr-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+/* ============================================================
+   답변하기 → 카메라 위 5초 카운트다운 + 카메라 펄스 애니메이션
+   ============================================================ */
+.immersive-interview-page .ivr-video.is-counting::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: 3px solid rgba(59, 110, 245, .9);
+  border-radius: inherit;
+  pointer-events: none;
+  animation: ivrCamPulse 1s ease-out infinite;
+}
+
+@keyframes ivrCamPulse {
+  0% { box-shadow: inset 0 0 0 0 rgba(59, 110, 245, .5); opacity: 1; }
+  100% { box-shadow: inset 0 0 0 24px rgba(59, 110, 245, 0); opacity: .5; }
+}
+
+.immersive-interview-page .ivr-countdown {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: inherit;
+  background: rgba(10, 16, 34, .42);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  color: #fff;
+}
+
+.immersive-interview-page .ivr-countdown-num {
+  font-size: clamp(80px, 15vw, 160px);
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 6px 24px rgba(0, 0, 0, .35);
+  animation: ivrCountPop .9s cubic-bezier(.2, .7, .3, 1);
+}
+
+.immersive-interview-page .ivr-countdown-label {
+  font-size: 15px;
+  font-weight: 700;
+  opacity: .92;
+}
+
+@keyframes ivrCountPop {
+  0% { transform: scale(.4); opacity: 0; }
+  30% { transform: scale(1.12); opacity: 1; }
+  60% { transform: scale(1); }
+  100% { transform: scale(.9); opacity: .3; }
+}
+
+/* ============================================================
+   자동 모드 카운트다운 (카메라 우상단, 크게)
+   ============================================================ */
+.immersive-interview-page .ivr-autocount {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  display: flex;
+  min-width: 64px;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: rgba(10, 16, 34, .55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
+}
+
+.immersive-interview-page .ivr-autocount strong {
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.immersive-interview-page .ivr-autocount small {
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  opacity: .85;
+}
+
+.immersive-interview-page .ivr-autocount.is-prep strong {
+  color: #ffd166;
+}
+
+/* Latest interview recording polish: replay tutorial, inline primary action, tighter side cards. */
+.immersive-interview-page .ivr-stage {
+  gap: 14px;
+  padding-bottom: 22px;
+}
+
+.immersive-interview-page .ivr-video-area {
+  position: relative;
+}
+
+.immersive-interview-page .ivr-tutorial-replay {
+  position: absolute;
+  top: 26px;
+  right: 16px;
+  z-index: 4;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid #d8dfec;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ivr-blue-dark);
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease, transform .15s ease;
+}
+
+.immersive-interview-page .ivr-tutorial-replay:hover,
+.immersive-interview-page .ivr-tutorial-replay:focus-visible {
+  border-color: var(--ivr-blue);
+  background: var(--ivr-blue-soft);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.immersive-interview-page .ivr-controls {
+  gap: 12px;
+  margin-top: -2px;
+}
+
+.immersive-interview-page .ivr-control-primary {
+  min-width: 132px;
+  height: 52px;
+  padding: 0 24px;
+  border-radius: 99px;
+  box-shadow: none;
+}
+
+.immersive-interview-page .ivr-control-primary.is-end {
+  min-width: 118px;
+}
+
+.immersive-interview-page .ivr-transcript {
+  padding: 12px 13px;
+  border-radius: 10px;
+}
+
+.immersive-interview-page .ivr-transcript p {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.immersive-interview-page .ivr-transcript p.is-latest {
+  font-size: 14.5px;
+}
+
+/* 말하기 속도는 숫자가 아니라 느림/보통/빠름을 보여준다(발표와 동일 기준).
+   글자 폭이 넓어지므로 크기를 한 단계 줄이고, 구간을 색으로 구분한다. */
+.immersive-interview-page .ivr-pace-cell strong {
+  font-size: 17px;
+}
+
+.immersive-interview-page .ivr-pace-cell.is-normal strong {
+  color: #1f9d5b;
+}
+
+.immersive-interview-page .ivr-pace-cell.is-slow strong,
+.immersive-interview-page .ivr-pace-cell.is-fast strong {
+  color: #d1701c;
+}

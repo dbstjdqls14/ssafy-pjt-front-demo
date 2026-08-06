@@ -1,0 +1,212 @@
+/* 폭·여백·글자 크기는 면접 리포트(.archive-report-shell / .metric-report-shell)를
+   기준으로 맞춘다 — 이 화면은 두 클래스를 함께 쓰므로 여기서 다시 지정하지 않는다. */
+.pr-page {
+  color: #111a3a;
+}
+
+.pr-back {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 4px;
+  color: #53617d;
+  font-size: 13px;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+/* 요약/점수 카드(.archive-report-summary)와 음성·몸짓 그래프(.iv-pace-*)는
+   면접 리포트와 같은 마크업·CSS를 쓴다(archive-report.css / interview-report.css).
+   여기서는 발표 전용 영역(영상 패널·피드백)만 다룬다. */
+
+.pr-data-empty { color: #969eb0; text-align: center; }
+
+/* 영상·자막 영역은 면접 리포트와 같은 마크업(.iv-video-row / .iv-video-controls-bar /
+   .iv-caption-*)을 그대로 쓴다 → 카드·재생 버튼·진행 바·자막 글자 크기는
+   interview-report.css 한 곳에서만 관리한다. 여기에는 발표에만 있는 슬라이드
+   썸네일 줄과, 자막 칸의 발표용 미세 조정만 남긴다. */
+.pr-media .pr-thumbnails {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 0 4px;
+  /* 썸네일 아래 가로 스크롤바는 얇게(면접 리포트의 다른 스크롤과 같은 두께). */
+  scrollbar-width: thin;
+  scrollbar-color: #c6cee0 transparent;
+}
+.pr-media .pr-thumbnails::-webkit-scrollbar { height: 6px; }
+.pr-media .pr-thumbnails::-webkit-scrollbar-track { background: transparent; }
+.pr-media .pr-thumbnails::-webkit-scrollbar-thumb { border-radius: 999px; background: #c6cee0; }
+.pr-media .pr-thumbnails button { flex: 0 0 88px; aspect-ratio: 16 / 9; padding: 0; overflow: hidden; border: 1px solid #d8dfec; border-radius: 8px; background: #f7f8fb; font-size: 11px; color: #7d879e; cursor: pointer; }
+.pr-media .pr-thumbnails button.is-active { border: 2px solid #5968dc; }
+.pr-media .pr-thumbnails button:disabled { opacity: .42; cursor: not-allowed; }
+.pr-media .pr-thumbnails img { width: 100%; height: 100%; object-fit: cover; }
+
+.pr-feedback { margin-top: 44px; padding-top: 32px; border-top: 1px solid #dbe1ee; }
+.pr-feedback > header h2,
+.pr-feedback > header p { margin: 0; }
+.pr-feedback > header h2 { font-size: 20px; font-weight: 850; letter-spacing: -.02em; }
+.pr-feedback > header p { margin-top: 7px; color: #7d879e; font-size: 12.5px; }
+.pr-feedback-layout { display: grid; grid-template-columns: minmax(220px, .72fr) minmax(0, 1.28fr); gap: 28px; margin-top: 20px; }
+.pr-feedback-layout nav { display: grid; align-content: start; gap: 9px; }
+.pr-feedback-layout nav button { padding: 14px 16px; border: 1px solid #e1e6f0; border-radius: 13px; background: #fff; color: #2f3a54; font-size: 12.5px; font-weight: 700; line-height: 1.5; text-align: left; cursor: pointer; }
+.pr-feedback-layout nav button.is-active { border-color: #5968dc; background: #f5f6fa; box-shadow: 0 0 0 2px rgba(101, 115, 221, .12); }
+.pr-feedback-layout nav span { margin-right: 10px; color: #5968dc; font-weight: 800; }
+.pr-feedback-layout article,
+.pr-qna-list article { padding: 20px; border: 1px solid #e1e6f0; border-radius: 14px; }
+.pr-feedback-layout h3,
+.pr-qna-list h3 { margin: 0; font-size: 15px; font-weight: 850; line-height: 1.5; }
+.pr-feedback-layout article p,
+.pr-qna-list p { margin: 13px 0 0; color: #59637a; font-size: 13.5px; line-height: 1.75; }
+.pr-feedback-layout :is(h3, p),
+.pr-qna-list :is(h3, p),
+.pr-transcript .iv-caption-line { overflow-wrap: anywhere; word-break: break-word; }
+
+/* 슬라이드 핵심 내용은 사용자가 직접 쓴 글이라 길이가 제한되지 않는다. 그대로 두면
+   제목 한 덩어리가 영상 칸·목록 칸을 통째로 밀어내므로 줄 수를 잘라 …으로 줄인다.
+   전체 문장은 title 속성(툴팁)에 그대로 남아 있다.
+   영상 위 슬라이드 제목 = 4줄, 슬라이드 내용 피드백 목록·제목 = 5줄. */
+.pr-page .pr-slide-column .iv-video-question {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.pr-feedback-layout nav button,
+.pr-feedback-layout article > h3,
+.pr-qna-list article > h3 {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+}
+.pr-transcript .iv-caption-seek {
+  width: 100%;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.pr-transcript .iv-caption-current.iv-caption-seek { background: #f5f6fa; }
+.pr-transcript .iv-caption-seek:focus-visible {
+  outline: 2px solid #5968dc;
+  outline-offset: 2px;
+}
+.pr-qna-list { display: grid; gap: 13px; margin-top: 20px; }
+.pr-qna-feedback { padding: 11px 13px; border-radius: 8px; background: #f4f5f9; }
+.pr-state { margin-top: 30px; padding: 34px; border: 1px solid #d7deeb; border-radius: 14px; color: #68738b; text-align: center; }
+.pr-state.is-error { border-color: #f0c5c5; background: #fff8f8; color: #a34343; }
+
+@media (max-width: 800px) {
+  .pr-feedback-layout { grid-template-columns: 1fr; }
+}
+
+/* 슬라이드 내용 피드백 — 발화가 없어 분석이 불가한 슬라이드는 흐리게 표시하고 비활성화한다.
+   오른쪽 카드에는 "내가 말한 내용"과 그 아래 AI 피드백을 붉은 카드로 구분한다.
+   (전에는 발화만 덩그러니 있어 어느 쪽이 피드백인지 읽히지 않았다.) */
+.pr-feedback-layout nav button.is-unmeasured {
+  border-style: dashed;
+  color: #97a0b5;
+  opacity: .62;
+}
+
+.pr-feedback-layout nav button:disabled { cursor: not-allowed; }
+
+.pr-feedback-layout nav button.is-unmeasured span { color: #a3abbf; }
+
+.pr-feedback-layout nav button.is-unmeasured.is-active {
+  opacity: 1;
+  border-style: solid;
+}
+
+.pr-block-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .02em;
+}
+
+.pr-said-block {
+  margin-top: 14px;
+  padding: 13px 15px;
+  border: 1px solid #e1e6f0;
+  border-radius: 12px;
+  background: #f7f8fb;
+}
+
+.pr-said-block .pr-block-label { color: #7d879e; }
+
+.pr-said-text {
+  margin: 0 !important;
+  color: #3f4a63;
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+
+.pr-feedback-block {
+  margin-top: 12px;
+  padding: 13px 15px;
+  border: 1px solid #f3cfcf;
+  border-radius: 12px;
+  background: #fdf5f5;
+}
+
+.pr-feedback-block .pr-block-label { color: #b4534f; }
+
+.pr-feedback-block p {
+  margin: 0 !important;
+  color: #7a4340;
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+
+.pr-feedback-block .pr-qna-feedback {
+  padding: 0;
+  background: transparent;
+}
+
+.pr-feedback-block.is-empty {
+  border-color: #e1e6f0;
+  background: #f7f8fb;
+}
+
+.pr-feedback-block.is-empty .pr-block-label { color: #7d879e; }
+
+.pr-unmeasured-note {
+  margin: 14px 0 0 !important;
+  padding: 13px 15px;
+  border: 1px dashed #d9dfea;
+  border-radius: 12px;
+  background: #f8f9fc;
+  color: #8b95aa;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* 질의응답 피드백에는 몇 번째 질문인지(Q1 …)를 앞에 붙인다. */
+.pr-qna-code {
+  display: inline-block;
+  margin-right: 8px;
+  color: #5968dc;
+  font-size: 12.5px;
+  font-weight: 850;
+  vertical-align: 1px;
+}
+
+/* 측정이 불가한 구간의 자막·그래프 안내 — 실제 발화와 헷갈리지 않게 다르게 보인다. */
+.metric-report-shell .iv-caption-current.is-unmeasured {
+  background: #f8f9fc;
+  border: 1px dashed #d9dfea;
+  color: #8b95aa;
+  font-style: italic;
+  font-weight: 700;
+}
+
+.metric-report-shell .iv-metric-empty.is-unmeasured {
+  color: #8b95aa;
+  font-style: normal;
+}

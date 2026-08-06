@@ -1,0 +1,321 @@
+/* Shared cross-document transition. Only compositor-friendly properties are
+   animated so the page geometry remains unchanged throughout navigation. */
+
+:root {
+  --aivo-page-transition-duration: 220ms;
+  --aivo-page-transition-ease: cubic-bezier(.4, 0, .2, 1);
+  background: #fff;
+  scrollbar-gutter: stable;
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: aivo-page-exit 220ms cubic-bezier(.4, 0, .2, 1) both !important;
+}
+
+::view-transition-new(root) {
+  animation: aivo-page-enter 220ms cubic-bezier(.4, 0, .2, 1) both !important;
+}
+
+html.aivo-page-entering body {
+  opacity: 0;
+  transform: translate3d(10px, 0, 0);
+}
+
+html[data-page-direction='previous'].aivo-page-entering body {
+  transform: translate3d(-10px, 0, 0);
+}
+
+html.aivo-page-entering.aivo-page-ready body {
+  opacity: 1;
+  transform: none;
+}
+
+html.aivo-page-leaving body {
+  opacity: 0;
+  transform: translate3d(-10px, 0, 0);
+  pointer-events: none;
+}
+
+html[data-page-direction='previous'].aivo-page-leaving body {
+  transform: translate3d(10px, 0, 0);
+}
+
+html.aivo-page-entering body,
+html.aivo-page-leaving body {
+  transition:
+    opacity var(--aivo-page-transition-duration) var(--aivo-page-transition-ease),
+    transform var(--aivo-page-transition-duration) var(--aivo-page-transition-ease);
+  will-change: opacity, transform;
+}
+
+html.aivo-flow-content-transition.aivo-page-entering body,
+html.aivo-flow-content-transition.aivo-page-leaving body,
+html.aivo-flow-content-transition.aivo-page-entering.aivo-page-ready body {
+  opacity: 1;
+  transform: none;
+}
+
+html.aivo-flow-content-transition.aivo-page-entering [data-flow-content] {
+  opacity: 0;
+  transform: translate3d(10px, 0, 0);
+}
+
+html[data-page-direction='previous'].aivo-flow-content-transition.aivo-page-entering [data-flow-content] {
+  transform: translate3d(-10px, 0, 0);
+}
+
+html.aivo-flow-content-transition.aivo-page-entering.aivo-page-ready [data-flow-content] {
+  opacity: 1;
+  transform: none;
+}
+
+html.aivo-flow-content-transition.aivo-page-leaving [data-flow-content] {
+  opacity: 0;
+  transform: translate3d(-10px, 0, 0);
+  pointer-events: none;
+}
+
+html[data-page-direction='previous'].aivo-flow-content-transition.aivo-page-leaving [data-flow-content] {
+  transform: translate3d(10px, 0, 0);
+}
+
+html.aivo-flow-content-transition.aivo-page-entering [data-flow-content],
+html.aivo-flow-content-transition.aivo-page-leaving [data-flow-content] {
+  transition:
+    opacity var(--aivo-page-transition-duration) var(--aivo-page-transition-ease),
+    transform var(--aivo-page-transition-duration) var(--aivo-page-transition-ease);
+  will-change: opacity, transform;
+}
+
+/* -------------------------------------------------------------------------
+   Single-page shell (Vue) — persistent chrome must never join the crossfade.
+   The header (#siteHeader) and footer (#siteFooter) live OUTSIDE the routed
+   region in App.vue. Fading <body> would composite that chrome into the
+   crossfade group and make it blink on every navigation, because a child can
+   never opt out of an ancestor's opacity. So while `html.aivo-app-shell` is
+   present we hold <body> perfectly still and animate ONLY `.aivo-route-viewport`,
+   the wrapper around <router-view>. The legacy standalone HTML pages (no
+   `.aivo-app-shell`) keep the document-level <body> fade defined above.
+   ------------------------------------------------------------------------- */
+.aivo-route-viewport {
+  position: relative;
+  /* Clip only the horizontal slide. `clip` (unlike `hidden`) does not turn the
+     element into a scroll container, so archive/faq keep their body-level
+     vertical scroll and no stray scrollbar appears mid-transition. */
+  overflow-x: clip;
+}
+
+html.aivo-app-shell.aivo-page-leaving body,
+html.aivo-app-shell.aivo-page-entering body,
+html.aivo-app-shell.aivo-page-entering.aivo-page-ready body {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+html.aivo-app-shell.aivo-page-entering .aivo-route-viewport {
+  opacity: 0;
+  transform: translate3d(10px, 0, 0);
+}
+
+html[data-page-direction='previous'].aivo-app-shell.aivo-page-entering .aivo-route-viewport {
+  transform: translate3d(-10px, 0, 0);
+}
+
+html.aivo-app-shell.aivo-page-entering.aivo-page-ready .aivo-route-viewport {
+  opacity: 1;
+  transform: none;
+}
+
+html.aivo-app-shell.aivo-page-leaving .aivo-route-viewport {
+  opacity: 0;
+  transform: translate3d(-10px, 0, 0);
+  pointer-events: none;
+}
+
+html[data-page-direction='previous'].aivo-app-shell.aivo-page-leaving .aivo-route-viewport {
+  transform: translate3d(10px, 0, 0);
+}
+
+html.aivo-app-shell.aivo-page-entering .aivo-route-viewport,
+html.aivo-app-shell.aivo-page-leaving .aivo-route-viewport {
+  transition:
+    opacity var(--aivo-page-transition-duration) var(--aivo-page-transition-ease),
+    transform var(--aivo-page-transition-duration) var(--aivo-page-transition-ease);
+  will-change: opacity, transform;
+}
+
+/* Presentation/interview wizard: keep the entire viewport (progress pillbar +
+   fixed side controls) stationary and animate only the inner step content, so
+   the shared progress bar never moves or blinks between steps. */
+html.aivo-app-shell.aivo-flow-content-transition.aivo-page-entering .aivo-route-viewport,
+html.aivo-app-shell.aivo-flow-content-transition.aivo-page-leaving .aivo-route-viewport,
+html.aivo-app-shell.aivo-flow-content-transition.aivo-page-entering.aivo-page-ready .aivo-route-viewport {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/*
+ * Preparation pages can be taller than the viewport. A transformed ancestor
+ * changes the containing block of fixed side controls, making them jump to
+ * the vertical center of the document while a route is swapping. Keep the
+ * flow shell geometrically stationary and animate only its content.
+ */
+html.aivo-page-entering body.practice-flow-page,
+html.aivo-page-leaving body.practice-flow-page,
+html.aivo-page-entering.aivo-page-ready body.practice-flow-page {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* Home choreography: the white canvas comes forward while the logo rises in
+   one straight line and the three rail categories unfold into the header row. */
+.aivo-home-transition-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1600ms cubic-bezier(.45, 0, .55, 1);
+}
+
+.aivo-home-transition-backdrop.is-active {
+  opacity: 1;
+}
+
+/* The stage is an invisible mirror of the REAL AppHeader — it exists only so the
+   choreography can measure where the logo and category words must LAND. It must
+   stay byte-for-byte aligned with app-shell.css's header layout (72px bar, logo
+   80×30 at the home-anchor x, nav absolutely centered at 50%, 15px/500 links),
+   otherwise the clones land on the wrong spot and the route swap looks like a
+   cut. */
+.aivo-home-transition-stage {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 120;
+  height: 72px;
+  border-bottom: 1px solid #e4e7f0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.aivo-home-transition-stage.is-ready {
+  opacity: 1;
+}
+
+.aivo-home-transition-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 72px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.aivo-home-transition-logo {
+  position: relative;
+  width: 80px;
+  height: 30px;
+  overflow: hidden;
+  margin-left: max(24px, calc((100vw - 1424px) / 2 + clamp(24px, 2.35vw, 45px)));
+}
+
+.aivo-home-transition-logo img {
+  position: absolute;
+  inset: 0;
+  width: 213%;
+  max-width: none;
+  height: auto;
+  transform: translate(-26.8%, -28%);
+}
+
+.aivo-home-transition-nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* No font-family override: inherit the app font so the target metrics match
+     the real header links exactly. */
+}
+
+.aivo-home-transition-nav span {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  color: #5b647a;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.aivo-home-transition-nav span.is-active {
+  color: #2f6bff;
+}
+
+.home-side-nav [data-transition-role='practice'],
+.home-side-nav [data-transition-role='records'],
+.home-side-nav [data-transition-role='faq'] {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
+}
+
+.aivo-home-transition-clone {
+  position: fixed !important;
+  z-index: 130 !important;
+  box-sizing: border-box;
+  margin: 0 !important;
+  padding: 0 !important;
+  pointer-events: none !important;
+  will-change: opacity, transform;
+}
+
+html.aivo-home-choreography .home-page main,
+html.aivo-home-choreography .home-page .home-ambient,
+html.aivo-home-choreography .home-page .home-menu-toggle,
+html.aivo-home-choreography .home-page .home-scroll-progress,
+html.aivo-home-choreography .home-page .home-side-nav [data-section-link],
+html.aivo-home-choreography .home-page .home-auth-links {
+  opacity: 0;
+  transition: opacity 700ms ease-in-out;
+}
+
+@keyframes aivo-page-exit {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translate3d(-10px, 0, 0); }
+}
+
+@keyframes aivo-page-enter {
+  from { opacity: 0; transform: translate3d(10px, 0, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  html.aivo-page-entering body,
+  html.aivo-page-leaving body,
+  html.aivo-app-shell.aivo-page-entering .aivo-route-viewport,
+  html.aivo-app-shell.aivo-page-leaving .aivo-route-viewport {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+    transform: none !important;
+  }
+
+  .aivo-home-transition-backdrop,
+  .aivo-home-transition-stage,
+  .aivo-home-transition-clone {
+    display: none !important;
+  }
+}

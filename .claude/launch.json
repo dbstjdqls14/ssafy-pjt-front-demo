@@ -1,0 +1,62 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "5199"],
+      "port": 5199,
+      "url": "http://127.0.0.1:5199"
+    },
+    {
+      "name": "aivo-verify",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "5188", "--strictPort"],
+      "port": 5188,
+      "autoPort": false,
+      "url": "http://127.0.0.1:5188"
+    },
+    {
+      "name": "aivo-frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "frontend-vue-main", "run", "dev", "--", "--port", "5177", "--strictPort"],
+      "port": 5177,
+      "autoPort": false,
+      "url": "http://127.0.0.1:5177"
+    },
+    {
+      "name": "aivo-frontend-session2",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "frontend-vue-main", "run", "dev", "--", "--port", "5183", "--strictPort"],
+      "port": 5183,
+      "autoPort": false,
+      "url": "http://127.0.0.1:5183"
+    },
+    {
+      "name": "aivo-auto",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "autoPort": true
+    },
+    {
+      "name": "deck-tool",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["C:/Users/SSAFY/AppData/Local/Temp/claude/C--Users-SSAFY-Desktop-aivo/6e3a780b-9911-4a60-b8e7-5f692b9b2a4d/scratchpad/deck-tool-server.js"],
+      "port": 8932,
+      "url": "http://127.0.0.1:8932"
+    },
+    {
+      "name": "deck",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--yes", "http-server", "C:/Users/SSAFY/Desktop/aivo_PPT", "-p", "8931", "-c-1"],
+      "port": 8931,
+      "url": "http://127.0.0.1:8931"
+    },
+    {
+      "name": "static",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--yes", "http-server", ".", "-p", "8899", "-c-1"],
+      "port": 8899
+    }
+  ]
+}

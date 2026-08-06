@@ -1,0 +1,11 @@
+.presentation-slides-page [hidden] {
+  display: none !important;
+}
+
+/* 이 페이지에서만 핵심 내용 입력칸 ↔ 이전/다음 버튼 간격 축소.
+   공통 규칙(.workflow-footer-actions { margin-top: 32px }, workflow-controls.css)은
+   그대로 두어 연습 설정 등 콘텐츠가 긴 다른 플로우 페이지의 버튼 겹침을 막는다.
+   body 스코프로 특이도를 높였으므로 파일 로드 순서와 무관하게 이 값이 이긴다. */
+body.presentation-slides-page .workflow-footer-actions {
+  margin-top: -16px;
+}

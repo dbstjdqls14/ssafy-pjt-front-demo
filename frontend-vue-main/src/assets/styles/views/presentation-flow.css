@@ -1,0 +1,3529 @@
+/* Compact, flat shell shared by the presentation preflight workflow. */
+
+body.presentation-flow-page {
+  min-width: 320px;
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  margin: 0;
+  overflow-x: hidden;
+  background: #fff;
+  color: #172346;
+}
+
+.presentation-flow-page #siteHeader,
+.presentation-flow-page #siteFooter {
+  min-width: 0;
+}
+
+body.presentation-flow-page #siteHeader {
+  position: relative;
+  z-index: 100;
+  padding: 0;
+}
+
+body.presentation-flow-page .top-nav {
+  position: relative;
+  top: 0;
+  width: 100%;
+  margin: 0;
+  overflow: visible;
+  border: 0;
+  border-bottom: 0;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.presentation-flow-page .top-nav::before,
+.presentation-flow-page .top-nav::after {
+  content: none;
+}
+
+.presentation-flow-page .nav-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  width: min(1424px, calc(100% - 48px));
+  height: 79px;
+  margin: 0 auto;
+  gap: 28px;
+}
+
+.presentation-flow-page .nav-logo {
+  width: 104px;
+  height: 42px;
+  aspect-ratio: auto;
+  flex: 0 0 104px;
+}
+
+.presentation-flow-page .nav-logo-crop {
+  height: 42px;
+  overflow: visible;
+}
+
+.presentation-flow-page .nav-logo-crop img {
+  top: 0;
+  left: 0;
+  width: 213%;
+  transform: translate(-26.8%, -28%);
+}
+
+.presentation-flow-page .nav-links {
+  position: absolute;
+  left: 50%;
+  display: flex;
+  min-width: 0;
+  flex: none;
+  justify-content: center;
+  gap: 8px;
+  transform: translateX(-50%);
+}
+
+.presentation-flow-page .nav-links a {
+  position: relative;
+  flex: 0 0 auto;
+  padding: 9px 13px;
+  border-radius: 0;
+  background: transparent;
+  color: #6f7b98;
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 18px;
+}
+
+.presentation-flow-page .nav-links a::after {
+  content: '';
+  position: absolute;
+  right: 13px;
+  bottom: 3px;
+  left: 13px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform .32s cubic-bezier(.22, 1, .36, 1);
+}
+
+.presentation-flow-page .nav-links a:hover,
+.presentation-flow-page .nav-links a.active {
+  background: transparent;
+  color: #192343;
+  box-shadow: none;
+  transform: none;
+}
+
+.presentation-flow-page .nav-links a:hover::after,
+.presentation-flow-page .nav-links a.active::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.presentation-flow-page .nav-right {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 11px;
+  margin-left: auto;
+  margin-right: clamp(24px, 4vw, 64px);
+  color: #192343;
+}
+
+.presentation-flow-page .nav-name,
+.presentation-flow-page .nav-link-small,
+.presentation-flow-page .nav-right a.nav-link-small {
+  display: inline-flex;
+  align-items: center;
+  color: #192343;
+  font-size: 12px;
+  font-weight: 560;
+}
+
+.presentation-flow-page .nav-login-btn {
+  height: auto;
+  padding: 2px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #192343;
+  box-shadow: none;
+  font-size: 12px;
+  font-weight: 560;
+}
+
+.presentation-flow-page .site-footer {
+  border-top: 1px solid #edf0f6;
+  background: #fff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.presentation-flow-page .footer-inner {
+  width: min(1240px, calc(100% - 48px));
+  min-height: 50px;
+  padding-block: 0;
+}
+
+.presentation-flow-page .presentation-flow-shell {
+  width: min(1040px, calc(100% - 48px));
+  min-height: 0;
+  margin: 0 auto;
+  padding: 14px 0 10px;
+  overflow: hidden;
+}
+
+.presentation-setup-page .presentation-flow-shell {
+  width: min(900px, calc(100% - 48px));
+}
+
+.presentation-flow-page .wizard-shell {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 14px;
+}
+
+.presentation-flow-page .presentation-progress {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 18px 0 0;
+}
+
+.presentation-flow-page .presentation-progress .step-pill {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  height: 30px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0 2px 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #7a849b;
+  box-shadow: none;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1;
+}
+
+.presentation-flow-page .presentation-progress .step-pill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 5px;
+  border-radius: 9999px;
+  background: #e5eaf3;
+}
+
+.presentation-flow-page .presentation-progress .step-pill i {
+  display: none;
+}
+
+.presentation-flow-page .presentation-progress .step-pill:is(.active, :has(~ .active)) {
+  color: #4e6fc2;
+}
+
+.presentation-flow-page .presentation-progress .step-pill:is(.active, :has(~ .active))::after {
+  background: #4e6fc2;
+}
+
+.presentation-flow-page .setup-grid,
+.presentation-flow-page .slide-grid,
+.presentation-flow-page .device-check,
+.presentation-flow-page .ready-grid {
+  min-height: 0;
+  margin: 0;
+  align-items: stretch;
+}
+
+.presentation-flow-page .setup-grid {
+  display: grid;
+  height: 440px;
+  max-height: 100%;
+  align-self: center;
+  grid-template-columns: minmax(0, 1fr) minmax(380px, .82fr);
+  gap: 36px;
+}
+
+.presentation-flow-page .setup-single-column {
+  width: min(720px, 100%);
+  height: auto;
+  max-height: none;
+  align-self: start;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  margin: 0 auto;
+}
+
+.presentation-flow-page .presentation-panel {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.presentation-flow-page .presentation-panel-head {
+  margin-bottom: 12px;
+}
+
+.presentation-flow-page .presentation-panel-head strong,
+.presentation-flow-page .presentation-panel-head small {
+  display: block;
+}
+
+.presentation-flow-page .presentation-panel-head strong {
+  color: #172346;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.presentation-flow-page .setup-form-panel {
+  gap: 10px;
+  overflow: visible;
+}
+
+.presentation-flow-page .setup-form-panel .presentation-panel-head {
+  margin-bottom: 0;
+}
+
+.presentation-flow-page .setup-form-panel .form-field {
+  margin: 0;
+}
+
+.presentation-flow-page .setup-form-panel .form-field > label,
+.presentation-flow-page .qna-copy label {
+  display: block;
+  margin-bottom: 6px;
+  color: #172346;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.presentation-flow-page .setup-form-panel .form-field > label span {
+  color: #8b94a7;
+  font-weight: 550;
+}
+
+.presentation-flow-page .setup-form-panel :is(input, textarea) {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid #dbe1ec;
+  border-radius: 8px;
+  background: #fff;
+  color: #172346;
+  box-shadow: none;
+  font: inherit;
+  font-size: 13px;
+}
+
+.presentation-flow-page .setup-form-panel input {
+  height: 40px;
+  padding: 0 12px;
+}
+
+/* 연습 설명은 100자 제한이라 실제로는 두 줄이면 충분하다. 예전 4줄 높이는
+   빈 공간만 커 보였다 → 2줄 + 카운터 자리(아래 26px)만 남긴다. */
+.presentation-flow-page .setup-form-panel textarea {
+  height: 78px;
+  min-height: 78px;
+  padding: 10px 12px 26px;
+  line-height: 1.45;
+  resize: none;
+}
+
+.presentation-flow-page .setup-form-panel :is(input, textarea):focus {
+  border-color: #4e6fc2;
+  outline: 3px solid rgba(78, 111, 194, .12);
+}
+
+.presentation-flow-page .presentation-panel-head small {
+  margin-top: 4px;
+  color: #8993a8;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.presentation-flow-page .upload-dropzone {
+  display: flex;
+  min-height: 94px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px 18px;
+  border: 1px dashed #cfd6e4;
+  border-radius: 12px;
+  background: #f7f8fb;
+  box-shadow: none;
+  text-align: center;
+  transition: border-color .2s ease, background-color .2s ease, box-shadow .2s ease;
+}
+
+.presentation-flow-page .upload-dropzone:is(:hover, :focus-visible, .is-dragging) {
+  border-color: #4e6fc2;
+  background: #f2f5fc;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(78, 111, 194, .1);
+}
+
+.presentation-flow-page .upload-copy {
+  min-width: 0;
+}
+
+.presentation-flow-page .upload-copy strong,
+.presentation-flow-page .upload-copy small {
+  display: block;
+}
+
+.presentation-flow-page .upload-copy strong {
+  color: #263f9c;
+  font-size: 13px;
+}
+
+.presentation-flow-page .upload-copy small {
+  margin-top: 5px;
+  color: #8a94a8;
+  font-size: 11px;
+}
+
+.presentation-flow-page .upload-file-row {
+  min-height: 40px;
+  margin-top: 6px;
+  padding: 7px 12px;
+  border-radius: 8px;
+}
+
+.presentation-flow-page .settings-panel .form-field {
+  margin-bottom: 14px;
+}
+
+.presentation-flow-page .settings-panel .form-field label {
+  color: #172346;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.presentation-flow-page .settings-panel .form-field input,
+.presentation-flow-page .stepper-value {
+  border: 1px solid #dbe1ec;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: none;
+}
+
+.presentation-flow-page .stepper-btn {
+  border: 1px solid #dbe1ec;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: none;
+}
+
+.presentation-flow-page .qna-setting {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 0;
+  padding: 11px 14px;
+  border: 1px solid #dbe1ec;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.presentation-flow-page .qna-copy p {
+  margin: 5px 0 0;
+  color: #888;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.presentation-flow-page .qna-copy label {
+  margin-bottom: 0;
+}
+
+.presentation-flow-page .qna-toggle {
+  display: inline-flex;
+  min-width: 104px;
+  height: 40px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #7d879d;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.presentation-flow-page .qna-switch-track {
+  position: relative;
+  width: 64px;
+  height: 32px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #dfe4ee;
+  transition: background-color .2s ease;
+}
+
+.presentation-flow-page .qna-switch-thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(24, 35, 66, .16);
+  transition: transform .22s cubic-bezier(.2, .75, .2, 1);
+}
+
+.presentation-flow-page .qna-toggle.is-on {
+  color: #263f9c;
+}
+
+.presentation-flow-page .qna-toggle.is-on .qna-switch-track {
+  background: #6d7fe0;
+}
+
+.presentation-flow-page .qna-toggle.is-on .qna-switch-thumb {
+  transform: translateX(32px);
+}
+
+.presentation-flow-page .qna-toggle:focus-visible {
+  outline: 3px solid rgba(109, 127, 224, .22);
+  outline-offset: 4px;
+  border-radius: 999px;
+}
+
+.presentation-flow-page .duration-setting {
+  display: grid;
+  min-height: 54px;
+  grid-template-columns: 150px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  padding: 6px 14px;
+  border: 1px solid #e2e6ee;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.presentation-flow-page .duration-setting > label {
+  margin: 0;
+}
+
+.presentation-flow-page .duration-setting .stepper-row {
+  justify-content: flex-end;
+}
+
+.presentation-flow-page .duration-setting .stepper-value {
+  max-width: 120px;
+  height: 36px;
+  flex: 0 1 120px;
+  font-size: 12px;
+}
+
+.presentation-flow-page .duration-setting .stepper-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #182342;
+  font-size: 22px;
+  line-height: 1;
+  transition: color .18s ease, background-color .18s ease;
+}
+
+.presentation-flow-page .duration-setting .stepper-btn:hover,
+.presentation-flow-page .duration-setting .stepper-btn:focus-visible {
+  background: #eef2ff;
+  color: #536bd0;
+  outline: none;
+}
+
+.presentation-flow-page .two-col-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.presentation-flow-page .two-col-row .qna-setting,
+.presentation-flow-page .two-col-row .duration-setting {
+  min-width: 0;
+}
+
+.presentation-flow-page .two-col-row .duration-setting {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+.presentation-flow-page .two-col-row .duration-setting > label {
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .presentation-flow-page .two-col-row {
+    grid-template-columns: 1fr;
+  }
+
+  .presentation-flow-page .qna-setting {
+    align-items: center;
+  }
+
+  .presentation-flow-page .duration-setting .stepper-row {
+    justify-content: stretch;
+  }
+}
+
+/* presentation-setup-page-only spacing + button fixes (kept out of the shared
+   .presentation-flow-page rules above so check/ready/slides are unaffected) */
+
+.presentation-flow-page.presentation-setup-page .presentation-flow-shell {
+  padding-top: 40px;
+}
+
+.presentation-flow-page.presentation-setup-page .presentation-progress {
+  margin-bottom: 26px;
+}
+
+.presentation-flow-page.presentation-setup-page .upload-field {
+  gap: 6px;
+}
+
+.presentation-flow-page.presentation-setup-page .upload-field > label {
+  margin-bottom: 0;
+}
+
+.presentation-flow-page.presentation-setup-page .upload-dropzone {
+  margin-top: 0;
+}
+
+.presentation-flow-page.presentation-setup-page .presentation-actions .btn-primary {
+  border-color: #6d7fe0;
+  background: #6d7fe0;
+}
+
+.presentation-flow-page.presentation-setup-page .presentation-actions .btn-secondary {
+  border-color: #cfd8ea;
+  background: #fff;
+  color: #33415f;
+}
+
+.presentation-flow-page.presentation-setup-page .presentation-actions :is(.btn-primary, .btn-secondary) {
+  border-radius: 999px;
+}
+
+.presentation-flow-page .slide-grid {
+  display: grid;
+  height: 460px;
+  max-height: 100%;
+  align-self: center;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr);
+  gap: 36px;
+}
+
+.presentation-flow-page .slide-nav-card,
+.presentation-flow-page .slide-note-panel,
+.presentation-flow-page .video-preview,
+.presentation-flow-page .confirm-panel,
+.presentation-flow-page .ready-sidebar {
+  min-height: 0;
+  height: 100%;
+  border: 1px solid #dfe4ee;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: none;
+}
+
+.presentation-flow-page .slide-nav-card {
+  padding: 30px 42px;
+}
+
+.presentation-flow-page .slide-nav-body {
+  min-height: 0;
+}
+
+.presentation-flow-page .slide-note-panel {
+  padding: 24px;
+}
+
+.presentation-flow-page .slide-note-panel textarea {
+  height: min(250px, 32vh);
+  border: 1px solid #dfe4ee;
+  border-radius: 8px;
+  background: #f8f9fb;
+  box-shadow: none;
+}
+
+.presentation-flow-page .slide-nav-btn {
+  border: 1px solid #dfe4ee;
+  background: #fff;
+  box-shadow: none;
+}
+
+.presentation-flow-page .device-check {
+  display: grid;
+  height: 480px;
+  max-height: 100%;
+  align-self: center;
+  grid-template-columns: minmax(0, 1.35fr) minmax(330px, .65fr);
+  gap: 36px;
+}
+
+.presentation-flow-page .video-preview {
+  padding: 12px;
+  background: #172346;
+}
+
+.presentation-flow-page .camera-stage {
+  max-height: 48vh;
+  background: #25345d;
+}
+
+.presentation-flow-page .confirm-panel {
+  padding: 22px;
+}
+
+.presentation-flow-page .ready-grid {
+  display: grid;
+  height: 480px;
+  max-height: 100%;
+  align-self: center;
+  grid-template-columns: minmax(290px, .72fr) minmax(0, 1.28fr);
+  gap: 36px;
+}
+
+.presentation-flow-page .ready-sidebar {
+  padding: 22px;
+}
+
+.presentation-flow-page .ready-item {
+  padding-block: 10px;
+}
+
+.presentation-flow-page .ready-grid > .slide-nav-card {
+  display: flex;
+}
+
+.presentation-flow-page .presentation-actions {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+}
+
+.presentation-flow-page .presentation-actions :is(.btn-primary, .btn-secondary) {
+  width: 140px;
+  height: 44px;
+  min-height: 44px;
+  margin: 0;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.presentation-flow-page .presentation-actions .btn-primary {
+  border-color: #172346;
+  background: #172346;
+}
+
+.presentation-flow-page .slide-actions .slide-note-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.presentation-flow-page .slide-actions .duration-chip {
+  min-width: 150px;
+  height: 44px;
+  border: 1px solid #dfe4ee;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: none;
+}
+
+@media (min-width: 901px) and (min-height: 760px) {
+  body.presentation-flow-page {
+    height: 100svh;
+    overflow: hidden;
+  }
+}
+
+@media (max-height: 860px) and (min-width: 901px) {
+  .presentation-flow-page .footer-inner {
+    min-height: 42px;
+  }
+
+  .presentation-flow-page .presentation-flow-shell {
+    padding-block: 10px 8px;
+  }
+
+  .presentation-flow-page .wizard-shell {
+    gap: 10px;
+  }
+
+  .presentation-flow-page .presentation-progress .step-pill {
+    height: 27px;
+  }
+
+  .presentation-flow-page .upload-dropzone {
+    min-height: 180px;
+    padding: 18px;
+  }
+
+  .presentation-setup-page .upload-dropzone {
+    min-height: 78px;
+    padding: 12px 16px;
+  }
+
+  .presentation-flow-page .ready-item {
+    padding-block: 7px;
+  }
+}
+
+@media (max-width: 900px) {
+  body.presentation-flow-page {
+    display: block;
+    min-height: 100svh;
+    overflow-y: auto;
+  }
+
+  .presentation-flow-page #siteHeader {
+    padding: 0;
+  }
+
+  .presentation-flow-page .top-nav {
+    top: 0;
+    border-radius: 0;
+  }
+
+  .presentation-flow-page .nav-inner,
+  .presentation-flow-page .footer-inner,
+  .presentation-flow-page .presentation-flow-shell {
+    width: min(100% - 32px, 640px);
+  }
+
+  .presentation-flow-page .nav-logo {
+    transform: none;
+  }
+
+  .presentation-flow-page .nav-links {
+    position: static;
+    flex: 1 1 auto;
+    transform: none;
+  }
+
+  .presentation-flow-page .nav-right {
+    margin-right: 0;
+  }
+
+  .presentation-flow-page .presentation-flow-shell {
+    padding: 18px 0 28px;
+    overflow: visible;
+  }
+
+  .presentation-flow-page .wizard-shell {
+    display: flex;
+    height: auto;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .presentation-flow-page .presentation-progress {
+    gap: 5px;
+    overflow-x: auto;
+  }
+
+  .presentation-flow-page .presentation-progress .step-pill {
+    min-width: max-content;
+    padding: 0 3px 12px;
+    font-size: 10px;
+  }
+
+  .presentation-flow-page :is(.setup-grid, .slide-grid, .device-check, .ready-grid) {
+    height: auto;
+    align-self: stretch;
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .presentation-flow-page .upload-dropzone,
+  .presentation-flow-page .slide-nav-card,
+  .presentation-flow-page .slide-note-panel,
+  .presentation-flow-page .video-preview,
+  .presentation-flow-page .confirm-panel,
+  .presentation-flow-page .ready-sidebar {
+    height: auto;
+    min-height: 280px;
+  }
+
+  .presentation-flow-page .slide-nav-card {
+    padding: 26px;
+  }
+
+  .presentation-flow-page .slide-nav-prev {
+    left: 8px;
+  }
+
+  .presentation-flow-page .slide-nav-next {
+    right: 8px;
+  }
+
+  .presentation-flow-page .presentation-actions,
+  .presentation-flow-page .slide-actions .slide-note-actions {
+    width: 100%;
+  }
+
+  .presentation-flow-page .slide-actions {
+    align-items: flex-end;
+  }
+
+  .presentation-flow-page .slide-actions .slide-note-actions {
+    justify-content: flex-end;
+  }
+}
+
+/* V16: latest device card polish must win over earlier compact passes. */
+.presentation-check-page .confirm-row {
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) minmax(160px, max-content);
+  align-items: center;
+  column-gap: 18px;
+}
+
+.presentation-check-page .confirm-row span,
+.presentation-check-page .confirm-row b {
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.presentation-check-page .confirm-row span::before {
+  content: none !important;
+  display: none !important;
+}
+
+.presentation-check-page .mic-level {
+  gap: 5px;
+}
+
+.presentation-check-page .mic-level span {
+  height: 24px !important;
+  border-radius: 4px !important;
+}
+
+/* 2026-07 shell/content stability pass: the shared chrome and progress rail
+   stay visually fixed while only the inner step body changes. */
+.presentation-flow-page [data-flow-progress] {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.presentation-check-page .presentation-flow-shell {
+  min-height: calc(100svh - 131px);
+  padding-top: clamp(18px, 2.6svh, 30px);
+}
+
+.presentation-check-page .workflow-stage {
+  margin-top: clamp(22px, 4svh, 42px);
+}
+
+.presentation-check-page .device-check {
+  height: clamp(560px, 61svh, 660px);
+  max-height: calc(100svh - 252px);
+  grid-template-columns: minmax(0, 1.36fr) minmax(360px, .64fr);
+  align-self: center;
+}
+
+.presentation-check-page .confirm-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 28px 34px;
+}
+
+.presentation-check-page .confirm-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 0;
+}
+
+.presentation-check-page .confirm-row span,
+.presentation-check-page .confirm-row b {
+  min-width: 0;
+  font-size: 12.5px;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.presentation-check-page .confirm-row span::before {
+  content: none !important;
+}
+
+.presentation-check-page .device-check-guidance {
+  margin-top: 16px;
+}
+
+.presentation-check-page .mic-level {
+  gap: 4px;
+}
+
+.presentation-check-page .mic-level span {
+  height: 22px;
+  border-radius: 4px;
+}
+
+.presentation-ready-page .workflow-stage {
+  margin-top: clamp(26px, 5svh, 54px);
+}
+
+.presentation-ready-page .ready-flow-content {
+  align-self: center;
+  width: min(620px, 100%);
+  transform: translateY(18px);
+}
+
+.presentation-ready-page .ready-confirm-card {
+  margin-inline: auto;
+}
+
+.presentation-ready-page .ready-start-button,
+.presentation-ready-page .ready-start-button:disabled,
+.presentation-ready-page .ready-start-button.is-ready:not(:disabled),
+.presentation-ready-page .ready-start-button:hover,
+.presentation-ready-page .ready-start-button:focus-visible {
+  box-shadow: none !important;
+}
+
+.presentation-ready-page .ready-start-button.is-ready:not(:disabled) {
+  animation: none !important;
+}
+
+.presentation-ready-page .ready-review-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.presentation-ready-page .ready-edit-button,
+.presentation-ready-page .ready-confirm-button {
+  width: min(180px, 100%);
+  min-height: 42px;
+}
+
+.presentation-ready-page .ready-edit-button {
+  border: 1px solid #cfd8ee;
+  border-radius: 999px;
+  background: #fff;
+  color: #5270dd;
+  font-size: 14px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .presentation-flow-page .nav-inner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    width: min(100% - 32px, 560px);
+    height: auto;
+    min-height: 112px;
+    padding: 10px 0 8px;
+    gap: 7px 12px;
+  }
+
+  .presentation-flow-page .nav-logo {
+    grid-column: 1;
+    grid-row: 1;
+    width: 76px;
+    flex-basis: 76px;
+  }
+
+  .presentation-flow-page .nav-right {
+    grid-column: 3;
+    grid-row: 1;
+    gap: 8px;
+  }
+
+  .presentation-flow-page .nav-name {
+    display: none;
+  }
+
+  .presentation-flow-page .nav-links {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: flex-start;
+    width: 100%;
+    overflow-x: auto;
+    padding: 0 0 2px;
+    scrollbar-width: none;
+  }
+
+  .presentation-flow-page .nav-links::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .presentation-flow-page .presentation-progress {
+    scrollbar-width: none;
+  }
+
+  .presentation-flow-page .presentation-progress::-webkit-scrollbar {
+    display: none;
+  }
+
+  .presentation-flow-page .setup-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .presentation-flow-page .qna-setting {
+    align-items: flex-start;
+  }
+
+  .presentation-flow-page .duration-setting {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .presentation-flow-page .presentation-actions :is(.btn-primary, .btn-secondary) {
+    width: min(140px, calc(50% - 6px));
+  }
+
+  .presentation-flow-page .slide-actions {
+    flex-wrap: wrap;
+  }
+
+  .presentation-flow-page .slide-actions .slide-note-actions {
+    justify-content: space-between;
+  }
+
+  .presentation-flow-page .slide-actions .duration-chip {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+}
+
+/* Unified presentation wizard geometry. */
+.presentation-flow-page .presentation-flow-shell,
+.presentation-flow-page.presentation-setup-page .presentation-flow-shell {
+  width: min(1040px, calc(100% - 48px));
+  padding-top: 24px;
+}
+
+.presentation-flow-page .presentation-flow-shell {
+  overflow: visible;
+}
+
+.presentation-flow-page .wizard-shell,
+.presentation-flow-page .presentation-progress,
+.presentation-flow-page .workflow-stage-content {
+  width: 100%;
+  min-width: 0;
+}
+
+.presentation-flow-page .workflow-stage,
+.presentation-flow-page.presentation-setup-page .workflow-stage { margin-top: 26px; }
+
+.presentation-flow-page.presentation-setup-page .presentation-progress {
+  margin-bottom: 0;
+}
+
+.presentation-flow-page .ready-flow-content {
+  display: grid;
+  min-height: 0;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 14px;
+}
+
+@media (min-width: 901px) {
+  body.presentation-flow-page {
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .presentation-flow-page .presentation-flow-shell,
+  .presentation-flow-page .wizard-shell,
+  .presentation-flow-page .workflow-stage,
+  .presentation-flow-page .workflow-stage-content,
+  .presentation-flow-page .slide-key-content,
+  .presentation-flow-page .ready-flow-content {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .presentation-flow-page .ready-grid {
+    height: 100%;
+  }
+}
+
+.presentation-flow-page .duration-input-wrap {
+  position: relative;
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.presentation-flow-page .two-col-row .duration-setting {
+  grid-template-columns: minmax(118px, .72fr) minmax(0, 1.28fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.presentation-flow-page .two-col-row .duration-setting > label {
+  margin: 0;
+}
+
+.presentation-flow-page .duration-input-wrap input {
+  width: 100%;
+  height: 36px;
+  padding: 0 30px 0 12px;
+  border: 1px solid #d8dfec;
+  border-radius: 8px;
+  background: #fff;
+  color: #172346;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  text-align: center;
+  outline: none;
+}
+
+.presentation-flow-page .duration-input-wrap input:focus {
+  border-color: #6d7fe0;
+  box-shadow: 0 0 0 3px rgba(78, 111, 194, .12);
+}
+
+.presentation-flow-page .duration-input-wrap span {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  color: #7c88a5;
+  font-size: 11px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.presentation-flow-page .slide-key-content {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  align-content: start;
+  gap: 14px;
+  width: 100%;
+  min-height: 0;
+}
+
+.presentation-flow-page .slide-key-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.presentation-flow-page .slide-key-head h1 {
+  margin: 0;
+  color: #172346;
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+.presentation-flow-page .slide-key-head p {
+  margin: 5px 0 0;
+  color: #7c88a5;
+  font-size: 12px;
+}
+
+.presentation-flow-page .slide-key-head .slide-counter {
+  flex: 0 0 auto;
+  color: #5271c8;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.presentation-flow-page .slide-preview-frame {
+  position: relative;
+  display: grid;
+  width: min(760px, 100%);
+  height: auto;
+  aspect-ratio: 16 / 9;
+  margin: 0 auto;
+  min-height: 0;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #d9e1ef;
+  border-radius: 12px;
+  background: #f4f6fb;
+}
+
+.presentation-flow-page .slide-preview-viewport {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  overflow: auto;
+  place-items: start center;
+  scrollbar-color: #9aa7ca transparent;
+  scrollbar-width: thin;
+}
+
+.presentation-flow-page .slide-preview-viewport > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+}
+
+.presentation-flow-page .slide-preview-viewport.is-zoomable > img {
+  width: calc(100% * var(--slide-zoom, 1));
+  height: calc(100% * var(--slide-zoom, 1));
+  max-width: none;
+  max-height: none;
+}
+
+/* 확대 컨트롤은 슬라이드 바깥 오른쪽에 붙인다(슬라이드 내용을 가리지 않도록).
+   .slide-preview-shell(슬라이드 확인) / .record-stage-card(녹화)가 기준 요소다. */
+.presentation-flow-page .slide-preview-shell {
+  position: relative;
+  width: min(760px, 100%);
+  margin: 0 auto;
+  min-height: 0;
+}
+
+.presentation-flow-page .slide-preview-shell .slide-preview-frame {
+  width: 100%;
+  margin: 0;
+}
+
+.presentation-slide-zoom {
+  position: absolute;
+  z-index: 8;
+  top: 50%;
+  right: -54px;
+  display: grid;
+  width: 42px;
+  justify-items: center;
+  gap: 6px;
+  padding: 8px 5px;
+  transform: translateY(-50%);
+  border: 1px solid rgba(77, 95, 157, .22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 8px 24px rgba(23, 35, 70, .16);
+}
+
+/* 좁은 화면에서는 슬라이드 바깥에 둘 여백이 없어 다시 안쪽 오른쪽에 붙인다. */
+@media (max-width: 900px) {
+  .presentation-flow-page .slide-preview-shell .presentation-slide-zoom {
+    right: 8px;
+  }
+}
+
+.presentation-slide-zoom > button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #eef1ff;
+  color: #3949a0;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.presentation-slide-zoom > button:disabled {
+  cursor: default;
+  opacity: .35;
+}
+
+.presentation-slide-zoom > input[type='range'] {
+  width: 20px;
+  height: 84px;
+  margin: 0;
+  direction: rtl;
+  writing-mode: vertical-lr;
+  accent-color: #6674df;
+}
+
+.presentation-slide-zoom > .presentation-slide-zoom-value {
+  width: auto;
+  height: auto;
+  padding: 2px 3px;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.presentation-flow-page .slide-preview-fallback {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-content: center;
+  padding: 8%;
+  background: #f4f6fb;
+  color: #172346;
+  text-align: center;
+}
+
+/* Skeleton shown while the uploaded deck is being converted (Task 4). */
+.presentation-flow-page .slide-preview-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  height: 100%;
+  padding: 9%;
+  justify-content: center;
+}
+
+.presentation-flow-page .slide-skeleton-line,
+.presentation-flow-page .slide-skeleton-block {
+  border-radius: 8px;
+  background: linear-gradient(100deg, #e7ecf5 20%, #f2f5fb 40%, #e7ecf5 60%);
+  background-size: 220% 100%;
+  animation: aivo-slide-shimmer 1.3s ease-in-out infinite;
+}
+
+.presentation-flow-page .slide-skeleton-line {
+  height: 16px;
+}
+
+.presentation-flow-page .slide-skeleton-block {
+  flex: 1;
+  min-height: 120px;
+  border-radius: 12px;
+}
+
+.presentation-flow-page .slide-skeleton-line.is-w40 { width: 40%; }
+.presentation-flow-page .slide-skeleton-line.is-w70 { width: 70%; }
+.presentation-flow-page .slide-skeleton-line.is-w55 { width: 55%; }
+
+@keyframes aivo-slide-shimmer {
+  0% { background-position: 180% 0; }
+  100% { background-position: -60% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .presentation-flow-page .slide-skeleton-line,
+  .presentation-flow-page .slide-skeleton-block {
+    animation: none;
+  }
+}
+
+.presentation-flow-page .slide-preview-fallback[hidden] { display: none; }
+.presentation-flow-page .slide-preview-fallback small { color: #5271c8; font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.presentation-flow-page .slide-preview-fallback h2 { margin: 16px 0 0; font-size: clamp(26px, 3vw, 42px); letter-spacing: -.055em; }
+.presentation-flow-page .slide-preview-fallback p { margin: 12px 0 0; color: #74809b; font-size: 13px; }
+
+.presentation-flow-page .slide-preview-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 4;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(78, 111, 194, .28);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .92);
+  color: #4e6fc2;
+  box-shadow: 0 5px 16px rgba(46, 68, 124, .12);
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.presentation-flow-page .slide-preview-nav svg {
+  width: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.presentation-flow-page .slide-preview-prev { left: 16px; }
+.presentation-flow-page .slide-preview-next { right: 16px; }
+
+.presentation-flow-page .slide-key-content .slide-note-panel {
+  display: grid;
+  min-height: 118px;
+  padding: 14px 16px;
+  border: 1px solid #d9e1ef;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.presentation-flow-page .slide-note-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.presentation-flow-page .slide-note-heading label { color: #172346; font-size: 13px; font-weight: 800; }
+.presentation-flow-page .slide-key-content .slide-note-panel textarea {
+  height: 72px;
+  min-height: 72px;
+  margin-top: 8px;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 1px solid #edf1f7;
+  border-radius: 0;
+  background: #fff;
+  resize: none;
+}
+
+.presentation-flow-page .mic-level-label { margin: 16px 0 0; color: #94a3b8; font-size: 11px; font-weight: 800; }
+.presentation-flow-page .mic-level { display: flex; gap: 3px; margin-top: 8px; }
+.presentation-flow-page .mic-level span { flex: 1; height: 20px; border-radius: 2px; background: #e2e5f5; }
+.presentation-flow-page .mic-level span.is-active { background: #4e6fc2; }
+.presentation-flow-page .device-secondary-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }
+.presentation-flow-page .device-secondary-actions .btn-secondary { width: 100%; height: 40px; margin: 0; }
+
+.presentation-flow-page .video-preview {
+  display: flex;
+  flex-direction: column;
+}
+
+.presentation-flow-page .camera-stage {
+  min-height: 0;
+  max-height: none;
+  flex: 1 1 auto;
+  aspect-ratio: auto;
+}
+
+.presentation-flow-page .camera-stage video {
+  object-fit: cover;
+  border-radius: 0;
+}
+
+/* 면접 장치 확인도 발표와 같이 남은 높이를 채운다.
+   예전에는 aspect-ratio: 16/9 + flex: 0 0 auto로 폭에서 높이를 역산해서, 왼쪽 컬럼이
+   넓어지면 카드 높이(.device-check의 clamp)를 넘어 아래가 잘렸다.
+   (--device-camera-ratio를 넣어주는 코드는 없어 사실상 항상 16/9로 고정이었다.) */
+.interview-check-page .camera-stage {
+  min-height: 0;
+  max-height: none;
+  flex: 1 1 auto;
+  aspect-ratio: auto;
+}
+
+.presentation-flow-page .device-preview-controls {
+  gap: 12px;
+  padding-top: 10px;
+}
+
+.presentation-flow-page .device-icon-toggle {
+  position: relative;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .54);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+  cursor: pointer;
+  transition: border-color .18s ease, color .18s ease, background-color .18s ease;
+}
+
+.presentation-flow-page .device-icon-toggle svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.presentation-flow-page .device-icon-toggle:hover,
+.presentation-flow-page .device-icon-toggle:focus-visible {
+  background: rgba(255, 255, 255, .2);
+  outline: none;
+}
+
+.presentation-flow-page .device-icon-toggle.is-off {
+  border-color: #dc4c64;
+  color: #dc4c64;
+  background: rgba(220, 76, 100, .08);
+}
+
+.presentation-flow-page .device-off-mark {
+  position: absolute;
+  width: 31px;
+  height: 2px;
+  border-radius: 99px;
+  background: currentColor;
+  opacity: 0;
+  transform: rotate(-45deg);
+  transition: opacity .18s ease;
+}
+
+.presentation-flow-page .device-icon-toggle.is-off .device-off-mark {
+  opacity: 1;
+}
+
+.presentation-flow-page .confirm-panel h3 {
+  margin: 0 0 8px;
+  color: #172346;
+  font-size: 20px;
+}
+
+.presentation-flow-page .confirm-row {
+  gap: 12px;
+  padding: 15px 0;
+  font-size: 14px;
+}
+
+.presentation-flow-page .confirm-row b {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.presentation-flow-page .confirm-row.is-off span::before,
+.presentation-flow-page .confirm-row.is-off b {
+  color: #dc4c64;
+}
+
+.presentation-flow-page .device-check-guidance {
+  display: grid;
+  gap: 7px;
+  margin: 14px 0 0;
+  padding: 13px 14px 13px 30px;
+  border-radius: 10px;
+  background: #f5f7fb;
+  color: #65708a;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.presentation-flow-page .ready-sidebar {
+  background: #172346;
+  color: #fff;
+}
+
+.presentation-flow-page .ready-sidebar > strong {
+  margin-bottom: 5px;
+  font-size: 20px;
+}
+
+.presentation-flow-page .ready-sidebar > small {
+  color: rgba(255, 255, 255, .66);
+  font-size: 12px;
+}
+
+.presentation-flow-page .ready-item {
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.presentation-flow-page .ready-check-icon {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  place-items: center;
+  border-radius: 50%;
+  background: #22a866;
+  color: #fff;
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.presentation-flow-page .ready-item strong {
+  font-size: 14px;
+}
+
+.presentation-flow-page .ready-item p {
+  color: rgba(255, 255, 255, .62);
+  font-size: 11px;
+}
+
+.presentation-flow-page .ready-item .status {
+  display: block;
+  color: #85e3ae;
+  font-size: 12px;
+}
+
+.presentation-flow-page .ready-slide-panel {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  gap: 12px;
+  padding: 16px;
+  background: #fff;
+}
+
+.presentation-flow-page .ready-slide-panel::before {
+  content: none;
+}
+
+.presentation-flow-page .ready-slide-preview {
+  position: relative;
+  display: flex;
+  width: min(560px, 100%);
+  aspect-ratio: 16 / 9;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid #dfe4ee;
+  border-radius: 12px;
+  background: #f5f7fb;
+}
+
+.presentation-flow-page .ready-slide-preview .slide-nav-body {
+  position: relative;
+  width: 100%;
+  padding: 48px 92px 38px;
+  text-align: left;
+}
+
+.presentation-flow-page .ready-slide-preview .slide-nav-btn {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  transform: translateY(-50%);
+}
+
+.presentation-flow-page .ready-slide-preview #prevSlideBtn { left: 14px; }
+.presentation-flow-page .ready-slide-preview #nextSlideBtn { right: 14px; }
+
+.presentation-flow-page .ready-slide-preview .slide-nav-body h3 {
+  margin-top: 14px;
+  font-size: clamp(24px, 2.4vw, 34px);
+}
+
+.presentation-flow-page .ready-slide-preview .slide-nav-body p {
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.presentation-flow-page .ready-slide-preview .ai-orb {
+  top: 24px;
+  right: 28px;
+  width: 62px;
+  height: 62px;
+  transform: none;
+  background: #6d7fe0;
+  box-shadow: none;
+  font-size: 14px;
+}
+
+.presentation-flow-page .ready-slide-preview .slide-counter {
+  display: block;
+  margin-top: 22px;
+  color: #77839e;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.presentation-flow-page .ready-duration {
+  margin: 0;
+  color: #8993a8;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.presentation-flow-page .ready-duration b {
+  color: #4e6fc2;
+}
+
+.presentation-flow-page .ready-note-field {
+  position: relative;
+  margin: 0;
+}
+
+.presentation-flow-page .ready-note-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.presentation-flow-page .ready-note-field textarea {
+  width: 100%;
+  height: 64px;
+  padding: 10px 12px;
+  border: 1px solid #e2e5f5;
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  font-size: 12px;
+  resize: none;
+}
+
+@media (max-width: 900px) {
+  .presentation-flow-page .presentation-flow-shell,
+  .presentation-flow-page.presentation-setup-page .presentation-flow-shell {
+    width: min(100% - 32px, 680px);
+  }
+
+  .presentation-flow-page .workflow-stage { margin-top: 18px; }
+  .presentation-flow-page .slide-key-head { align-items: flex-start; }
+}
+
+@media (max-width: 560px) {
+  .presentation-flow-page .two-col-row .duration-setting {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .presentation-flow-page .slide-key-head { display: block; }
+  .presentation-flow-page .slide-key-head .slide-counter { display: block; margin-top: 8px; }
+  .presentation-flow-page .slide-preview-nav { width: 32px; height: 32px; }
+  .presentation-flow-page .device-secondary-actions { grid-template-columns: 1fr; }
+}
+
+/* Final preflight alignment and surface polish. */
+.presentation-flow-page :is(.setup-single-column, .slide-key-content) {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.presentation-flow-page .qna-toggle {
+  display: grid;
+  width: 112px;
+  min-width: 112px;
+  grid-template-columns: 64px 32px;
+  justify-content: initial;
+  gap: 12px;
+}
+
+.presentation-flow-page .qna-toggle b {
+  width: 32px;
+  text-align: center;
+}
+
+.presentation-flow-page.presentation-setup-page .setup-form-panel {
+  gap: 12px;
+}
+
+/* 항목 사이 간격은 패널의 gap(12px) 하나로만 만든다. 자료 업로드에만 margin이
+   더 붙어 있어 위 항목들과 간격이 달라 보였다. */
+.presentation-flow-page.presentation-setup-page .upload-field {
+  margin-bottom: 0;
+}
+
+body.presentation-flow-page.presentation-slides-page {
+  height: auto;
+  min-height: 100svh;
+  overflow-y: auto;
+}
+
+.presentation-flow-page.presentation-slides-page :is(
+  .presentation-flow-shell,
+  .wizard-shell,
+  .workflow-stage,
+  .workflow-stage-content,
+  .slide-key-content
+) {
+  height: auto;
+}
+
+.presentation-flow-page .slide-page-control {
+  display: inline-grid;
+  flex: 0 0 auto;
+  grid-template-columns: 24px auto 24px;
+  align-items: center;
+  gap: 4px;
+  color: #5271c8;
+  white-space: nowrap;
+}
+
+.presentation-flow-page .slide-page-control button {
+  width: 24px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.presentation-flow-page .slide-page-control button:hover,
+.presentation-flow-page .slide-page-control button:focus-visible {
+  color: #263f9c;
+  outline: none;
+}
+
+/* 처음/끝 슬라이드에서 넘김 버튼 비활성화 표시 */
+.presentation-flow-page .slide-page-control button:disabled,
+.presentation-ready-page .ready-slide-control button:disabled {
+  opacity: .28;
+  cursor: not-allowed;
+}
+.presentation-flow-page .slide-page-control button:disabled:hover,
+.presentation-ready-page .ready-slide-control button:disabled:hover {
+  color: inherit;
+}
+
+.presentation-flow-page.presentation-slides-page .slide-note-panel,
+.presentation-flow-page.presentation-slides-page .slide-note-panel textarea {
+  background: #fff;
+  background-image: none;
+  box-shadow: none;
+}
+
+/* 핵심 내용 입력 시 뜨던 보라색 포커스 테두리(아웃라인) 제거. */
+.presentation-flow-page .slide-note-panel textarea:focus,
+.presentation-flow-page .slide-key-content .slide-note-panel textarea:focus {
+  outline: none;
+  border-color: #dfe4ee;
+  box-shadow: none;
+}
+
+/* Demo polish: prevent device copy clipping and center the final check vertically. */
+.presentation-check-page .confirm-row {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  align-content: center;
+}
+
+.presentation-check-page .confirm-row b {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.presentation-check-page .device-check-guidance {
+  margin: 14px 0 0;
+  line-height: 1.55;
+}
+
+.presentation-check-page .mic-level-label {
+  margin-top: 14px;
+}
+
+.presentation-ready-page .workflow-stage {
+  min-height: calc(100svh - 79px - 71px - 96px);
+  align-items: center;
+}
+
+.presentation-ready-page .ready-flow-content {
+  align-self: center;
+  margin: 0 auto;
+  width: min(760px, 100%);
+  height: 100%;
+  min-height: 100%;
+  place-items: center;
+}
+
+.presentation-flow-page.presentation-slides-page .slide-note-panel::before {
+  content: none;
+}
+
+.presentation-check-page .camera-preview-head {
+  position: relative;
+  justify-content: flex-end;
+}
+
+.presentation-check-page .device-live-indicator {
+  position: absolute;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #ef4458;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  transform: translateX(-50%);
+}
+
+.presentation-check-page .device-live-indicator i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 4px rgba(239, 68, 88, .12);
+}
+
+.presentation-check-page .confirm-panel {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  background-image: none;
+  box-shadow: none;
+}
+
+.presentation-check-page .confirm-panel::before {
+  content: none;
+}
+
+.presentation-check-page .device-secondary-actions {
+  grid-template-columns: 1fr;
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.presentation-check-page #recheckBtn {
+  border: 1px solid #dbe1ec;
+  background: #fff;
+  background-image: none;
+  box-shadow: none;
+}
+
+.presentation-check-page #recheckBtn:hover,
+.presentation-check-page #recheckBtn:focus-visible {
+  border-color: #8fa2dd;
+  background: #f4f6fc;
+  box-shadow: none;
+}
+
+.presentation-ready-page .ready-grid {
+  grid-template-columns: minmax(310px, .76fr) minmax(0, 1.24fr);
+  gap: 24px;
+}
+
+.presentation-ready-page .ready-sidebar {
+  background: #fff;
+  background-image: none;
+  color: #172346;
+  box-shadow: none;
+}
+
+.presentation-ready-page .ready-check-icon {
+  color: #fff !important;
+}
+
+.presentation-ready-page .ready-sidebar::before,
+.presentation-ready-page .ready-item::before {
+  content: none;
+}
+
+.presentation-ready-page .ready-sidebar > small {
+  color: #7c88a5;
+}
+
+.presentation-ready-page .ready-item {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 0;
+  padding: 14px 0;
+  border: 0;
+  border-top: 1px solid #edf1f7;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.presentation-ready-page .ready-item:first-of-type {
+  margin-top: 14px;
+}
+
+.presentation-ready-page .ready-item strong {
+  color: #172346;
+}
+
+.presentation-ready-page .ready-item p {
+  margin: 3px 0 0;
+  color: #7c88a5;
+}
+
+.presentation-ready-page .ready-item .status {
+  margin-top: 5px;
+  color: #159957;
+}
+
+.presentation-ready-page .ready-grid > .ready-slide-panel {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
+}
+
+.presentation-ready-page .ready-slide-preview > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+}
+
+.presentation-ready-page .ready-slide-preview .slide-nav-body[hidden] {
+  display: none;
+}
+
+.presentation-ready-page .ready-slide-panel > .slide-counter {
+  margin-top: 10px;
+  color: #4e6fc2;
+  font-size: 11px;
+  font-weight: 750;
+  text-align: right;
+}
+
+.presentation-ready-page .ready-note-plain {
+  min-height: 48px;
+  margin: 14px 0 0;
+  padding: 0;
+  color: #66728c;
+  font-size: 13px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.presentation-ready-page .ready-start-button {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 99px;
+  background: #4f6ff2;
+  background-image: none;
+  box-shadow: none;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.presentation-ready-page .ready-start-button:hover,
+.presentation-ready-page .ready-start-button:focus-visible {
+  background: #3f5fe0;
+  box-shadow: none;
+}
+
+/* Final shared geometry: all four presentation steps keep the same shell,
+   progress origin, and side controls while only the stage content changes. */
+.presentation-flow-page .presentation-flow-shell,
+.presentation-flow-page.presentation-setup-page .presentation-flow-shell {
+  width: min(1040px, calc(100% - 48px));
+  padding-top: 32px;
+}
+
+.presentation-flow-page .wizard-shell {
+  gap: 0;
+}
+
+.presentation-flow-page .presentation-progress {
+  height: 52px;
+  margin: 18px 0 0;
+}
+
+.presentation-flow-page .workflow-stage,
+.presentation-flow-page.presentation-setup-page .workflow-stage {
+  margin-top: 26px;
+}
+
+.presentation-slides-page .slide-page-control .slide-counter {
+  position: static;
+  inset: auto;
+  display: block;
+  min-width: 68px;
+  margin: 0;
+  text-align: center;
+  transform: none;
+}
+
+.presentation-slides-page .slide-key-content {
+  padding-bottom: 48px;
+}
+
+.presentation-ready-page .ready-flow-content {
+  height: auto;
+  align-self: start;
+}
+
+.presentation-ready-page .ready-grid {
+  height: auto;
+  align-items: stretch;
+}
+
+.presentation-ready-page .ready-sidebar,
+.presentation-ready-page .ready-grid > .ready-slide-panel {
+  height: auto;
+  min-height: 0;
+  align-self: stretch;
+}
+
+.presentation-ready-page .ready-grid > .ready-slide-panel {
+  align-content: start;
+}
+
+.presentation-ready-page .ready-slide-preview {
+  margin-top: 0;
+}
+
+.presentation-ready-page .ready-slide-preview .slide-counter {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  z-index: 6;
+  margin: 0;
+  padding: 3px 7px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, .88);
+  color: #4f6ff2;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+@media (max-width: 900px) {
+  .presentation-ready-page .ready-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* User screenshot alignment pass: device spacing and ready slide controls. */
+.presentation-check-page .workflow-stage-content {
+  padding-bottom: 48px;
+  box-sizing: border-box;
+}
+
+.presentation-ready-page .ready-grid {
+  grid-template-columns: minmax(270px, .58fr) minmax(0, 1.42fr);
+  gap: 42px;
+}
+
+.presentation-ready-page .ready-sidebar {
+  padding: 20px;
+}
+
+.presentation-ready-page .ready-item {
+  padding: 12px 0;
+}
+
+.presentation-ready-page .ready-slide-preview,
+.presentation-ready-page .ready-note-plain {
+  width: min(620px, 100%);
+}
+
+.presentation-ready-page .ready-note-plain {
+  margin: 14px auto 0;
+}
+
+.presentation-ready-page .ready-slide-preview .slide-counter {
+  position: static;
+  inset: auto;
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 1;
+}
+
+/* 슬라이드 넘김 내비게이션을 미리보기 카드 우상단으로 이동
+   (슬라이드 단계의 .slide-page-control과 위치를 맞춤). 이미지 위에서도
+   또렷하게 보이도록 반투명 흰색 알약 배경을 얹는다. */
+.presentation-ready-page .ready-slide-control {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .9);
+  box-shadow: 0 2px 8px rgba(23, 35, 70, .1);
+  color: #4f6ff2;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.presentation-ready-page .ready-slide-control .slide-counter {
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.presentation-ready-page .ready-slide-control button {
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 1;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.presentation-ready-page .ready-slide-control button:hover,
+.presentation-ready-page .ready-slide-control button:focus-visible {
+  color: #263f9c;
+  outline: none;
+}
+
+@media (max-width: 900px) {
+  .presentation-ready-page .ready-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+}
+
+/* Ready page balance: inset the content so progress-bar gutters feel even. */
+.presentation-ready-page .ready-flow-content {
+  width: min(944px, 100%);
+  margin-inline: auto;
+}
+
+@media (max-width: 900px) {
+  .presentation-ready-page .ready-flow-content {
+    width: 100%;
+  }
+}
+
+/* Device check final spacing pass. */
+.presentation-check-page .presentation-flow-shell {
+  padding-bottom: 88px;
+}
+
+.presentation-check-page .workflow-stage-content {
+  padding-bottom: 72px;
+}
+
+.presentation-check-page .confirm-panel {
+  justify-content: flex-start;
+  min-height: 0;
+}
+
+.presentation-check-page .device-secondary-actions {
+  display: none;
+}
+
+.presentation-check-page .device-check {
+  margin-bottom: 20px;
+}
+
+/* 2026-07 settings-confirm pass: taller device area + animated confirmation flow. */
+.presentation-check-page .presentation-flow-shell {
+  padding-bottom: 96px;
+}
+
+.presentation-check-page .workflow-stage {
+  margin-top: 34px;
+}
+
+.presentation-check-page .workflow-stage-content {
+  padding-bottom: 84px;
+}
+
+.presentation-check-page .device-check {
+  height: clamp(560px, 58svh, 650px);
+  grid-template-columns: minmax(0, 1.42fr) minmax(340px, .58fr);
+  gap: 34px;
+  margin-bottom: 0;
+}
+
+.presentation-check-page .video-preview {
+  min-height: 0;
+  border-radius: 12px;
+}
+
+.presentation-check-page .camera-stage {
+  min-height: 390px;
+  max-height: none;
+}
+
+.presentation-check-page .confirm-panel {
+  min-height: 100%;
+  padding: 28px;
+}
+
+.presentation-ready-page .presentation-flow-shell {
+  padding-bottom: 120px;
+}
+
+.presentation-ready-page .workflow-stage {
+  margin-top: 34px;
+}
+
+.presentation-ready-page .ready-flow-content {
+  display: grid;
+  width: min(944px, 100%);
+  min-height: clamp(520px, 55svh, 640px);
+  margin-inline: auto;
+  margin-bottom: 58px;
+  place-items: start center;
+}
+
+.presentation-ready-page .ready-confirm-card {
+  display: grid;
+  width: min(560px, 100%);
+  gap: 22px;
+  padding: 34px 36px;
+  border: 1px solid #dfe4ee;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 18px 44px rgba(23, 35, 70, .06);
+}
+
+.presentation-ready-page .ready-confirm-head {
+  display: grid;
+  gap: 8px;
+}
+
+.presentation-ready-page .ready-kicker {
+  color: #6d7fe0;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .14em;
+}
+
+.presentation-ready-page .ready-confirm-head h1,
+.presentation-ready-page .ready-slide-review-head h2 {
+  margin: 0;
+  color: #172346;
+  font-size: clamp(26px, 2.2vw, 34px);
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.presentation-ready-page .ready-confirm-head p,
+.presentation-ready-page .ready-slide-review-head p {
+  margin: 0;
+  color: #7c88a5;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.presentation-ready-page .ready-confirm-head p b {
+  color: #172346;
+}
+
+.presentation-ready-page .ready-check-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.presentation-ready-page .ready-item {
+  display: flex;
+  gap: 18px;
+  min-height: 92px;
+  align-items: center;
+  padding: 16px 0;
+  border-top: 1px solid #edf1f7;
+  opacity: .78;
+  transform: translateY(0);
+  transition: opacity .22s ease, transform .22s ease;
+}
+
+.presentation-ready-page .ready-item:first-child {
+  border-top: 1px solid #edf1f7;
+}
+
+.presentation-ready-page .ready-check-icon {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  border: 2px solid #e4e9f4;
+  background: #f7f9fd;
+  color: transparent !important;
+  font-size: 28px;
+  transition: background-color .22s ease, border-color .22s ease, color .22s ease, transform .22s ease;
+}
+
+.presentation-ready-page .ready-item strong {
+  display: block;
+  color: #172346;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.presentation-ready-page .ready-item .status {
+  display: block;
+  margin-top: 8px;
+  color: #a0a8ba;
+  font-size: 18px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.presentation-ready-page .ready-item.done {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.presentation-ready-page .ready-item.done .ready-check-icon {
+  border-color: #80bf6f;
+  background: #80bf6f;
+  color: #fff !important;
+  animation: readyCheckPop .38s cubic-bezier(.2, 1.35, .36, 1);
+}
+
+.presentation-ready-page .ready-item.done .status {
+  color: #4f8d72;
+  animation: readyStatusFade .28s ease both;
+}
+
+.presentation-ready-page .ready-start-button {
+  min-height: 58px;
+  margin-top: 4px;
+  border-radius: 999px;
+  background: #4f6ff2;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.presentation-ready-page .ready-start-button:disabled {
+  background: #dbe2f1;
+  color: #98a2b8;
+  cursor: not-allowed;
+}
+
+.presentation-ready-page .ready-start-button.is-ready:not(:disabled) {
+  animation: readyButtonGlow .52s ease both;
+}
+
+.presentation-ready-page .ready-slide-review {
+  display: grid;
+  width: min(980px, 100%);
+  /* 슬라이드 작성(.slide-key-content) 페이지와 동일한 헤더-콘텐츠 간격(14px). */
+  gap: 14px;
+  justify-items: center;
+}
+
+.presentation-ready-page .ready-slide-review[hidden],
+.presentation-ready-page .ready-confirm-card[hidden] {
+  display: none;
+}
+
+.presentation-ready-page .ready-slide-review.is-visible {
+  animation: readyReviewIn .32s ease both;
+}
+
+.presentation-ready-page .ready-slide-review-head {
+  display: grid;
+  width: min(860px, 100%);
+  gap: 8px;
+}
+
+.presentation-ready-page .ready-slide-panel {
+  display: grid;
+  width: min(860px, 100%);
+  gap: 14px;
+  padding: 0;
+  background: transparent;
+}
+
+.presentation-ready-page .ready-slide-preview,
+.presentation-ready-page .ready-note-plain {
+  width: 100%;
+}
+
+.presentation-ready-page .ready-slide-preview {
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+}
+
+.presentation-ready-page .ready-note-plain {
+  min-height: 64px;
+  margin: 0;
+  color: #66728c;
+  font-size: 15px;
+}
+
+.presentation-ready-page .ready-confirm-button {
+  width: min(240px, 100%);
+  min-height: 54px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+@keyframes readyCheckPop {
+  0% { transform: scale(.74); }
+  68% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+@keyframes readyStatusFade {
+  from { opacity: .35; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes readyButtonGlow {
+  0% { box-shadow: 0 0 0 rgba(79, 111, 242, 0); }
+  100% { box-shadow: 0 14px 30px rgba(79, 111, 242, .2); }
+}
+
+@keyframes readyReviewIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 900px) {
+  .presentation-check-page .device-check {
+    height: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .presentation-check-page .camera-stage {
+    min-height: 280px;
+  }
+
+  .presentation-ready-page .ready-flow-content {
+    min-height: auto;
+    margin-bottom: 42px;
+  }
+
+  .presentation-ready-page .ready-confirm-card {
+    padding: 26px 22px;
+  }
+
+  .presentation-ready-page .ready-item {
+    min-height: 78px;
+  }
+
+  .presentation-ready-page .ready-item strong {
+    font-size: 20px;
+  }
+
+  .presentation-ready-page .ready-item .status {
+    font-size: 15px;
+  }
+}
+
+/* 2026-07 viewport correction: keep check/confirm screens inside 1080px without clipping. */
+.presentation-check-page .presentation-flow-shell {
+  overflow: visible;
+  padding-top: 24px;
+  padding-bottom: 56px;
+}
+
+.presentation-check-page .wizard-shell,
+.presentation-check-page .workflow-stage-content {
+  overflow: visible;
+}
+
+.presentation-check-page .workflow-stage {
+  margin-top: 22px;
+}
+
+.presentation-check-page .workflow-stage-content {
+  padding-bottom: 0;
+}
+
+.presentation-check-page .device-check {
+  height: clamp(560px, 56svh, 620px);
+  max-height: none;
+  grid-template-columns: minmax(0, 1.38fr) minmax(340px, .62fr);
+  gap: 30px;
+}
+
+.presentation-check-page .video-preview {
+  padding: 10px;
+}
+
+.presentation-check-page .camera-stage {
+  min-height: 0;
+  height: auto;
+  max-height: none;
+}
+
+.presentation-check-page .confirm-panel {
+  min-height: 0;
+  height: 100%;
+  overflow: visible;
+  padding: 24px 26px;
+}
+
+.presentation-check-page .confirm-panel h3 {
+  margin-bottom: 14px;
+  font-size: 22px;
+}
+
+.presentation-check-page .confirm-row {
+  padding: 12px 0;
+  font-size: 14px;
+}
+
+.presentation-check-page .confirm-row b {
+  font-size: 13px;
+}
+
+.presentation-check-page .device-check-guidance {
+  margin-top: 12px;
+  padding: 12px 14px 12px 26px;
+  gap: 5px;
+  font-size: 11px;
+  line-height: 1.42;
+}
+
+.presentation-check-page .mic-level-label {
+  margin-top: 12px;
+}
+
+.presentation-check-page .mic-level span {
+  height: 16px;
+}
+
+.presentation-ready-page .presentation-flow-shell {
+  overflow: visible;
+  padding-top: 24px;
+  padding-bottom: 72px;
+}
+
+.presentation-ready-page .workflow-stage {
+  margin-top: 20px;
+}
+
+.presentation-ready-page .ready-flow-content {
+  width: min(760px, 100%);
+  min-height: 0;
+  margin-bottom: 34px;
+  place-items: center;
+}
+
+.presentation-ready-page .ready-confirm-card {
+  width: min(520px, 100%);
+  gap: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.presentation-ready-page .ready-confirm-head,
+.presentation-ready-page .ready-kicker {
+  display: none;
+}
+
+.presentation-ready-page .ready-check-list {
+  width: 100%;
+}
+
+.presentation-ready-page .ready-item {
+  min-height: 78px;
+  gap: 16px;
+  padding: 12px 0;
+}
+
+.presentation-ready-page .ready-check-icon {
+  width: 44px;
+  height: 44px;
+  flex-basis: 44px;
+  font-size: 24px;
+}
+
+.presentation-ready-page .ready-item strong {
+  font-size: 21px;
+}
+
+.presentation-ready-page .ready-item .status {
+  margin-top: 4px;
+  font-size: 15px;
+}
+
+.presentation-ready-page .ready-start-button {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 14px;
+  font-size: 15px;
+}
+
+.presentation-ready-page .ready-slide-review {
+  width: min(760px, 100%);
+  gap: 12px;
+  justify-items: stretch;
+}
+
+.presentation-ready-page .ready-slide-review.is-visible {
+  animation-duration: .48s;
+}
+
+.presentation-ready-page .ready-slide-review-head {
+  width: min(720px, 100%);
+  gap: 6px;
+}
+
+.presentation-ready-page .ready-slide-review-head h2 {
+  font-size: clamp(24px, 2vw, 30px);
+}
+
+.presentation-ready-page .ready-slide-panel {
+  width: min(720px, 100%);
+  gap: 10px;
+}
+
+.presentation-ready-page .ready-slide-preview {
+  border-radius: 12px;
+}
+
+.presentation-ready-page .ready-note-plain {
+  min-height: 42px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.presentation-ready-page .ready-confirm-button {
+  justify-self: center;
+  min-height: 48px;
+}
+
+@media (max-width: 900px) {
+  .presentation-check-page .device-check {
+    height: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .presentation-check-page .camera-stage {
+    min-height: 280px;
+  }
+
+  .presentation-ready-page .ready-flow-content {
+    width: 100%;
+    margin-bottom: 36px;
+  }
+
+  .presentation-ready-page .ready-confirm-card {
+    width: 100%;
+  }
+
+  .presentation-ready-page .ready-slide-review,
+  .presentation-ready-page .ready-slide-panel,
+  .presentation-ready-page .ready-slide-review-head {
+    width: 100%;
+  }
+}
+
+/* 2026-07 follow-up: keep shared chrome stable and fit check/ready screens above the footer. */
+.presentation-check-page .presentation-flow-shell,
+.presentation-ready-page .presentation-flow-shell {
+  min-height: calc(100svh - 131px);
+  overflow: hidden;
+  padding-top: 14px;
+  padding-bottom: 0;
+}
+
+.presentation-check-page .wizard-shell,
+.presentation-ready-page .wizard-shell {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.presentation-check-page .workflow-stage,
+.presentation-ready-page .workflow-stage {
+  min-height: 0;
+  margin-top: 12px;
+  align-items: center;
+}
+
+.presentation-check-page .workflow-stage-content,
+.presentation-ready-page .workflow-stage-content {
+  min-height: 0;
+  overflow: hidden;
+  padding-bottom: 0;
+}
+
+.presentation-check-page .device-check {
+  height: clamp(468px, 48svh, 528px);
+  max-height: calc(100svh - 292px);
+  grid-template-columns: minmax(0, 1.42fr) minmax(320px, .58fr);
+  gap: 28px;
+  align-self: center;
+}
+
+.presentation-check-page .video-preview {
+  padding: 10px;
+}
+
+.presentation-check-page .camera-stage {
+  min-height: 0;
+  height: 100%;
+  max-height: none;
+}
+
+.presentation-check-page .camera-stage img {
+  object-fit: cover;
+}
+
+.presentation-check-page .confirm-panel {
+  height: 100%;
+  /* 패널 높이는 좌측 영상에 맞춰 고정되는데 내용(장치 상태·안내·마이크 레벨)이
+     세로로 약간 넘쳐 하단 마이크 레벨 바가 잘렸다. 세로 여백을 조금씩 줄여 담는다. */
+  overflow: hidden;
+  padding: 12px 28px;
+}
+
+.presentation-check-page .confirm-panel h3 {
+  margin-bottom: 12px;
+  font-size: 22px;
+}
+
+.presentation-check-page .confirm-row {
+  padding: 11px 0;
+  font-size: 14px;
+}
+
+.presentation-check-page .confirm-row b {
+  font-size: 13px;
+}
+
+.presentation-check-page .device-check-guidance {
+  margin-top: 10px;
+  padding: 12px 14px 12px 28px;
+  gap: 5px;
+  font-size: 11px;
+}
+
+.presentation-check-page .mic-level-label {
+  margin-top: 10px;
+}
+
+.presentation-check-page .mic-level span {
+  height: 16px;
+}
+
+.presentation-ready-page .ready-flow-content {
+  align-self: stretch;
+  display: grid;
+  width: min(620px, 100%);
+  min-height: 0;
+  margin: 0 auto;
+  place-items: center;
+}
+
+.presentation-ready-page .ready-confirm-card {
+  width: min(500px, 100%);
+  gap: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.presentation-ready-page .ready-check-list {
+  width: 100%;
+}
+
+.presentation-ready-page .ready-item {
+  min-height: 66px;
+  gap: 14px;
+  padding: 8px 0;
+}
+
+.presentation-ready-page .ready-check-icon {
+  width: 38px;
+  height: 38px;
+  flex-basis: 38px;
+  font-size: 21px;
+}
+
+.presentation-ready-page .ready-item strong {
+  font-size: 18px;
+}
+
+.presentation-ready-page .ready-item .status {
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.presentation-ready-page .ready-item-main {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.presentation-ready-page .ready-review-link {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid #cfd8ee;
+  border-radius: 999px;
+  background: #fff;
+  color: #5270dd;
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.presentation-ready-page .ready-review-link:hover,
+.presentation-ready-page .ready-review-link:focus-visible {
+  border-color: #7384e7;
+  background: #f7f8ff;
+  outline: none;
+}
+
+.presentation-ready-page .ready-review-link:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.presentation-ready-page .ready-start-button {
+  min-height: 46px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.presentation-ready-page .ready-slide-review {
+  align-self: center;
+  width: min(720px, 100%);
+  gap: 10px;
+  justify-items: stretch;
+}
+
+.presentation-ready-page .ready-slide-review-head {
+  display: none;
+}
+
+.presentation-ready-page .ready-slide-panel {
+  width: min(660px, 100%);
+  gap: 8px;
+  justify-self: center;
+}
+
+.presentation-ready-page .ready-slide-preview {
+  width: 100%;
+  max-height: min(50svh, 390px);
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+}
+
+.presentation-ready-page .ready-slide-preview .slide-nav-body {
+  padding: 0 64px;
+}
+
+.presentation-ready-page .ready-slide-preview .slide-nav-body .eyebrow {
+  font-size: 10px;
+}
+
+.presentation-ready-page .ready-slide-preview .slide-nav-body h3 {
+  font-size: clamp(27px, 2.8vw, 40px);
+}
+
+.presentation-ready-page .ready-slide-preview .slide-nav-body p {
+  font-size: clamp(12px, 1.1vw, 15px);
+}
+
+.presentation-ready-page .ready-note-plain {
+  min-height: 32px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.presentation-ready-page .ready-confirm-button {
+  justify-self: center;
+  width: min(180px, 100%);
+  min-height: 42px;
+  border-radius: 999px;
+  background: #6473e8;
+  box-shadow: none;
+  font-size: 14px;
+}
+
+.presentation-ready-page .ready-confirm-button:hover,
+.presentation-ready-page .ready-confirm-button:focus-visible {
+  background: #5263df;
+  box-shadow: none;
+}
+
+@media (max-width: 900px) {
+  .presentation-check-page .presentation-flow-shell,
+  .presentation-ready-page .presentation-flow-shell {
+    overflow: visible;
+    padding-bottom: 28px;
+  }
+
+  .presentation-check-page .wizard-shell,
+  .presentation-ready-page .wizard-shell,
+  .presentation-check-page .workflow-stage-content,
+  .presentation-ready-page .workflow-stage-content {
+    overflow: visible;
+  }
+
+  .presentation-check-page .device-check {
+    height: auto;
+    max-height: none;
+    grid-template-columns: 1fr;
+  }
+
+  .presentation-ready-page .ready-flow-content,
+  .presentation-ready-page .ready-slide-review,
+  .presentation-ready-page .ready-slide-panel {
+    width: 100%;
+  }
+
+  .presentation-ready-page .ready-item-main {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* Absolute final ready-screen centering guard. */
+.presentation-ready-page .workflow-stage-content.ready-flow-content {
+  width: min(760px, 100%);
+  height: calc(100svh - 79px - 71px - 120px);
+  min-height: 620px;
+  margin: 0 auto;
+  place-items: center;
+}
+
+@media (max-width: 900px) {
+  .presentation-ready-page .workflow-stage-content.ready-flow-content {
+    height: auto;
+    min-height: 0;
+  }
+}
+
+/* Final demo layout guard: readable device card and vertically centered ready state. */
+.presentation-check-page .confirm-row {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  align-content: center;
+}
+
+.presentation-check-page .confirm-row b {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.presentation-check-page .device-check-guidance {
+  margin: 14px 0 0;
+  line-height: 1.55;
+}
+
+.presentation-check-page .mic-level-label {
+  margin-top: 14px;
+}
+
+.presentation-ready-page .workflow-stage {
+  min-height: calc(100svh - 79px - 71px - 96px);
+  align-items: center;
+}
+
+.presentation-ready-page .ready-flow-content {
+  align-self: center;
+  margin: 0 auto;
+}
+
+/* Demo viewport regression guard (1920 x 1080). */
+.presentation-check-page .confirm-row b {
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+}
+
+.presentation-ready-page .workflow-stage-content.ready-flow-content {
+  height: 620px;
+  min-height: 620px;
+  transform: none;
+}
+
+.presentation-ready-page .ready-slide-review.is-visible {
+  display: grid;
+  gap: 14px;
+  align-content: center;
+  /* 넘김 내비게이션이 상단으로 이동한 만큼, 리뷰 콘텐츠를 아래로 내려
+     상단 진행 바와의 간격을 넓힌다(우상단 버튼이 진행 바에 붙지 않도록). */
+  margin-top: 56px;
+}
+
+.presentation-ready-page .ready-review-actions {
+  display: flex;
+  visibility: visible;
+  position: relative;
+  z-index: 2;
+  justify-content: center;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .presentation-ready-page .workflow-stage-content.ready-flow-content {
+    height: auto;
+    min-height: 0;
+  }
+}
+
+/* ============================================================
+   STANDARDIZED FLOW LAYOUT — single source of truth (authoritative)
+   ------------------------------------------------------------
+   The preflight wizard pages (1 자료·설정 / 2 핵심 내용 / 3 장치 확인 /
+   4 설정 확인) previously each redefined the shell padding, progress-bar
+   margin, and progress→content gap in many scattered/duplicated rules, so
+   the progress bar jumped 18px+ between pages and the gaps drifted.
+
+   This block is placed last and uses a `body.` prefix so it out-specifies
+   and overrides every earlier per-page override. Two variables are the only
+   knobs; the "연습 설정" page values are the reference (task 3):
+     • --flow-pad-y       header→progress === content→footer padding (task 1)
+     • --flow-gap-content progress-bar → content gap (task 3)
+   The progress bar's Y is governed solely by --flow-pad-y (progress margin is
+   zeroed), so it stays pinned at the exact same position on every page — no
+   drift, no flicker: only the gauge/steps animate. (task 2)
+   ============================================================ */
+body.presentation-flow-page {
+  --flow-pad-y: 50px;
+  --flow-gap-content: 26px;
+}
+
+/* Equal top & bottom padding on the main container → balanced, and the fixed
+   top value pins the progress bar identically across pages. */
+body.presentation-flow-page .presentation-flow-shell,
+body.presentation-flow-page.presentation-setup-page .presentation-flow-shell,
+body.presentation-flow-page.presentation-slides-page .presentation-flow-shell,
+body.presentation-flow-page.presentation-check-page .presentation-flow-shell,
+body.presentation-flow-page.presentation-ready-page .presentation-flow-shell {
+  padding-top: var(--flow-pad-y);
+  padding-bottom: var(--flow-pad-y);
+}
+
+/* Progress bar carries no margin of its own — its position is defined only by
+   the shell padding above, so it never shifts between pages. */
+body.presentation-flow-page .presentation-progress,
+body.presentation-flow-page.presentation-setup-page .presentation-progress,
+body.presentation-flow-page.presentation-slides-page .presentation-progress,
+body.presentation-flow-page.presentation-check-page .presentation-progress,
+body.presentation-flow-page.presentation-ready-page .presentation-progress {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Identical progress → content gap on every page (reference: 연습 설정). */
+body.presentation-flow-page .workflow-stage,
+body.presentation-flow-page.presentation-setup-page .workflow-stage,
+body.presentation-flow-page.presentation-slides-page .workflow-stage,
+body.presentation-flow-page.presentation-check-page .workflow-stage,
+body.presentation-flow-page.presentation-ready-page .workflow-stage {
+  margin-top: var(--flow-gap-content);
+}
+
+@media (max-width: 720px) {
+  body.presentation-flow-page {
+    --flow-pad-y: 28px;
+    --flow-gap-content: 18px;
+  }
+}
+
+/* Vue SPA shell: one progress rail lives outside the keyed route scene, so
+   setup/slides/check/ready only update the active step and never remount it. */
+.aivo-persistent-flow-progress {
+  display: none;
+}
+
+body.presentation-flow-page .aivo-persistent-flow-progress {
+  position: absolute;
+  top: var(--flow-pad-y);
+  left: 50%;
+  z-index: 24;
+  display: block;
+  width: min(1040px, calc(100% - 48px));
+  transform: translateX(-50%);
+}
+
+body.presentation-flow-page .aivo-persistent-flow-progress .presentation-progress {
+  height: 52px;
+  margin: 0;
+}
+
+/* Interview flow carries a 5-step progress rail (vs. presentation's 4). */
+body.presentation-flow-page .presentation-progress.is-interview-progress {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+body.presentation-flow-page .presentation-flow-shell,
+body.presentation-flow-page.presentation-setup-page .presentation-flow-shell,
+body.presentation-flow-page.presentation-slides-page .presentation-flow-shell,
+body.presentation-flow-page.presentation-check-page .presentation-flow-shell,
+body.presentation-flow-page.presentation-ready-page .presentation-flow-shell {
+  padding-top: calc(var(--flow-pad-y) + 52px);
+}
+
+@media (max-width: 720px) {
+  body.presentation-flow-page .aivo-persistent-flow-progress {
+    width: min(100% - 32px, 560px);
+  }
+}
+
+/* ============================================================
+   자료 업로드 — 업로드하면 드롭존 카드를 파일 카드로 "교체"
+   (카드 아래에 덧붙이지 않음). 용량은 파일명과 간격을 두고 표시.
+   ============================================================ */
+body.presentation-flow-page .upload-field:has(.upload-file-row.show) .upload-dropzone {
+  display: none;
+}
+
+/* 파일 카드는 드롭존 카드와 완전히 동일한 형태(테두리·라운드·크기·배경)를
+   유지하고, 안의 텍스트만 업로드한 파일명 + 용량으로 표시한다. */
+body.presentation-flow-page .upload-file-row.show {
+  margin-top: 0;
+  min-height: 94px;
+  padding: 16px 20px;
+  border: 1px dashed #cfd6e4;
+  border-radius: 12px;
+  background: #f7f8fb;
+}
+
+body.presentation-flow-page .upload-file-row > div {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 12px;
+}
+
+body.presentation-flow-page .upload-file-row > div > strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.presentation-flow-page .upload-file-row > div > small {
+  flex: 0 0 auto;
+  color: #8a94a8;
+}
+
+/* ============================================================
+   장치 확인 — 표준 여백(50/50) 적용 후 세로 공간이 줄어 카메라 아래가
+   잘리던 문제 해결: 높이 예산을 늘어난 패딩만큼 줄이고, 가로 폭도 함께
+   좁혀 낮은 화면에서도 잘리지 않게 한다.
+   ============================================================ */
+body.presentation-check-page .device-check {
+  width: min(1012px, 100%);
+  margin-inline: auto;
+  height: clamp(430px, 48svh, 520px);
+  max-height: calc(100svh - 330px);
+  grid-template-columns: minmax(0, 1.34fr) minmax(332px, .66fr);
+}
+
+/* ============================================================
+   장치 상태 카드: 제목 축소 + 줄 간격 압축으로 마이크 입력 레벨까지 표시
+   (파일 맨 끝 — 앞선 confirm-panel 규칙들을 이김)
+   ============================================================ */
+.presentation-check-page .confirm-panel h3 {
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+.presentation-check-page .confirm-row {
+  padding: 7px 0;
+  gap: 2px;
+  font-size: 13px;
+}
+.presentation-check-page .confirm-row b {
+  font-size: 12px;
+}
+.presentation-check-page .device-check-guidance {
+  margin-top: 10px;
+}
+.presentation-check-page .mic-level-label {
+  margin-top: 10px;
+}
+
+/* Connected upload/model states reserve their own space while asynchronous
+   work runs, preventing the wizard from shifting during API/model loading. */
+body.presentation-flow-page .upload-dropzone.is-disabled {
+  cursor: wait;
+  opacity: .62;
+}
+
+body.presentation-flow-page .upload-file-row .upload-state-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  color: var(--aivo-blue-strong);
+  font-weight: 800;
+}
+
+/* Processing: periwinkle text + spinner. Done: green. Error: red. */
+body.presentation-flow-page .upload-state-label.is-processing {
+  color: #6f66e6;
+}
+
+body.presentation-flow-page .upload-state-label.is-done {
+  color: #1f9d5b;
+}
+
+body.presentation-flow-page .upload-state-label.is-error {
+  color: #d64545;
+}
+
+body.presentation-flow-page .upload-state-spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(111, 102, 230, .28);
+  border-top-color: #6f66e6;
+  border-radius: 50%;
+  animation: aivo-upload-spin .7s linear infinite;
+}
+
+@keyframes aivo-upload-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.presentation-flow-page .upload-state-spinner {
+    animation-duration: 1.6s;
+  }
+}
+
+/* 처리 단계 문구는 :key 변경으로 매번 새로 마운트되어 이 페이드가 재생된다
+   → 단계가 바뀔 때마다 부드럽게 전환돼 진행되고 있음을 느끼게 한다. */
+body.presentation-flow-page .upload-state-text {
+  animation: aivo-upload-phase-in .28s ease both;
+}
+
+@keyframes aivo-upload-phase-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* 문구 끝의 점(...)이 순차적으로 깜빡여, 같은 단계에 머물러도 멈춘 것처럼
+   보이지 않게 한다. */
+body.presentation-flow-page .upload-state-dots {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  margin-left: 1px;
+}
+
+body.presentation-flow-page .upload-state-dots i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .3;
+  animation: aivo-upload-dot 1.1s ease-in-out infinite;
+}
+
+body.presentation-flow-page .upload-state-dots i:nth-child(2) { animation-delay: .18s; }
+body.presentation-flow-page .upload-state-dots i:nth-child(3) { animation-delay: .36s; }
+
+@keyframes aivo-upload-dot {
+  0%, 60%, 100% { opacity: .3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-2px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.presentation-flow-page .upload-state-text,
+  body.presentation-flow-page .upload-state-dots i {
+    animation: none;
+  }
+}
+
+body.presentation-flow-page .upload-error {
+  display: block;
+  min-height: 18px;
+  margin-top: 7px;
+}
+
+body.presentation-flow-page .analysis-ready-row {
+  min-height: 48px;
+}
+
+body.presentation-flow-page .device-permission-retry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0 12px;
+  padding: 10px 12px;
+  border: 1px solid #f4c9c9;
+  border-radius: 10px;
+  background: #fff7f7;
+}
+
+body.presentation-flow-page .device-permission-retry p {
+  margin: 0;
+  color: #b42318;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* 권한 다시 요청 버튼 — 좁은 패널에서 '권한 다시 요 / 청'으로 끊겨 보였고, 호버
+   반응이 없어 버튼으로 읽히지 않았다. 줄바꿈을 막고(flex-shrink도 0) 경고 카드와
+   같은 톤의 솔리드 버튼 + 호버/누름 상태를 준다. */
+body.presentation-flow-page .analysis-retry-button {
+  flex: 0 0 auto;
+  min-width: 88px;
+  min-height: 32px;
+  padding: 0 14px;
+  border: 1px solid #b42318;
+  border-radius: 8px;
+  background: #b42318;
+  color: #fff;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease, transform .12s ease;
+}
+
+body.presentation-flow-page .analysis-retry-button:hover:not(:disabled),
+body.presentation-flow-page .analysis-retry-button:focus-visible:not(:disabled) {
+  border-color: #8f1c13;
+  background: #8f1c13;
+  box-shadow: 0 4px 12px rgba(180, 35, 24, .26);
+  outline: none;
+}
+
+body.presentation-flow-page .analysis-retry-button:active:not(:disabled) {
+  box-shadow: none;
+  transform: translateY(1px);
+}
+
+body.presentation-flow-page .analysis-retry-button:disabled {
+  border-color: #e0b4b0;
+  background: #e0b4b0;
+  cursor: not-allowed;
+}
+
+body.presentation-flow-page .slide-preview-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+}

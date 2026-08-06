@@ -1,0 +1,31 @@
+/* 화면 스타일 번들 — Vite가 컴파일하는 현재 디자인.
+   라우트별 body 클래스로 스코프되므로 함께 로드해도 안전하다.
+   global/ = 공통 크롬(앱 셸·헤더·전환·컨트롤), views/ = 화면(플로우)별 스타일.
+   화면이 SFC scoped 스타일로 재작성되면 해당 항목을 하나씩 제거한다. */
+@import './global/app.css';
+@import './global/site-chrome.css';
+@import './global/page-transition.css';
+@import './global/workflow-controls.css';
+@import './views/auth.css';
+@import './views/practice-flow.css';
+@import './views/folder-select.css';
+@import './views/archive-followup.css';
+@import './views/folder-detail.css';
+@import './views/mypage-refresh.css';
+@import './views/home.css';
+@import './views/archive-report.css';
+@import './views/interview-report.css';
+@import './views/presentation-flow.css';
+@import './views/presentation-setup.css';
+@import './views/presentation-slides.css';
+@import './views/presentation-check.css';
+@import './views/presentation-ready.css';
+@import './views/presentation-record.css';
+@import './views/presentation-qna.css';
+@import './views/presentation-outcome.css';
+@import './views/interview-flow.css'; /* interview overrides presentation-flow base */
+@import './views/interview-record.css';
+@import './views/interview-analyzing.css';
+/* 마지막에 로드한다 — 글자 수 카운터 자리(입력칸 안쪽 오른쪽)는 화면별 flow CSS의
+   padding 재지정에 밀리면 글자와 겹치므로, 같은 특이도에서 이 규칙이 이겨야 한다. */
+@import './global/limited-field.css';

@@ -1,0 +1,337 @@
+/* AIVO shared site chrome -------------------------------------------------
+   This file is intentionally loaded after page-specific styles. Header
+   geometry and typography live here so route changes cannot restyle them. */
+
+#siteHeader {
+  position: relative;
+  z-index: 100;
+  width: 100%;
+  height: 79px;
+  min-height: 79px;
+  padding: 0;
+  contain: layout paint;
+  background: #fff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
+  font-synthesis: none;
+}
+
+[data-global-chrome][hidden] {
+  display: none !important;
+}
+
+/* Older page themes add an 18px glass-shell inset with a more specific body
+   selector. The shared shell always wins so unscoped pages (for example My
+   Page) start on the same y-coordinate as practice and auth routes. */
+body #siteHeader {
+  padding: 0 !important;
+}
+
+#siteHeader .top-nav {
+  position: relative;
+  top: 0;
+  width: 100%;
+  height: 79px;
+  margin: 0;
+  overflow: visible;
+  border: 0;
+  border-bottom: 1px solid #edf0f6;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+#siteHeader .top-nav::before,
+#siteHeader .top-nav::after {
+  content: none;
+}
+
+#siteHeader .nav-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 260px auto 260px;
+  align-items: center;
+  width: min(1424px, calc(100% - 48px));
+  height: 79px;
+  margin: 0 auto;
+  gap: 24px;
+}
+
+#siteHeader .nav-logo {
+  position: relative;
+  display: block;
+  justify-self: start;
+  width: 104px;
+  height: 42px;
+  flex: none;
+  aspect-ratio: auto;
+  overflow: hidden;
+  transform: none;
+}
+
+html.aivo-global-chrome-visible #siteHeader .nav-inner {
+  width: min(1424px, calc(100% - 48px));
+  padding-inline: clamp(24px, 2.35vw, 45px);
+  box-sizing: border-box;
+}
+
+#siteHeader .nav-logo-crop {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 104px;
+  height: 42px;
+  overflow: visible;
+}
+
+#siteHeader .nav-logo-crop img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 213%;
+  max-width: none;
+  height: auto;
+  transform: translate(-26.8%, -28%);
+}
+
+#siteHeader .nav-links {
+  position: static;
+  display: grid;
+  grid-template-columns: 78px 72px 52px;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  min-width: 0;
+  gap: 8px;
+  transform: none;
+}
+
+#siteHeader .nav-links a {
+  position: relative;
+  display: inline-flex;
+  width: 100%;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 0;
+  border-radius: 0;
+  background: transparent;
+  color: #6f7b98;
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 18px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  opacity: 1;
+  animation: none;
+  transform: none;
+  transition: color .24s ease;
+}
+
+#siteHeader .nav-links a::after {
+  content: '';
+  position: absolute;
+  right: 12px;
+  bottom: 2px;
+  left: 12px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform .28s cubic-bezier(.22, 1, .36, 1);
+}
+
+#siteHeader .nav-links a:hover,
+#siteHeader .nav-links a:focus-visible,
+#siteHeader .nav-links a.active {
+  background: transparent;
+  color: #192343;
+  box-shadow: none;
+  outline: none;
+  transform: none;
+}
+
+#siteHeader .nav-links a:hover::after,
+#siteHeader .nav-links a:focus-visible::after,
+#siteHeader .nav-links a.active::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+#siteHeader .nav-right {
+  display: flex;
+  width: 260px;
+  min-width: 260px;
+  align-items: center;
+  justify-content: flex-end;
+  justify-self: end;
+  gap: 11px;
+  margin: 0;
+  color: #192343;
+  opacity: 1;
+  animation: none;
+  transform: none;
+}
+
+#siteHeader .nav-name,
+#siteHeader .nav-link-small,
+#siteHeader .nav-right a.nav-link-small,
+#siteHeader .nav-login-btn {
+  display: inline-flex;
+  height: auto;
+  align-items: center;
+  padding: 2px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #192343;
+  box-shadow: none;
+  filter: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 560;
+  line-height: 18px;
+  white-space: nowrap;
+  transform: none;
+}
+
+#siteHeader .nav-avatar {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #e5edfc;
+  box-shadow: none;
+  color: #192343;
+  font-size: 12px;
+  font-weight: 700;
+  animation: none;
+}
+
+#siteHeader .nav-right #navLogoutBtn {
+  margin-left: 0;
+  padding-left: 12px;
+  border-left: 1px solid #d8e0f0;
+  color: #7e89a3;
+}
+
+#siteFooter {
+  width: 100%;
+  min-height: 52px;
+  background: #fff;
+}
+
+#siteFooter .site-footer {
+  min-height: 52px;
+  padding: 0;
+  border-top: 1px solid #eef1f7;
+  background: #fff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+#siteFooter .footer-inner {
+  width: min(1424px, calc(100% - 48px));
+  min-height: 52px;
+  padding: 0 clamp(24px, 2.35vw, 45px);
+  box-sizing: border-box;
+  flex-wrap: nowrap;
+}
+
+/* A single root cross-fade owns page changes; header descendants must never
+   run a second named transition that can end on a different pixel. */
+#siteHeader,
+#siteHeader * {
+  view-transition-name: none !important;
+}
+
+@media (max-width: 900px) {
+  #siteHeader .nav-inner {
+    grid-template-columns: 104px minmax(218px, 1fr) minmax(150px, 220px);
+    gap: 14px;
+  }
+
+  #siteHeader .nav-right {
+    width: auto;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  #siteHeader {
+    height: 112px;
+    min-height: 112px;
+  }
+
+  #siteHeader .top-nav {
+    height: 112px;
+  }
+
+  #siteHeader .nav-inner {
+    grid-template-columns: 76px minmax(0, 1fr) auto;
+    grid-template-rows: 58px 44px;
+    width: min(100% - 32px, 560px);
+    height: 112px;
+    padding: 5px 0;
+    gap: 0 12px;
+  }
+
+  #siteHeader .nav-logo,
+  #siteHeader .nav-logo-crop {
+    width: 76px;
+    height: 32px;
+  }
+
+  #siteHeader .nav-logo {
+    grid-column: 1;
+    grid-row: 1;
+    transform: none;
+  }
+
+  #siteHeader .nav-links {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    grid-template-columns: 78px 72px 52px;
+    justify-self: start;
+    width: 100%;
+    height: 38px;
+    padding: 0 0 2px;
+    overflow: visible;
+  }
+
+  #siteHeader .nav-right {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  #siteHeader .nav-name,
+  #siteHeader .nav-avatar,
+  #siteHeader #navLogoutBtn {
+    display: none;
+  }
+
+  #siteFooter .footer-inner {
+    width: min(100% - 32px, 560px);
+    min-height: 64px;
+    padding: 12px 0;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 420px) {
+  #siteHeader .nav-right {
+    gap: 8px;
+  }
+
+  #siteHeader .nav-right :is(.nav-link-small, .nav-login-btn) {
+    font-size: 11px;
+  }
+
+}

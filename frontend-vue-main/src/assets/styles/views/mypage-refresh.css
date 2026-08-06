@@ -1,0 +1,2527 @@
+.mypage-page {
+  --mypage-ink: #17213f;
+  --mypage-muted: #7d89a6;
+  --mypage-blue: #5276df; /* 서비스 포인트 색상으로 통일 */
+  --mypage-blue-soft: #edf1ff;
+  --mypage-line: #e4e9f3;
+  --mypage-surface: #f5f7fb;
+  min-height: 100vh;
+  color: var(--mypage-ink);
+  background: #fff;
+}
+
+.mypage-page .page-shell.wide {
+  width: min(1080px, calc(100% - 40px));
+  margin-inline: auto;
+  padding: 48px 0 76px;
+}
+
+.mypage-page-head {
+  margin: 0 0 34px;
+}
+
+.mypage-page .mypage-page-head h1 {
+  margin: 0;
+  color: var(--mypage-ink);
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.04em;
+}
+
+.mypage-page .mypage-page-head p {
+  margin: 9px 0 0;
+  color: var(--mypage-muted);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.mypage-page .mypage-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  align-items: start;
+  gap: 32px;
+  margin-top: 0;
+}
+
+.mypage-page .mypage-nav {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-content: start;
+  gap: 8px;
+  min-height: 0;
+  padding: 18px;
+  border: 1px solid var(--mypage-line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(27, 43, 83, 0.05);
+}
+
+.mypage-page .mypage-nav a {
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 16px;
+  border-radius: 11px;
+  color: #65718e;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-decoration: none;
+  transition: color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.mypage-page .mypage-nav a:hover {
+  color: var(--mypage-blue);
+  background: #f7f8fd;
+}
+
+.mypage-page .mypage-nav a:focus-visible {
+  outline: 3px solid rgba(88, 116, 220, 0.2);
+  outline-offset: 2px;
+}
+
+.mypage-page .mypage-nav a.active,
+.mypage-page .mypage-nav a[aria-current='page'] {
+  color: var(--mypage-blue);
+  background: var(--mypage-blue-soft);
+}
+
+.mypage-page .mypage-panel {
+  min-width: 0;
+  min-height: 0;
+  padding: 30px 32px 36px;
+  border: 1px solid var(--mypage-line);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 14px 36px rgba(27, 43, 83, 0.045);
+}
+
+.mypage-content-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+
+.mypage-page .mypage-content-head h2 {
+  margin: 0;
+  color: var(--mypage-ink);
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: -0.035em;
+}
+
+.mypage-page .mypage-content-head p {
+  margin: 7px 0 0;
+  color: var(--mypage-muted);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.mypage-page .mypage-primary-action {
+  flex: 0 0 auto;
+  width: 176px;
+  min-height: 50px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+.mypage-profile-surface {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 30px;
+  padding: 32px 36px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--mypage-surface);
+}
+
+.mypage-page .mypage-profile-surface .avatar {
+  display: grid;
+  place-items: center;
+  width: 124px;
+  height: 124px;
+  border-radius: 50%;
+  color: var(--mypage-blue);
+  background: #e9edff;
+  font-size: 34px;
+  font-weight: 800;
+}
+
+.mypage-page .mypage-profile-surface .name-block {
+  min-width: 0;
+}
+
+.mypage-page .mypage-profile-surface .name-block > strong {
+  display: block;
+  color: var(--mypage-ink);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.mypage-page .mypage-profile-surface .name-block > span {
+  display: block;
+  margin-top: 5px;
+  color: var(--mypage-muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.google-account-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 460px);
+  margin-top: 18px;
+  padding: 13px 16px;
+  border: 1px solid #edf0f6;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.google-account-row > i,
+.mypage-page .google-badge-block > i {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: conic-gradient(#4285f4 0 25%, #34a853 0 50%, #fbbc05 0 75%, #ea4335 0);
+}
+
+.google-account-row div {
+  min-width: 0;
+}
+
+.google-account-row strong,
+.google-account-row small {
+  display: block;
+}
+
+.google-account-row strong {
+  color: var(--mypage-ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.google-account-row small {
+  margin-top: 2px;
+  overflow: hidden;
+  color: var(--mypage-muted);
+  font-size: 12px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mypage-page .mypage-section-title {
+  margin: 28px 0 13px;
+  color: var(--mypage-ink);
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.mypage-page .account-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.mypage-page .account-info-box {
+  min-height: 96px;
+  padding: 20px 22px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--mypage-surface);
+}
+
+.mypage-page .account-info-box small {
+  color: var(--mypage-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mypage-page .account-info-box strong {
+  display: block;
+  margin-top: 7px;
+  color: var(--mypage-ink);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.mypage-page .mypage-edit-surface {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  align-items: start;
+  gap: 46px;
+  padding: 36px 40px;
+  border: 0;
+  border-radius: 18px;
+  background: #f0f3fa;
+}
+
+.mypage-page .mypage-edit-avatar-col {
+  width: 100%;
+  min-width: 0;
+}
+
+.mypage-page .avatar-upload {
+  width: 150px;
+  height: 150px;
+  margin-inline: auto;
+  border-radius: 50%;
+  background: #e5eaff;
+}
+
+.mypage-page .avatar-upload > span {
+  font-size: 36px;
+}
+
+.mypage-page .avatar-upload .overlay {
+  height: 42px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mypage-page .google-badge-block {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.mypage-page .google-badge-block strong {
+  font-size: 12px;
+}
+
+.mypage-page .google-badge-block span {
+  margin-top: 2px;
+  font-size: 11px;
+}
+
+.mypage-page .mypage-edit-form {
+  width: 100%;
+  min-width: 0;
+}
+
+.mypage-page .mypage-edit-surface .form-field {
+  margin-bottom: 18px;
+}
+
+.mypage-page .mypage-edit-surface .form-field label {
+  margin-bottom: 7px;
+  color: var(--mypage-ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.mypage-page .mypage-edit-surface .form-field input {
+  min-height: 54px;
+  border: 1px solid #e4e8f1;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 14px;
+}
+
+.mypage-page .password-change-btn {
+  /* RouterLink(<a>)는 기본 inline이라 width/min-height/정렬이 먹지 않았다.
+     inline-flex + 가운데 정렬로 버튼답게 텍스트를 세로·가로 중앙에 배치. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  min-height: 48px;
+  margin-top: 2px;
+  border: 0;
+  border-radius: 11px;
+  color: #fff;
+  background: var(--mypage-blue);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.mypage-page .mypage-edit-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 48px;
+}
+
+.mypage-form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.mypage-page .mypage-form-actions .btn-secondary,
+.mypage-page .mypage-form-actions .btn-primary {
+  min-width: 118px;
+  min-height: 48px;
+  border-radius: 11px;
+  box-shadow: none;
+}
+
+.mypage-page .doc-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 22px;
+}
+
+.mypage-page .doc-filter-chips button {
+  min-width: 78px;
+  min-height: 38px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  color: #63708f;
+  background: var(--mypage-blue-soft);
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+.mypage-page .doc-filter-chips button.active {
+  color: #fff;
+  background: var(--mypage-ink);
+}
+
+.mypage-page .doc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0;
+}
+
+.mypage-page .doc-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 188px;
+  padding: 20px;
+  border: 1px solid #dce3ef;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 10px 22px rgba(27, 43, 83, 0.07);
+}
+
+.mypage-page .doc-card strong {
+  margin-top: 14px;
+  overflow: hidden;
+  color: var(--mypage-ink);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mypage-page .doc-card > small {
+  margin-top: 7px;
+  color: var(--mypage-muted);
+  font-size: 12px;
+}
+
+.mypage-page .doc-tag {
+  width: fit-content;
+  min-width: 62px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.mypage-page .doc-footer {
+  margin-top: auto;
+}
+
+.mypage-page .doc-footer small {
+  font-size: 12px;
+}
+
+.mypage-page .doc-footer button {
+  min-width: 74px;
+  min-height: 38px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+@media (max-width: 1100px) {
+  .mypage-page .mypage-layout {
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .mypage-profile-surface {
+    gap: 22px;
+    padding: 28px;
+  }
+
+  .mypage-page .mypage-profile-surface .avatar {
+    width: 104px;
+    height: 104px;
+  }
+
+  .mypage-page .mypage-edit-surface {
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 30px;
+    padding: 30px;
+  }
+}
+
+@media (max-width: 900px) {
+  .mypage-page .page-shell.wide {
+    width: min(100% - 40px, 760px);
+    padding-top: 38px;
+  }
+
+  .mypage-page .mypage-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .mypage-page .mypage-nav {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow-x: auto;
+    padding: 8px;
+    scrollbar-width: none;
+  }
+
+  .mypage-page .mypage-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mypage-page .mypage-nav a {
+    justify-content: center;
+    min-height: 44px;
+    padding-inline: 14px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .mypage-page .mypage-panel {
+    padding: 26px;
+  }
+
+  .mypage-profile-surface {
+    grid-template-columns: 96px minmax(0, 1fr);
+  }
+
+  .mypage-page .mypage-profile-surface .avatar {
+    width: 96px;
+    height: 96px;
+  }
+
+  .mypage-page .mypage-profile-surface .mypage-primary-action {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .mypage-page .mypage-edit-surface {
+    grid-template-columns: 1fr;
+  }
+
+  .mypage-page .mypage-edit-avatar-col {
+    width: min(100%, 260px);
+    margin-inline: auto;
+  }
+
+  .mypage-page .doc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .mypage-page .page-shell.wide {
+    width: calc(100% - 28px);
+    padding: 30px 0 54px;
+  }
+
+  .mypage-page-head {
+    margin-bottom: 24px;
+  }
+
+  .mypage-page .mypage-page-head h1 {
+    font-size: 28px;
+  }
+
+  .mypage-page .mypage-panel {
+    padding: 22px 18px 26px;
+    border-radius: 16px;
+  }
+
+  .mypage-page .mypage-nav a {
+    padding-inline: 8px;
+    font-size: 13px;
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  .mypage-content-head,
+  .mypage-documents-head {
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .mypage-page .mypage-content-head h2 {
+    font-size: 22px;
+  }
+
+  .mypage-page .mypage-primary-action {
+    width: 100%;
+  }
+
+  .mypage-profile-surface {
+    grid-template-columns: 1fr;
+    justify-items: start;
+    gap: 20px;
+    padding: 24px;
+  }
+
+  .mypage-page .mypage-profile-surface .avatar {
+    width: 88px;
+    height: 88px;
+    font-size: 28px;
+  }
+
+  .mypage-page .mypage-profile-surface .mypage-primary-action {
+    grid-column: auto;
+  }
+
+  .mypage-page .account-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mypage-page .mypage-edit-surface {
+    padding: 24px 18px;
+  }
+
+  .mypage-page .mypage-edit-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    margin-top: 32px;
+  }
+
+  .mypage-form-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mypage-page .danger-link {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .mypage-page .doc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 회원 탈퇴: 평범한 빨간 텍스트라 눈에 안 띄어, 테두리 있는 위험 칩으로 강조. */
+.mypage-page .mypage-edit-actions .danger-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border: 1px solid #f0b4b4;
+  border-radius: 10px;
+  background: #fff5f5;
+  color: #d83a3a;
+  font-size: 13px;
+  font-weight: 850;
+  text-decoration: none;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.mypage-page .mypage-edit-actions .danger-link::before {
+  content: '⚠';
+  font-size: 13px;
+}
+
+.mypage-page .mypage-edit-actions .danger-link:hover,
+.mypage-page .mypage-edit-actions .danger-link:focus-visible {
+  border-color: #e08585;
+  background: #fdeaea;
+  color: #c62828;
+  outline: none;
+}
+
+/* Modern mypage frame -------------------------------------------------------
+   A light navigation rail and open content canvas replace nested card shells. */
+.mypage-page .page-shell.wide {
+  padding-top: 52px;
+}
+
+.mypage-page-head {
+  margin-bottom: 30px;
+}
+
+.mypage-page .mypage-layout {
+  grid-template-columns: 184px minmax(0, 1fr);
+  align-items: start;
+  gap: 26px;
+}
+
+.mypage-page .mypage-nav {
+  gap: 8px;
+  padding: 0 20px 0 0;
+  border: 0;
+  border-right: 1px solid var(--mypage-line);
+  background: transparent;
+}
+
+.mypage-page .mypage-nav a {
+  position: relative;
+  min-height: 42px;
+  padding: 0 12px;
+  background: transparent;
+  color: #65708a;
+}
+
+.mypage-page .mypage-nav a.active,
+.mypage-page .mypage-nav a[aria-current='page'] {
+  background: transparent;
+  color: var(--mypage-blue);
+}
+
+.mypage-page .mypage-nav a.active::before,
+.mypage-page .mypage-nav a[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  top: 9px;
+  bottom: 9px;
+  left: 0;
+  width: 3px;
+  background: var(--mypage-blue);
+}
+
+.mypage-page .mypage-panel {
+  padding: 0 0 0 4px;
+  border: 0;
+  background: #fff;
+}
+
+.mypage-page .mypage-profile-surface {
+  padding: 20px 0;
+  border: 1px solid var(--mypage-line);
+  border-right: 0;
+  border-left: 0;
+  background: #fff;
+}
+
+.mypage-page .google-account-row {
+  border: 1px solid var(--mypage-line);
+  background: #fff;
+}
+
+.mypage-page .account-info-grid {
+  gap: 0;
+  border-top: 1px solid var(--mypage-line);
+  border-bottom: 1px solid var(--mypage-line);
+}
+
+.mypage-page .account-info-box {
+  border: 0;
+  background: #fff;
+}
+
+.mypage-page .account-info-box + .account-info-box {
+  border-left: 1px solid var(--mypage-line);
+}
+
+.mypage-page :is(.mypage-primary-action, .doc-filter-chips button.active, .doc-footer button) {
+  border-color: var(--mypage-blue);
+  background-color: var(--mypage-blue);
+}
+
+.mypage-page .doc-card {
+  border-color: var(--mypage-line);
+  background: #fff;
+  box-shadow: none;
+}
+
+@media (min-width: 901px) {
+  .mypage-info-page:not(.is-editing) .page-shell.wide {
+    width: min(1080px, calc(100% - 40px));
+    padding-top: 52px;
+    padding-bottom: 30px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-layout {
+    min-height: calc(100svh - 270px);
+    grid-template-columns: 184px minmax(0, 1fr);
+    align-items: start;
+    gap: 26px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-panel {
+    align-self: center;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-nav {
+    padding: 0 20px 0 0;
+    border: 0;
+    border-right: 1px solid var(--mypage-line);
+    background: transparent;
+  }
+}
+
+@media (max-width: 900px) {
+  .mypage-page .page-shell.wide {
+    padding-top: 34px;
+  }
+
+  .mypage-page .mypage-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .mypage-page .mypage-nav {
+    padding: 0 0 12px;
+    border-right: 0;
+    border-bottom: 1px solid var(--mypage-line);
+  }
+
+  .mypage-page .mypage-nav a.active::before,
+  .mypage-page .mypage-nav a[aria-current='page']::before {
+    top: auto;
+    right: 12px;
+    bottom: 0;
+    left: 12px;
+    width: auto;
+    height: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mypage-page .mypage-nav a {
+    transition: none;
+  }
+}
+
+/* Keep the account overview, shared header, and footer in one desktop frame.
+   Edit mode intentionally falls back to the regular scrollable page. */
+@media (min-width: 901px) {
+  body.mypage-info-page:not(.is-editing) {
+    display: grid;
+    height: 100svh;
+    min-height: 0;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    overflow: hidden;
+  }
+
+  .mypage-info-page:not(.is-editing) #siteHeader,
+  .mypage-info-page:not(.is-editing) #siteFooter {
+    min-width: 0;
+  }
+
+  .mypage-info-page:not(.is-editing) .page-shell.wide {
+    display: flex;
+    width: min(1040px, calc(100% - 48px));
+    height: 100%;
+    min-height: 0;
+    flex-direction: column;
+    padding: 20px 0 14px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-page-head {
+    margin-bottom: 14px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-page-head h1 {
+    font-size: 28px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-page-head p {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-layout {
+    display: grid;
+    min-height: 0;
+    flex: 1;
+    grid-template-columns: 210px minmax(0, 1fr);
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-nav {
+    padding: 11px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-nav a {
+    min-height: 40px;
+    padding-inline: 13px;
+    font-size: 14px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-panel {
+    padding: 18px 20px;
+    overflow: hidden;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-content-head {
+    margin-bottom: 12px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-content-head h2 {
+    font-size: 21px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-content-head p {
+    margin-top: 3px;
+    font-size: 12px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-profile-surface {
+    gap: 18px;
+    padding: 17px 20px;
+    border-radius: 15px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-profile-surface .avatar {
+    width: 88px;
+    height: 88px;
+    font-size: 28px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-profile-surface .name-block > strong {
+    font-size: 22px;
+  }
+
+  .mypage-info-page:not(.is-editing) .google-account-row {
+    margin-top: 9px;
+    padding: 9px 12px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-primary-action {
+    width: 156px;
+    min-height: 42px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-section-title {
+    margin: 14px 0 8px;
+    font-size: 17px;
+  }
+
+  .mypage-info-page:not(.is-editing) .account-info-grid {
+    gap: 12px;
+  }
+
+  .mypage-info-page:not(.is-editing) .account-info-box {
+    min-height: 70px;
+    padding: 12px 15px;
+    /* 계정 정보는 위·아래 실선 한 줄로 구분하는 평면 표이므로 모서리를 굴리지 않는다. */
+    border-radius: 0;
+  }
+
+  .mypage-info-page:not(.is-editing) .account-info-box strong {
+    margin-top: 3px;
+    font-size: 15px;
+  }
+
+  .mypage-info-page:not(.is-editing) .footer-inner {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+}
+
+/* Compact flat mypage system -------------------------------------------------
+   All three tabs share the same frame, type scale, and square surface language. */
+.mypage-page .page-shell.wide {
+  width: min(1080px, calc(100% - 40px));
+  padding: 28px 0 52px;
+}
+
+.mypage-page-head {
+  margin-bottom: 20px;
+}
+
+.mypage-page .mypage-page-head h1 {
+  font-size: 28px;
+}
+
+.mypage-page .mypage-page-head p {
+  margin-top: 5px;
+  font-size: 12px;
+}
+
+.mypage-page .mypage-layout {
+  grid-template-columns: 184px minmax(0, 1fr);
+  align-items: start;
+  gap: 18px;
+}
+
+.mypage-page :is(.mypage-nav, .mypage-panel) {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.mypage-page .mypage-nav {
+  gap: 3px;
+  padding: 9px;
+}
+
+.mypage-page .mypage-nav a {
+  min-height: 36px;
+  padding: 0 11px;
+  border-radius: 0;
+  font-size: 13px;
+}
+
+.mypage-page .mypage-panel {
+  padding: 21px 22px 22px;
+}
+
+.mypage-content-head {
+  margin-bottom: 16px;
+}
+
+.mypage-page .mypage-content-head h2 {
+  font-size: 20px;
+}
+
+.mypage-page .mypage-content-head p {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.mypage-page .mypage-primary-action {
+  width: 142px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 0;
+  font-size: 12px;
+}
+
+.mypage-page :is(.mypage-profile-surface, .account-info-box, .doc-card, .trend-summary-item, .trend-section) {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.mypage-profile-surface {
+  gap: 18px;
+  padding: 18px 20px;
+  background: #f5f7fb;
+}
+
+.mypage-page .mypage-profile-surface .avatar {
+  width: 82px;
+  height: 82px;
+  font-size: 25px;
+}
+
+.mypage-page .mypage-profile-surface .name-block > strong {
+  font-size: 20px;
+}
+
+.mypage-page .mypage-profile-surface .name-block > span {
+  font-size: 12px;
+}
+
+.google-account-row {
+  width: min(100%, 400px);
+  margin-top: 8px;
+  padding: 8px 11px;
+  border-radius: 0;
+}
+
+.google-account-row strong {
+  font-size: 12px;
+}
+
+.google-account-row small {
+  font-size: 11px;
+}
+
+.mypage-page .mypage-section-title {
+  margin: 16px 0 8px;
+  font-size: 16px;
+}
+
+.mypage-page .account-info-grid {
+  gap: 10px;
+}
+
+.mypage-page .account-info-box {
+  min-height: 68px;
+  padding: 11px 14px;
+}
+
+.mypage-page .account-info-box small {
+  font-size: 11px;
+}
+
+.mypage-page .account-info-box strong {
+  margin-top: 3px;
+  font-size: 14px;
+}
+
+.mypage-page .doc-filter-chips {
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.mypage-page .doc-filter-chips button {
+  min-width: 64px;
+  min-height: 32px;
+  padding: 0 13px;
+  border-radius: 0;
+  font-size: 11px;
+}
+
+.mypage-page .doc-filter-chips button.active {
+  background: var(--mypage-blue);
+}
+
+.mypage-page .doc-grid {
+  gap: 10px;
+}
+
+.mypage-page .doc-card {
+  min-height: 146px;
+  padding: 14px;
+}
+
+.mypage-page .doc-card strong {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.mypage-page .doc-card > small,
+.mypage-page .doc-footer small {
+  font-size: 10px;
+}
+
+.mypage-page .doc-tag {
+  min-width: 52px;
+  padding: 4px 9px;
+  border-radius: 0;
+  font-size: 10px;
+}
+
+.mypage-page .doc-footer button {
+  min-width: 60px;
+  min-height: 30px;
+  border-radius: 0;
+  font-size: 11px;
+}
+
+/* Reuse the homepage growth story without duplicating the old bar-chart view. */
+.mypage-page .learning-growth-card {
+  padding: 4px 0 22px;
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  color: var(--mypage-ink);
+  box-shadow: none;
+}
+
+.learning-growth-card > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.learning-growth-card h3 {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.35;
+}
+
+.learning-growth-card header p {
+  margin: 5px 0 0;
+  color: #aeb7ce;
+  font-size: 11px;
+}
+
+.learning-growth-card header > span,
+.learning-growth-score > small,
+.learning-growth-metrics dt {
+  color: var(--mypage-blue);
+  /* 종합 점수·지표 라벨을 monospace로 두면 한글이 폴백 폰트로 렌더돼 카드 안에서
+     혼자 다른 폰트로 보인다. 앱 본문 폰트로 통일. */
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+.learning-growth-main {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  margin-top: 12px;
+}
+
+/* 큰 점수/지표를 왼쪽 끝에서 살짝 안쪽으로 */
+.learning-growth-score {
+  padding-left: 18px;
+}
+
+.learning-growth-score strong {
+  display: block;
+  margin-top: 2px;
+  color: var(--mypage-blue);
+  font-size: 68px;
+  font-weight: 600;
+  line-height: .95;
+  letter-spacing: -.08em;
+}
+
+.learning-growth-score p {
+  margin: 10px 0 0;
+  color: var(--mypage-muted);
+  font-size: 12px;
+}
+
+.learning-growth-score b {
+  color: var(--mypage-blue);
+}
+
+.learning-growth-chart {
+  min-width: 0;
+}
+
+.learning-growth-chart svg {
+  width: 100%;
+  height: 190px;
+  overflow: visible;
+}
+
+.learning-growth-fill {
+  fill: rgba(82, 118, 223, .12);
+}
+
+.learning-growth-line {
+  fill: none;
+  stroke: var(--mypage-blue);
+  stroke-width: 2;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* 포인트는 HTML 원으로 그려 SVG 스트레치로 인한 타원화를 방지하고 라벨과 정렬한다. */
+.learning-growth-plot {
+  position: relative;
+}
+
+.learning-growth-plot svg {
+  display: block;
+}
+
+.learning-growth-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--mypage-blue);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(82, 118, 223, .35);
+  transform: translate(-50%, -50%);
+}
+
+.learning-growth-dot.is-current {
+  width: 17px;
+  height: 17px;
+  box-shadow: 0 0 0 4px rgba(82, 118, 223, .18);
+}
+
+.learning-growth-labels {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  margin-top: -8px;
+  color: var(--mypage-ink);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.learning-growth-labels small {
+  display: block;
+  margin-top: 2px;
+  color: var(--mypage-muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.learning-growth-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 16px 0 0;
+  padding-top: 14px;
+  padding-left: 18px;
+  border-top: 1px solid var(--mypage-line);
+}
+
+.learning-growth-metrics dd {
+  margin: 4px 0 0;
+  font-size: 19px;
+  font-weight: 750;
+}
+
+/* 단위(단어/분, 일)를 값과 어울리게 키워 속도·연속 기록도 다른 지표와 통일 */
+.learning-growth-metrics dd small {
+  margin-left: 2px;
+  color: var(--mypage-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mypage-page .trend-section {
+  margin-top: 0;
+  padding: 24px 0;
+  border-top: 1px solid var(--mypage-line);
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 0;
+  background: #fff;
+}
+
+.mypage-page .trend-section h3 {
+  font-size: 20px;
+}
+
+.mypage-page .trend-section > p {
+  margin-top: 5px;
+  font-size: 13px;
+}
+
+.mypage-page .trend-tabs {
+  gap: 4px;
+  margin: 14px 0 12px;
+}
+
+.mypage-page .trend-tabs button {
+  min-width: 58px;
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--mypage-line);
+  border-radius: 0;
+  background: #fff;
+  font-size: 11px;
+  box-shadow: none;
+}
+
+.mypage-page .trend-tabs button.active {
+  border-color: var(--mypage-blue);
+  color: #fff;
+  background: var(--mypage-blue);
+}
+
+.mypage-page :is(.capability-item, .habit-item, .improve-row > div) {
+  border: 0;
+  border-left: 1px solid var(--mypage-line);
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+}
+
+.mypage-page :is(.capability-item, .habit-item) {
+  padding: 14px;
+}
+
+.mypage-page :is(.capability-item, .habit-item) small,
+.mypage-page .improve-row small {
+  font-size: 12px;
+}
+
+.mypage-page :is(.capability-item, .habit-item) strong,
+.mypage-page .improve-row strong {
+  font-size: 17px;
+}
+
+.mypage-page .numbered-list li {
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 0;
+  border-bottom: 1px solid var(--mypage-line);
+  background: #fff;
+  font-size: 13px;
+}
+
+.mypage-page .compare-table {
+  font-size: 13px;
+}
+
+.mypage-page .habit-table-wrap {
+  margin-top: 16px;
+  overflow-x: auto;
+}
+
+.mypage-page .habit-progress-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--mypage-ink);
+  font-size: 13px;
+  text-align: center;
+}
+
+.mypage-page .habit-progress-table :is(th, td) {
+  padding: 13px 12px;
+  border-bottom: 1px solid var(--mypage-line);
+}
+
+.mypage-page .habit-progress-table thead th {
+  color: var(--mypage-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.mypage-page .habit-progress-table :is(th:first-child, td:first-child) {
+  text-align: left;
+}
+
+.mypage-page .habit-progress-table tbody th {
+  font-weight: 750;
+}
+
+.mypage-page .habit-progress-table tbody td:last-child {
+  color: var(--mypage-blue);
+  font-weight: 800;
+}
+
+/* AI 피드백 콜아웃: 배경색으로 AI가 짚어준 내용임을 드러낸다.
+   배지+제목을 한 줄, 설명은 그 아래 줄에 배치. */
+.mypage-page .habit-conclusion {
+  display: block;
+  margin-top: 18px;
+  padding: 18px 20px;
+  border-top: 0;
+  border-radius: 14px;
+  background: #eef2ff;
+}
+
+.mypage-page .habit-conclusion-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1f2440;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.mypage-page .habit-ai-badge {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--mypage-blue);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: -.01em;
+}
+
+.mypage-page .habit-conclusion p {
+  margin: 10px 0 0;
+  color: #4a5578;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+@media (min-width: 901px) {
+  .mypage-info-page:not(.is-editing) .page-shell.wide {
+    display: block;
+    width: min(1080px, calc(100% - 40px));
+    height: auto;
+    padding: 18px 0 12px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-layout {
+    min-height: 0;
+    grid-template-columns: 184px minmax(0, 1fr);
+    align-items: start;
+    gap: 18px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-nav,
+  .mypage-info-page:not(.is-editing) .mypage-panel {
+    height: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .mypage-page .mypage-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .learning-growth-main {
+    grid-template-columns: 1fr;
+  }
+
+  .learning-growth-score {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .mypage-page .page-shell.wide {
+    width: calc(100% - 28px);
+  }
+
+  .learning-growth-card {
+    padding: 18px 14px 14px;
+  }
+
+  .learning-growth-card > header > span {
+    display: none;
+  }
+
+  .learning-growth-chart svg {
+    height: 150px;
+  }
+
+  .learning-growth-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Keep these final overrides last so older desktop-fit rules cannot restore the
+   boxed navigation or move the account overview back to the top. */
+.mypage-page .page-shell.wide {
+  width: min(1080px, calc(100% - 40px));
+  padding-top: 52px;
+}
+
+.mypage-page-head {
+  margin-bottom: 30px;
+}
+
+.mypage-page .mypage-layout {
+  grid-template-columns: 184px minmax(0, 1fr);
+  align-items: start;
+  gap: 26px;
+}
+
+.mypage-page .mypage-nav {
+  gap: 8px;
+  padding: 0 20px 0 0;
+  border: 0;
+  border-right: 1px solid var(--mypage-line);
+  background: transparent;
+}
+
+.mypage-page .mypage-nav a {
+  position: relative;
+  min-height: 42px;
+  padding: 0 12px;
+  background: transparent;
+  color: #65708a;
+}
+
+.mypage-page .mypage-nav a.active,
+.mypage-page .mypage-nav a[aria-current='page'] {
+  background: transparent;
+  color: var(--mypage-blue);
+}
+
+.mypage-page .mypage-nav a.active::before,
+.mypage-page .mypage-nav a[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  top: 9px;
+  bottom: 9px;
+  left: 0;
+  width: 3px;
+  background: var(--mypage-blue);
+}
+
+.mypage-page .mypage-panel {
+  padding: 0 0 0 4px;
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+}
+
+.mypage-page .mypage-profile-surface {
+  padding: 20px 0;
+  border: 1px solid var(--mypage-line);
+  border-right: 0;
+  border-left: 0;
+  border-radius: 0 !important;
+  background: #fff;
+  box-shadow: none;
+}
+
+.mypage-page .google-account-row {
+  border: 1px solid var(--mypage-line);
+  border-radius: 0;
+  background: #fff;
+}
+
+.mypage-page .account-info-grid {
+  gap: 0;
+  border-top: 1px solid var(--mypage-line);
+  border-bottom: 1px solid var(--mypage-line);
+}
+
+.mypage-page .account-info-box {
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+}
+
+.mypage-page .account-info-box + .account-info-box {
+  border-left: 1px solid var(--mypage-line);
+}
+
+.mypage-page :is(.mypage-primary-action, .doc-filter-chips button.active, .doc-footer button) {
+  border-color: var(--mypage-blue);
+  background-color: var(--mypage-blue);
+}
+
+.mypage-page .doc-card {
+  border-color: var(--mypage-line);
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+}
+
+@media (min-width: 901px) {
+  .mypage-info-page:not(.is-editing) .page-shell.wide {
+    width: min(1080px, calc(100% - 40px));
+    padding-top: 52px;
+    padding-bottom: 30px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-layout {
+    min-height: calc(100svh - 270px);
+    grid-template-columns: 184px minmax(0, 1fr);
+    align-items: start;
+    gap: 26px;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-panel {
+    align-self: center;
+  }
+
+  .mypage-info-page:not(.is-editing) .mypage-nav {
+    padding: 0 20px 0 0;
+    border: 0;
+    border-right: 1px solid var(--mypage-line);
+    background: transparent;
+  }
+}
+
+@media (max-width: 900px) {
+  .mypage-page .page-shell.wide {
+    padding-top: 34px;
+  }
+
+  .mypage-page .mypage-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .mypage-page .mypage-nav {
+    padding: 0 0 12px;
+    border-right: 0;
+    border-bottom: 1px solid var(--mypage-line);
+  }
+
+  .mypage-page .mypage-nav a.active::before,
+  .mypage-page .mypage-nav a[aria-current='page']::before {
+    top: auto;
+    right: 12px;
+    bottom: 0;
+    left: 12px;
+    width: auto;
+    height: 2px;
+  }
+}
+
+/* ============================================================
+   마이페이지 통일 패스 (사용자 피드백)
+   · info 탭 전용 '한 화면 프레임' 제거 → 모든 탭이 동일한 스크롤 레이아웃
+   · 좌 네비 / 우 패널을 같은 플랫 스타일로 통일, 상단 정렬 일치
+   · 표면을 살짝 둥글려 촌스러움 완화
+   ============================================================ */
+@media (min-width: 901px) {
+  body.mypage-page.mypage-info-page:not(.is-editing) {
+    /* display:block이면 기본 body의 flex-column 푸터 고정이 풀려 콘텐츠가 짧은 내
+       정보 탭에서 푸터가 화면 하단에 안 붙고 위로 떠(아래에 빈 공간) 보였다.
+       다른 페이지·탭과 동일하게 flex 컬럼으로 두어 푸터를 바닥에 고정한다. */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  body.mypage-info-page:not(.is-editing) .page-shell.wide {
+    display: block;
+    width: min(1080px, calc(100% - 40px));
+    height: auto;
+    min-height: 0;
+    padding: 28px 0 52px;
+  }
+
+  body.mypage-info-page:not(.is-editing) .mypage-page-head {
+    margin-bottom: 20px;
+  }
+  body.mypage-info-page:not(.is-editing) .mypage-page-head h1 {
+    font-size: 28px;
+  }
+
+  body.mypage-info-page:not(.is-editing) .mypage-layout {
+    min-height: 0;
+    grid-template-columns: 200px minmax(0, 1fr);
+    align-items: start;
+    gap: 18px;
+  }
+
+  body.mypage-info-page:not(.is-editing) .mypage-panel {
+    align-self: start;
+    padding: 2px 0 26px 4px;
+    overflow: visible;
+  }
+}
+
+/* 좌 네비: 모든 탭 동일 — 카드 없이 우측 구분선만, 상단부터 시작
+   app.css의 `body.mypage-page :is(.mypage-nav …)`(특이도 0,2,1)를 이기기 위해
+   동일 특이도 + 나중 로드 규칙으로 선언한다. */
+body.mypage-page .mypage-nav {
+  align-self: start;
+  min-height: 0;
+  gap: 4px;
+  padding: 4px 22px 4px 0;
+  border: 0;
+  border-right: 1px solid var(--mypage-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.mypage-page .mypage-nav a {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* 우 패널: 플랫하되 표면들은 살짝 둥글게 (촌스러움 완화) */
+.mypage-page .mypage-panel {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 4px 0 0 4px;
+}
+
+/* .account-info-box 제외 — 위·아래 실선으로만 구분하는 평면 표라, 모서리를 굴리면
+   구분선 끝이 휘어 보인다(위 .mypage-page .account-info-box의 border-radius:0 유지). */
+.mypage-page :is(.mypage-profile-surface, .doc-card, .trend-summary-item, .trend-section) {
+  border-radius: 14px;
+}
+
+.mypage-page .mypage-primary-action {
+  border-radius: 10px;
+}
+
+/* 비밀번호 변경 뷰 — 큰 카드(배경·패딩·라운드) 없이 '내 정보'와 동일한 가로 영역을
+   그대로 쓰는 평면 폼. (max-width 제거로 1fr 컬럼 전체 폭 사용) */
+.mypage-security-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: none;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.mypage-security-form .form-field label {
+  margin-bottom: 7px;
+  color: var(--mypage-ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+.mypage-security-form .form-field input {
+  min-height: 52px;
+  border: 1px solid #e4e8f1;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 14px;
+}
+.mypage-security-form .option-grid.mypage-pw-rules {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 2px 0 4px;
+}
+.mypage-security-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+.mypage-security-actions .btn-secondary,
+.mypage-security-actions .btn-primary {
+  min-width: 120px;
+  /* 취소·비밀번호 변경 버튼 글씨 중앙정렬(앵커/버튼 혼용이라 명시). */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* 마이페이지 보조 버튼(예: '비밀번호 변경'): 그라데이션·그림자·글래스 제거
+   → 테두리 + 호버 강조. */
+body.mypage-page .btn-ghost-sm {
+  background: #fff;
+  border: 1px solid var(--mypage-line, #e4e9f3);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  transition: border-color .16s ease, background-color .16s ease, color .16s ease;
+}
+body.mypage-page .btn-ghost-sm:hover,
+body.mypage-page .btn-ghost-sm:focus-visible {
+  border-color: var(--mypage-blue, #5276df);
+  background: var(--mypage-blue-soft, #edf1ff);
+  color: var(--mypage-blue, #5276df);
+  outline: none;
+}
+/* 비밀번호 입력칸 오른쪽 '보기' 토글 — 버튼 폭만큼 입력칸 안쪽 여백을 비워
+   글자와 겹치지 않게 한다. */
+.mypage-security-form .password-field {
+  position: relative;
+  display: block;
+}
+.mypage-security-form .password-field input {
+  width: 100%;
+  padding-right: 78px;
+}
+.mypage-security-form .password-reveal-btn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  min-width: 58px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--mypage-line, #e4e9f3);
+  border-radius: 9px;
+  background: #fff;
+  color: #64708a;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  transform: translateY(-50%);
+  cursor: pointer;
+  transition: border-color .16s ease, background-color .16s ease, color .16s ease;
+}
+.mypage-security-form .password-reveal-btn:hover,
+.mypage-security-form .password-reveal-btn:focus-visible {
+  border-color: var(--mypage-blue, #5276df);
+  background: var(--mypage-blue-soft, #edf1ff);
+  color: var(--mypage-blue, #5276df);
+  outline: none;
+}
+.mypage-security-form .password-reveal-btn[aria-pressed='true'] {
+  border-color: var(--mypage-blue, #5276df);
+  color: var(--mypage-blue, #5276df);
+}
+
+/* 자소서·포트폴리오 카드 정돈 — 플랫 compact 톤의 촌스러움 완화 */
+.mypage-page .doc-filter-chips {
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.mypage-page .doc-filter-chips button {
+  min-width: 68px;
+  min-height: 34px;
+  padding: 0 15px;
+  border: 1px solid var(--mypage-line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64708a;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.mypage-page .doc-filter-chips button.active {
+  border-color: var(--mypage-blue);
+  background: var(--mypage-blue);
+  color: #fff;
+}
+.mypage-page .doc-grid {
+  gap: 14px;
+}
+.mypage-page .doc-card {
+  min-height: 150px;
+  padding: 18px;
+  border: 1px solid var(--mypage-line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(20, 28, 60, .04);
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.mypage-page .doc-card:hover {
+  border-color: #c7d2fe;
+  box-shadow: 0 10px 24px rgba(37, 68, 168, .1);
+  transform: translateY(-2px);
+}
+.mypage-page .doc-card strong {
+  display: block;
+  min-width: 0;
+  margin-top: 12px;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+.mypage-page .doc-card > small,
+.mypage-page .doc-footer small {
+  font-size: 11px;
+  color: #9aa4bd;
+}
+.mypage-page .doc-tag {
+  min-width: 0;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.mypage-page .doc-footer {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f3fa;
+}
+.mypage-page .doc-footer button {
+  min-width: 62px;
+  min-height: 32px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ============================================================
+   마이페이지 중첩 라우트 — 헤더/푸터/네비 고정, 우측 패널만 교체
+   ============================================================ */
+/* 모든 탭에서 동일한 2열 그리드(좌 네비 고정 폭 + 우 패널) */
+body.mypage-page .mypage-layout {
+  grid-template-columns: 200px minmax(0, 1fr);
+  align-items: start;
+  gap: 18px;
+}
+
+/* 패널 전환: 새로 마운트되는 우측 패널만 부드럽게 나타난다.
+   leave 완료를 기다리는 <Transition> 대신 enter 애니메이션만 사용해
+   전환이 멈추는 일이 없고, 헤더·푸터·네비는 그대로 유지된다. */
+body.mypage-page .mypage-panel {
+  animation: mypanelIn 0.22s ease both;
+}
+@keyframes mypanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.mypage-page .mypage-panel {
+    animation: none;
+  }
+}
+
+/* 좌측 카테고리: 각진 형태 + 파란 좌측 선 제거 */
+body.mypage-page .mypage-nav a {
+  border-radius: 0;
+}
+body.mypage-page .mypage-nav a.active::before,
+body.mypage-page .mypage-nav a[aria-current='page']::before {
+  display: none;
+  content: none;
+}
+
+/* 자소서 카드 '보기' 버튼: 파란 배경 위 흰 글자 */
+body.mypage-page .doc-footer button {
+  color: #fff;
+}
+
+/* '새 자료 등록' 버튼을 헤더 기준으로 살짝 아래로 */
+body.mypage-page .mypage-documents-head {
+  align-items: flex-start;
+}
+body.mypage-page .mypage-documents-head .mypage-primary-action {
+  margin-top: 14px;
+}
+
+body.mypage-page .doc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+body.mypage-page .doc-footer .doc-delete-button {
+  border: 1px solid #e2e7f0;
+  color: #737d94;
+  background: #fff;
+}
+
+body.mypage-page .doc-state-message,
+body.mypage-page .doc-empty-state {
+  display: grid;
+  place-items: center;
+  min-height: 300px;
+  padding: 48px 24px;
+  border: 1px dashed #d7deec;
+  border-radius: 18px;
+  color: #778199;
+  text-align: center;
+}
+
+body.mypage-page .doc-state-message.is-error { color: var(--aivo-danger); }
+body.mypage-page .doc-empty-state span { font-size: 40px; color: var(--mypage-blue); }
+body.mypage-page .doc-empty-state strong { margin-top: 8px; color: var(--mypage-ink); font-size: 18px; }
+body.mypage-page .doc-empty-state p { margin: 8px 0 20px; font-size: 13px; }
+body.mypage-page .doc-empty-state .btn-primary { display: inline-flex; align-items: center; justify-content: center; }
+
+.doc-modal-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(20, 27, 52, .42);
+  backdrop-filter: blur(4px);
+}
+
+.doc-confirm-modal {
+  width: min(420px, 100%);
+  padding: 30px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(20, 27, 52, .22);
+  text-align: center;
+}
+
+.doc-registration-modal {
+  width: min(560px, 100%);
+  padding: 30px;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(20, 27, 52, .22);
+}
+
+.doc-registration-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.doc-registration-head span {
+  color: #6377dd;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.doc-registration-head h3 {
+  margin-top: 7px;
+  color: #202844;
+  font-size: 22px;
+}
+
+.doc-registration-head p {
+  margin-top: 7px;
+  color: #838da3;
+  font-size: 13px;
+}
+
+.doc-registration-head > button {
+  flex: 0 0 auto;
+  border: 0;
+  color: #8c95a9;
+  background: transparent;
+  font-size: 26px;
+}
+
+.doc-type-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.doc-type-options button {
+  min-height: 132px;
+  padding: 22px;
+  border: 1px solid #dfe4ef;
+  border-radius: 15px;
+  background: #fff;
+  text-align: left;
+  transition: border-color .2s ease, background-color .2s ease, transform .2s ease;
+}
+
+.doc-type-options button:hover {
+  border-color: #667be1;
+  background: #f6f7ff;
+  transform: translateY(-2px);
+}
+
+.doc-type-options strong {
+  display: block;
+  color: #202844;
+  font-size: 17px;
+}
+
+.doc-type-options span {
+  display: block;
+  margin-top: 10px;
+  color: #7e889e;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.doc-form-field,
+.doc-file-field {
+  display: block;
+  margin-top: 24px;
+}
+
+.doc-form-field > span,
+.doc-file-field > span {
+  display: block;
+  margin-bottom: 9px;
+  color: #303953;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.doc-form-field input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid #dce2ed;
+  border-radius: 11px;
+  color: #202844;
+  background: #fff;
+}
+
+.doc-form-field small {
+  display: block;
+  margin-top: 6px;
+  color: #9aa2b4;
+  font-size: 11px;
+  text-align: right;
+}
+
+.doc-file-field {
+  position: relative;
+  padding: 18px;
+  border: 1px dashed #cbd4e6;
+  border-radius: 12px;
+  background: #f8f9fc;
+  cursor: pointer;
+}
+
+.doc-file-field input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.doc-file-field strong {
+  color: #68738b;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.doc-file-field .doc-file-help {
+  display: block;
+  margin-top: 7px;
+  color: #8d96aa;
+  font-size: 11px;
+}
+
+.doc-form-error {
+  margin-top: 14px;
+  color: #dc2626;
+  font-size: 13px;
+}
+
+.doc-registration-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.doc-registration-actions button {
+  min-width: 110px;
+  min-height: 44px;
+  border-radius: 11px;
+}
+
+body.mypage-page .doc-state-message > p { margin: 0; }
+body.mypage-page .doc-state-message > button { margin-top: 14px; }
+
+.doc-confirm-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  color: #dc2626;
+  background: #fee2e2;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.doc-confirm-modal h3 { color: #202844; font-size: 20px; }
+.doc-confirm-modal p { margin-top: 10px; color: #778199; font-size: 14px; line-height: 1.6; }
+.doc-confirm-actions { display: flex; gap: 10px; margin-top: 24px; }
+.doc-confirm-actions > * { flex: 1; min-height: 44px; border-radius: 11px; }
+.doc-danger-button { border: 0; color: #fff; background: #dc2626; font-weight: 800; }
+
+body.mypage-page .document-detail-back {
+  display: inline-flex;
+  margin-bottom: 18px;
+  color: #67738c;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+body.mypage-page .document-detail-card {
+  overflow: hidden;
+  border: 1px solid #e0e5ef;
+  border-radius: 20px;
+  background: #fff;
+}
+
+body.mypage-page .document-detail-card > header { padding: 28px 30px 22px; }
+body.mypage-page .document-detail-card h2 {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 12px;
+  color: #202844;
+  font-size: 24px;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+body.mypage-page .document-detail-card header p { margin-top: 7px; color: #929bb0; font-size: 13px; }
+body.mypage-page .document-content {
+  min-height: 260px;
+  margin: 0 30px;
+  padding: 28px;
+  border: 1px solid #e5e9f1;
+  border-radius: 14px;
+  background: #f8f9fc;
+}
+body.mypage-page .document-content > span { color: #687de2; font-size: 12px; font-weight: 800; }
+body.mypage-page .document-content h3 { margin-top: 8px; color: #303953; font-size: 18px; }
+body.mypage-page .document-content p { margin-top: 20px; color: #4d5870; font-size: 14px; line-height: 1.9; overflow-wrap: anywhere; white-space: pre-wrap; word-break: break-word; }
+body.mypage-page .document-content p.document-content-empty { color: #929bb0; }
+body.mypage-page .document-detail-card > footer { display: flex; justify-content: flex-end; gap: 10px; padding: 22px 30px 28px; }
+body.mypage-page .document-detail-card > footer > * { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 0 18px; border-radius: 10px; font-size: 13px; font-weight: 800; }
+body.mypage-page .doc-danger-outline { border: 1px solid #fecaca; color: #dc2626; background: #fff; }
+
+@media (max-width: 640px) {
+  .doc-registration-modal { padding: 24px 20px; }
+  .doc-type-options { grid-template-columns: 1fr; }
+  .doc-registration-actions button { flex: 1; min-width: 0; }
+}
+
+/* 마이페이지 푸터도 다른 페이지와 동일한 공용 푸터(.footer-inner: min(1440px,100%),
+   좌우 32px)를 그대로 쓴다. 기존엔 본문(1080)에 맞춰 좁히고 좌우 패딩을 0으로 둬
+   글씨가 양끝에 닿지 않고 안쪽에 떠 보였다 → 폭/패딩을 공용 기본값으로 복원. */
+body.mypage-page .footer-inner {
+  width: min(1440px, 100%);
+  margin-inline: auto;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+/* ============================================================
+   내 학습 추이: 글자 크기를 본문 기준(15px)으로 통일, 제목은 제목대로
+   ============================================================ */
+body.mypage-trend-page .trend-section h3 {
+  font-size: 20px;
+}
+body.mypage-trend-page .trend-section > p {
+  font-size: 15px;
+  line-height: 1.6;
+}
+body.mypage-trend-page .trend-tabs button {
+  min-height: 34px;
+  font-size: 14px;
+}
+body.mypage-trend-page :is(.capability-item, .habit-item) small,
+body.mypage-trend-page .improve-row small {
+  font-size: 14px;
+}
+body.mypage-trend-page :is(.capability-item, .habit-item) strong,
+body.mypage-trend-page .improve-row strong {
+  font-size: 19px;
+}
+body.mypage-trend-page .numbered-list li {
+  min-height: 56px;
+  font-size: 18px;
+}
+body.mypage-trend-page .numbered-list li > span:first-child {
+  /* 라벨(첫 span)이 base .numbered-list li span의 11px 회색에 걸려 본문보다 작게
+     보이던 것을 우측 카운트·본문과 동일한 15px로 맞춘다. */
+  font-size: 15px;
+  color: var(--mypage-ink);
+}
+body.mypage-trend-page .numbered-list li > span:last-child {
+  font-size: 15px;
+}
+body.mypage-trend-page .compare-table {
+  font-size: 15px;
+}
+body.mypage-trend-page .habit-progress-table {
+  font-size: 15px;
+}
+body.mypage-trend-page .habit-progress-table thead th {
+  font-size: 13px;
+}
+body.mypage-trend-page .habit-conclusion strong,
+body.mypage-trend-page .habit-conclusion p {
+  font-size: 15px;
+}
+/* 종합 점수·속도·집중도·성장률·연속 기록 라벨을 읽기 편한 크기로 */
+body.mypage-trend-page :is(.learning-growth-score > small, .learning-growth-metrics dt) {
+  font-size: 13px;
+  letter-spacing: -.01em;
+}
+body.mypage-trend-page .learning-growth-labels {
+  font-size: 14px;
+}
+body.mypage-trend-page .learning-growth-labels small {
+  font-size: 11px;
+}
+body.mypage-trend-page .learning-growth-metrics dd {
+  font-size: 18px;
+}
+
+/* ============================================================
+   마이페이지 폼/버튼 플랫화 (그라데이션·그림자·글래스 제거)
+   ============================================================ */
+/* 입력칸: 유리질 그림자(inset 하이라이트 + soft drop) 제거 → 평면 흰 배경 + 테두리. */
+body.mypage-page .form-field input,
+body.mypage-page .form-field select,
+body.mypage-page .form-field textarea {
+  background: #fff;
+  background-image: none;
+  box-shadow: none;
+}
+
+/* 비밀번호 변경/완료(primary): 솔리드 브랜드 색으로 또렷하게(그라데이션·그림자 없음). */
+body.mypage-page .btn-primary {
+  background: var(--mypage-blue, #5276df);
+  background-image: none;
+  box-shadow: none;
+}
+body.mypage-page .btn-primary:hover,
+body.mypage-page .btn-primary:focus-visible {
+  background: #3f62c9;
+  background-image: none;
+  box-shadow: none;
+  transform: none;
+  filter: none;
+}
+
+/* 취소(secondary): 글래스(반투명·backdrop blur·그림자) 제거 → 흰 배경 + 테두리 + 호버. */
+body.mypage-page .btn-secondary {
+  background: #fff;
+  background-image: none;
+  border: 1px solid var(--mypage-line, #e4e9f3);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+body.mypage-page .btn-secondary:hover,
+body.mypage-page .btn-secondary:focus-visible {
+  border-color: var(--mypage-blue, #5276df);
+  background: var(--mypage-blue-soft, #edf1ff);
+  color: var(--mypage-blue, #5276df);
+  outline: none;
+}
+
+/* '비밀번호 변경' 버튼(내 정보 페이지)이 흰 배경+옅은 테두리라 거의 안 보였음
+   → 브랜드 아웃라인으로 또렷하게. (다른 기기 로그아웃 btn-ghost-sm 과 구분) */
+body.mypage-page .password-change-btn {
+  border: 1px solid var(--mypage-blue, #5276df);
+  background: var(--mypage-blue-soft, #edf1ff);
+  color: var(--mypage-blue, #5276df);
+}
+body.mypage-page .password-change-btn:hover,
+body.mypage-page .password-change-btn:focus-visible {
+  border-color: var(--mypage-blue, #5276df);
+  background: var(--mypage-blue, #5276df);
+  color: #fff;
+}
+
+/* 프로필 이미지는 기존 원형 영역을 유지하면서 실제 파일 입력과 연결한다. */
+.mypage-page .mypage-profile-surface .avatar,
+.mypage-page .avatar-upload {
+  overflow: hidden;
+}
+
+.mypage-page .mypage-profile-surface .avatar img,
+.mypage-page .avatar-upload img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mypage-page button.avatar-upload {
+  position: relative;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.mypage-page button.avatar-upload:focus-visible {
+  outline: 3px solid rgba(82, 118, 223, .35);
+  outline-offset: 4px;
+}
+
+.mypage-page .profile-image-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.mypage-page .profile-image-reset {
+  margin-top: 12px;
+  border: 0;
+  background: transparent;
+  color: #667be1;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mypage-page .profile-image-error {
+  display: block;
+  max-width: 220px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* ============================================================
+   좌측 카테고리(네비) 위치를 모든 마이페이지 탭에서 통일.
+   '내 정보(overview)' 페이지만 shell 상단 패딩(52)·네비 컬럼 폭(184)·gap(26)을
+   달리 써서 탭 전환 시 왼쪽 카테고리가 미세하게 어긋났다 → 표준값으로 고정.
+   (레거시 .mypage-info-page 선택자 특이도가 높아 !important 로 확정.)
+   ============================================================ */
+@media (min-width: 901px) {
+  body.mypage-page .page-shell.wide.mypage-shell {
+    padding-top: 40px !important;
+  }
+  body.mypage-page .mypage-layout {
+    grid-template-columns: 200px minmax(0, 1fr) !important;
+    gap: 24px !important;
+    align-items: start !important;
+  }
+  /* 네비 자체는 항상 상단 고정 + 동일 크기 */
+  body.mypage-page .mypage-nav {
+    align-self: start !important;
+  }
+  body.mypage-page .mypage-nav a {
+    min-height: 44px !important;
+    line-height: 1.4 !important;
+  }
+}
+
+/* 위 통일 보강: '내 정보' 페이지만 page-head 하단 여백(20)·네비 상단 패딩(0)이
+   달라 카테고리가 10px 위로 떠 있었다 → 모든 탭 동일(head 30 / nav 패딩 통일). */
+@media (min-width: 901px) {
+  body.mypage-page .mypage-page-head {
+    margin: 0 0 30px !important;
+  }
+  body.mypage-page .mypage-nav {
+    padding: 4px 20px 4px 0 !important;
+  }
+}
+.mypage-page .mypage-profile-surface .name-block > strong,
+.mypage-page .mypage-profile-surface .name-block > span,
+.mypage-page .account-info-box strong {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mypage-page .doc-card .doc-card-title {
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.mypage-page .doc-file-field .doc-file-name,
+.mypage-page .doc-delete-title {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Final responsive safeguards: the legacy 3-column mobile grid forced the long
+   document label into its neighbours. Tabs now keep their natural width and
+   use horizontal scrolling, while profile text can shrink inside its grid. */
+body.mypage-page .mypage-profile-surface .name-block {
+  min-width: 0;
+}
+
+body.mypage-page .mypage-profile-surface .name-block > strong,
+body.mypage-page .mypage-profile-surface .name-block > span {
+  display: block;
+}
+
+@media (max-width: 900px) {
+  body.mypage-page .mypage-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body.mypage-page .mypage-nav {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+    padding: 0 0 12px !important;
+    overflow-x: auto;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--mypage-line);
+    scrollbar-width: thin;
+  }
+
+  body.mypage-page .mypage-nav > a {
+    flex: 0 0 auto;
+    min-width: max-content;
+    padding-inline: 14px;
+    white-space: nowrap;
+  }
+}

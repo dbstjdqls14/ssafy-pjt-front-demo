@@ -1,0 +1,550 @@
+/* Archive-only polish kept separate from shared app.css.
+   This file owns the final archive geometry and interaction states. */
+body.archive-page {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Canonical archive compact scale: match FAQ heading rhythm. */
+body.archive-page .archive-shell {
+  width: min(1180px, calc(100% - 48px));
+  min-height: calc(100svh - 131px);
+  margin: 0 auto;
+  padding: 40px 0 88px;
+}
+
+body.archive-page .archive-shell > .faq-head {
+  width: min(880px, 100%);
+  margin: 0 auto;
+  text-align: center;
+}
+
+body.archive-page .faq-head h1 {
+  font-size: clamp(36px, 4.6vw, 52px);
+  font-weight: 800;
+}
+
+body.archive-page .faq-head p {
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+body.archive-page .archive-toolbar {
+  /* 탭 전용 상단 네비게이션 — 수평 중앙 정렬. 검색창은 아래 별도 행으로 분리. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(1040px, 100%);
+  margin-top: 44px;
+  margin-inline: auto;
+}
+
+body.archive-page .archive-tabs {
+  justify-content: center;
+  margin-top: 0;
+}
+
+/* 검색창 전용 행: 탭보다 한 레벨 아래, 중앙 정렬. */
+body.archive-page .archive-searchbar {
+  display: flex;
+  justify-content: center;
+  width: min(1040px, 100%);
+  margin: 40px auto 0;
+}
+
+/* 탭임을 명확히 인지하도록 hover 시 배경 대신 밑줄 + 파란 글씨. */
+body.archive-page .archive-tabs .faq-tab-btn {
+  position: relative;
+  border-radius: 10px;
+  background: transparent;
+  transition: color .16s ease;
+}
+
+body.archive-page .archive-tabs .faq-tab-btn:hover,
+body.archive-page .archive-tabs .faq-tab-btn:focus-visible {
+  background: transparent;
+  color: #3b56b0;
+}
+
+/* 활성 탭도 비활성과 동일한 굵기 → 글자 폭이 같아져 세 탭의 밑줄 길이/위치가
+   완전히 동일해진다(활성 구분은 색으로). 활성만 850이면 글자가 넓어져 밑줄이
+   더 길게 보였던 문제 해결. */
+body.archive-page .archive-tabs .faq-tab-btn,
+body.archive-page .archive-tabs .faq-tab-btn.active {
+  font-weight: 750;
+}
+
+/* 밑줄은 항상 존재하되 scaleX(0)으로 숨겨두고, hover/active 때 좌→우로 그려진다
+   (우측 상단 마이페이지 링크의 hover 밑줄 애니메이션과 동일). 길이는 활성 탭과
+   완전히 동일(left:6px·right:6px). */
+body.archive-page .archive-tabs .faq-tab-btn::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 6px;
+  right: 6px;
+  /* 기본 FAQ 탭의 구분선(|) 규칙 .faq-tab-btn:not(:last-child)::after 가 남긴
+     margin-left:14px 를 제거. 이게 남으면 마지막(면접)을 뺀 전체·발표 밑줄만
+     14px 오른쪽으로 밀리고 짧아져 어긋나 보였다. margin:0 으로 세 탭 통일. */
+  margin: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: #4e6fc2;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform .28s cubic-bezier(.22, 1, .36, 1);
+}
+
+body.archive-page .archive-tabs .faq-tab-btn:not(.active):hover::after,
+body.archive-page .archive-tabs .faq-tab-btn:not(.active):focus-visible::after {
+  background: rgba(78, 111, 194, .5);
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+body.archive-page .archive-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 340px;
+  max-width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid #dbe1ed;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(52, 68, 120, .06);
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+
+body.archive-page .archive-search:focus-within {
+  border-color: #7185e5;
+  box-shadow: 0 0 0 3px rgba(113, 133, 229, .12);
+}
+
+body.archive-page .archive-search svg {
+  width: 18px;
+  fill: none;
+  stroke: #8e98ae;
+  stroke-width: 1.8;
+}
+
+body.archive-page .archive-search input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  color: #2b344d;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+}
+
+body.archive-page .archive-search button {
+  border: 0;
+  color: #9aa3b6;
+  background: transparent;
+  font-size: 18px;
+}
+
+body.archive-page .archive-master,
+body.archive-page .archive-master.has-selection {
+  grid-template-columns: minmax(0, 1fr) 340px;
+  /* 폴더 카드를 리스트 최상단에 고정(세로 중앙 정렬 금지). 항목 수가 적어도
+     폴더가 위로 올라가 검색창을 가리지 않고, 항상 리스트 맨 위 높이에 머문다. */
+  align-items: start;
+  gap: 48px;
+  width: min(1040px, 100%);
+  /* 검색창과 콘텐츠 사이 간격을 넉넉히(20 → 40px). */
+  margin: 40px auto 0;
+}
+
+body.archive-page .archive-list {
+  --archive-row-height: 74px;
+  /* 페이지당 5개까지 표시(스크롤 대신 아래 페이지네이션으로 이동). 5행 높이만큼
+     최소 높이를 확보해, 결과가 적어도 목록 영역·푸터 간격이 흔들리지 않는다. */
+  min-height: calc(var(--archive-row-height) * 5);
+  padding-right: 10px;
+}
+
+/* 목록 아래 페이지 이동 컨트롤 (< 1 2 >). */
+body.archive-page .archive-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+body.archive-page .archive-page-num,
+body.archive-page .archive-page-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid #dbe1ed;
+  border-radius: 10px;
+  background: #fff;
+  color: #5b6478;
+  font-size: 14px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: border-color .16s ease, background .16s ease, color .16s ease;
+}
+
+body.archive-page .archive-page-num:hover,
+body.archive-page .archive-page-arrow:not(:disabled):hover {
+  border-color: #7185e5;
+  color: #3b56b0;
+}
+
+body.archive-page .archive-page-num.is-active {
+  border-color: #6a7de4;
+  background: #6a7de4;
+  color: #fff;
+}
+
+body.archive-page .archive-page-arrow:disabled {
+  opacity: .4;
+  cursor: default;
+}
+
+body.archive-page .archive-list-state {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  color: #8d96aa;
+  font-size: 14px;
+  font-weight: 650;
+  text-align: center;
+}
+
+body.archive-page .archive-list-state.is-error { color: var(--aivo-danger); }
+
+body.archive-page .archive-row {
+  grid-template-columns: 170px minmax(0, 1fr) 68px;
+  gap: 18px;
+  min-height: var(--archive-row-height);
+  padding: 14px 18px;
+  border-top-color: rgba(216, 223, 236, .9);
+}
+
+body.archive-page .archive-row:hover,
+body.archive-page .archive-row:focus-visible,
+body.archive-page .archive-row.selected {
+  padding: 14px 18px;
+  background: rgba(93, 127, 229, .075);
+}
+
+body.archive-page .archive-row > span {
+  font-family: 'Pretendard Variable', Pretendard, 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* 발표/면접 구분용 색상 배지 */
+body.archive-page .archive-row-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+body.archive-page .archive-type-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  font-style: normal;
+  letter-spacing: -.01em;
+}
+body.archive-page .archive-type-tag.is-presentation {
+  color: #3b56b0;
+  background: rgba(82, 118, 223, .12);
+}
+body.archive-page .archive-type-tag.is-interview {
+  color: #1f7a55;
+  background: rgba(35, 158, 102, .13);
+}
+body.archive-page .archive-row-meta time {
+  color: #8b93a7;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+body.archive-page .archive-row strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.archive-page .archive-row b {
+  padding-right: 0;
+  color: #6575e6;
+  font-family: inherit;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 850;
+  line-height: 1.3;
+  text-align: right;
+  white-space: nowrap;
+}
+
+body.archive-page .archive-detail,
+body.archive-page .archive-master.has-selection .archive-detail {
+  width: 340px;
+}
+
+body.archive-page .archive-detail {
+  /* 세로 중앙(align-self:center) 대신 리스트 최상단에 고정 — 항목 수가 적어도
+     폴더가 위로 올라가 검색창을 가리지 않고, 스크린샷의 위치를 유지한다.
+     (데스크톱 1101px+ 에선 카드가 position:absolute 라 세로 위치는 --archive-card-top
+     으로 조절한다. 여기 margin-top 은 좁은 화면 그리드 레이아웃에서만 의미가 있다.) */
+  align-self: start;
+  cursor: pointer;
+  filter: none;
+}
+
+body.archive-page .archive-detail:focus-visible {
+  outline: 3px solid rgba(78, 111, 194, .28);
+  outline-offset: 8px;
+}
+
+body.archive-page .archive-detail-back {
+  top: -34px;
+  height: 74px;
+  background: #5e71d8;
+  clip-path: polygon(0 0, 26% 0, 34% 18px, 100% 18px, 100% 100%, 0 100%);
+}
+
+body.archive-page .archive-detail-card {
+  min-width: 0;
+  min-height: 238px;
+  padding: 26px 28px 20px;
+  border: 0;
+  border-radius: 9px 9px 18px 18px;
+  background: #6a7de4;
+  color: #fff;
+  box-shadow: 0 24px 42px rgba(55, 72, 153, .18);
+}
+
+body.archive-page .archive-detail-close,
+body.archive-page .archive-detail-type,
+body.archive-page .archive-detail-title,
+body.archive-page .archive-detail-stats small,
+body.archive-page .archive-detail-stats strong,
+body.archive-page .archive-detail-meta,
+body.archive-page .archive-detail-link {
+  color: #fff;
+}
+
+body.archive-page .archive-detail-type,
+body.archive-page .archive-detail-stats small,
+body.archive-page .archive-detail-meta {
+  opacity: .78;
+}
+
+body.archive-page .archive-detail-title {
+  display: block;
+  display: -webkit-box;
+  margin-top: 8px;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  font-size: 22px;
+  line-height: 1.3;
+  word-break: break-word;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+body.archive-page .archive-detail-meta.is-breakable {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+body.archive-page .archive-detail-stats {
+  border-top: 1px solid rgba(255, 255, 255, .28);
+}
+
+body.archive-page .archive-detail-link {
+  justify-content: center;
+  height: 32px;
+  margin-top: 14px;
+  font-size: 17px;
+}
+
+/* Final hover-only folder papers. */
+body.archive-page .archive-detail-paper {
+  z-index: 1;
+  display: none;
+  opacity: 0;
+  transform-origin: 50% 100%;
+  transition: opacity .14s ease, transform .24s ease;
+}
+
+body.archive-page .paper-count-1 .archive-detail-paper-primary,
+body.archive-page .paper-count-2 .archive-detail-paper-primary,
+body.archive-page .paper-count-2 .archive-detail-paper-secondary,
+body.archive-page .paper-count-3 .archive-detail-paper-primary,
+body.archive-page .paper-count-3 .archive-detail-paper-secondary,
+body.archive-page .paper-count-3 .archive-detail-paper-tertiary {
+  display: block;
+}
+
+body.archive-page .paper-count-1:is(:hover, :focus-visible) .archive-detail-paper-primary,
+body.archive-page .paper-count-2:is(:hover, :focus-visible) .archive-detail-paper-primary,
+body.archive-page .paper-count-3:is(:hover, :focus-visible) .archive-detail-paper-primary {
+  opacity: 1;
+  transform: translate3d(5px, -15px, 0) rotate(4deg);
+}
+
+body.archive-page .paper-count-2:is(:hover, :focus-visible) .archive-detail-paper-secondary {
+  opacity: 1;
+  transform: translate3d(-8px, -21px, 0) rotate(-6deg);
+}
+
+body.archive-page .paper-count-3:is(:hover, :focus-visible) .archive-detail-paper-secondary {
+  opacity: 1;
+  transform: translate3d(-10px, -20px, 0) rotate(-6deg);
+}
+
+body.archive-page .paper-count-3:is(:hover, :focus-visible) .archive-detail-paper-tertiary {
+  opacity: 1;
+  transform: translate3d(0, -27px, 0);
+}
+
+/* Stable button-owned archive tab underline. */
+body.archive-page .archive-tab-indicator {
+  display: none !important;
+}
+
+body.archive-page .archive-tabs .faq-tab-btn.active::after {
+  background: #4e6fc2;
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+@media (max-width: 1100px) {
+  body.archive-page .archive-master,
+  body.archive-page .archive-master.has-selection {
+    grid-template-columns: 1fr;
+    width: min(760px, 100%);
+  }
+
+  body.archive-page .archive-detail,
+  body.archive-page .archive-master.has-selection .archive-detail {
+    width: min(340px, 100%);
+    justify-self: center;
+  }
+}
+
+@media (max-width: 560px) {
+  body.archive-page main.archive-shell {
+    width: min(100% - 28px, 1180px);
+  }
+
+  /* 세로 스택 모바일에선 검색창 행을 전체 폭으로 확장. */
+  body.archive-page .archive-searchbar {
+    justify-content: stretch;
+  }
+
+  body.archive-page .archive-search {
+    width: 100%;
+  }
+
+  body.archive-page .archive-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 18px 10px;
+  }
+
+  body.archive-page .archive-row:hover,
+  body.archive-page .archive-row:focus-visible,
+  body.archive-page .archive-row.selected {
+    padding: 18px 10px;
+  }
+}
+
+/* ==========================================================================
+   내 기록 상세 패널 인터랙션 (데스크톱)
+   · 폴더 패널은 그리드 우측 상단에 절대 고정 → 리스트 높이가 바뀌어도 흔들리지 않음.
+   · 선택 있음: 리스트는 좌측, 패널 페이드인(우→제자리).
+   · 선택 없음(X 삭제): 리스트가 중앙으로 미끄러지고 패널은 페이드아웃.
+   ========================================================================== */
+@media (min-width: 1101px) {
+  body.archive-page .archive-master,
+  body.archive-page .archive-master.has-selection {
+    display: block;
+    position: relative;
+    grid-template-columns: none;
+    align-items: initial;
+    gap: 0;
+  }
+
+  body.archive-page .archive-master,
+  body.archive-page .archive-master.has-selection {
+    /* 폴더 카드가 position:absolute 라 높이에 기여하지 않는다. 카드(top:75px+높이)와
+       5행 목록+페이지네이션을 모두 담을 최소 높이를 확보해, 결과 수·폴더 개폐와
+       무관하게 검색창~푸터 간격을 두 번째 스크린샷처럼 고정한다. */
+    min-height: 470px;
+  }
+
+  body.archive-page .archive-master .archive-list,
+  body.archive-page .archive-master .archive-pagination {
+    width: 640px;
+    max-width: 100%;
+    margin-inline: 0;
+    /* 선택 없을 때 컨테이너(1040) 안에서 중앙: (1040-640)/2 = 200px */
+    transform: translateX(200px);
+    transition: transform .5s cubic-bezier(.4, 0, .2, 1);
+    will-change: transform;
+  }
+
+  body.archive-page .archive-master .archive-list {
+    margin-top: 0;
+  }
+
+  body.archive-page .archive-master.has-selection .archive-list,
+  body.archive-page .archive-master.has-selection .archive-pagination {
+    transform: translateX(0);
+  }
+
+  /* 폴더 카드는 우측 컬럼에 절대 위치로 고정(항목 수와 무관하게 위치 유지).
+     ▶▶ 카드 세로 위치는 오직 아래 top 한 값으로 조절 ◀◀
+        키우면 아래로(예 80px), 0이면 맨 위, 음수면 더 위로. (margin-top은 여기
+        margin:0 에 덮여 효과가 없으므로 반드시 top 을 바꿔야 한다.) */
+  body.archive-page .archive-master .archive-detail {
+    position: absolute;
+    top: 75px;
+    right: 0;
+    margin: 0;
+    transform: none;
+  }
+}
+
+/* 폴더 패널은 '열 때만' 우측에서 페이드인(닫기는 즉시). 예전 Vue <Transition> 의
+   leave 애니메이션이 검색 중 비동기 목록 갱신과 겹쳐 카드가 닫히지 않고 남는 문제가
+   있어, 순수 CSS enter 애니메이션으로 대체했다. v-if 로 사라질 때는 곧바로 제거된다. */
+body.archive-page .archive-detail {
+  animation: archive-panel-in .38s cubic-bezier(.4, 0, .2, 1);
+}
+
+@keyframes archive-panel-in {
+  from { opacity: 0; transform: translateX(28px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.archive-page .archive-master .archive-list {
+    transition: none;
+  }
+  body.archive-page .archive-detail {
+    animation: none;
+  }
+}

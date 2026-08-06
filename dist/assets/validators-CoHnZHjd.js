@@ -1,0 +1,1 @@
+const t=/^\S+@\S+\.\S+$/,a=s=>t.test(String(s??"").trim());const S=s=>String(s??"").length>=8,o={email:"올바른 이메일 형식을 입력해주세요.",name:"이름을 입력해주세요.",password:"비밀번호는 8자 이상이어야 해요.",passwordRequired:"비밀번호를 입력해주세요.",passwordMismatch:"비밀번호가 일치하지 않아요."};export{o as a,S as b,a as i};

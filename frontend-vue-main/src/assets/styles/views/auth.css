@@ -1,0 +1,396 @@
+/* Authentication pages reuse the practice-entry header and footer while keeping
+   the form compact enough to remain in a single viewport. */
+body.auth-page {
+  display: flex;
+  height: 100svh;
+  min-height: 560px;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff !important;
+}
+
+.auth-page #siteHeader,
+.auth-page #siteFooter {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.auth-page .top-nav {
+  border: 0;
+  background: #fff;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.auth-page .top-nav::before,
+.auth-page .top-nav::after {
+  content: none;
+  background: none;
+  filter: none;
+}
+
+.auth-page .site-footer {
+  border-top-color: #eef1f7;
+  background: #fff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* App.vue의 라우트 래퍼(.route-view)는 기본 block이라, 그 안의 .auth-editorial이
+   flex로 늘어나지 못해 세로 중앙 정렬이 깨진다. 인증 페이지에서만 래퍼를 세로
+   flex + 스크롤러로 만들어, 헤더~푸터 사이 전체 높이를 editorial이 채우게 한다. */
+body.auth-page .route-view {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* editorial은 래퍼 높이를 채우되(flex-grow) 콘텐츠보다 작게 줄지는 않는다(flex-shrink:0).
+   - 뷰포트가 넉넉하면: editorial이 커지고 justify-content:center가 카드를 세로 중앙에
+     둬서 헤더~콘텐츠, 콘텐츠~푸터 간격이 같아진다.
+   - 뷰포트가 콘텐츠보다 짧으면: editorial이 콘텐츠 높이로 유지되고 래퍼(.route-view)가
+     스크롤되어 카드 상·하단이 잘리지 않는다. (margin:auto 방식은 이 경우 스크롤이 막힘) */
+.auth-page .auth-editorial {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex: 1 0 auto;
+  /* 기본 .auth-editorial의 min-height:calc(100svh - 114px)를 무력화한다.
+     이 값이 남아 있으면 editorial이 래퍼보다 커져 중앙 정렬이 아래로 밀린다. */
+  min-height: 0;
+  padding: 18px 24px;
+  background: #fff;
+}
+
+.auth-page .auth-card {
+  width: min(440px, 100%);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.auth-page .auth-card::before,
+.auth-page .auth-card::after {
+  content: none;
+  background: none;
+  filter: none;
+}
+
+.auth-page .auth-card h1 {
+  margin: 0 0 24px;
+  color: #171923;
+  font-size: 30px;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -.035em;
+  text-align: left;
+}
+
+.auth-page .auth-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0 0 22px;
+  border-bottom: 1px solid #d8e0f0;
+}
+
+.auth-page .auth-tabs button {
+  position: relative;
+  padding: 0 0 12px;
+  border: 0;
+  background: transparent;
+  color: #8a94aa;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-page .auth-tabs button::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: transparent;
+}
+
+.auth-page .auth-tabs button.active {
+  color: #192343;
+}
+
+.auth-page .auth-tabs button.active::after {
+  background: #5271c8;
+}
+
+.auth-page .form-field {
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.auth-page .form-field label {
+  color: #192343;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.auth-page .form-field input {
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-width: 0 0 1px;
+  border-style: solid;
+  border-color: #d8e0f0;
+  border-radius: 0;
+  background: transparent;
+  color: #171923;
+  font-size: 14px;
+  font-weight: 500;
+  outline: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.auth-page .form-field input:focus {
+  border-color: #6f82df;
+  outline: 0;
+  box-shadow: none;
+}
+
+.auth-page .password-control {
+  position: relative;
+}
+
+.auth-page .password-control input {
+  padding-right: 70px;
+}
+
+/* 토글은 입력칸 오른쪽 끝(밑줄 끝)에 붙지 않고 한 칸 안쪽에 둔다. */
+.auth-page .password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  padding: 7px 0 7px 12px;
+  border: 0;
+  background: transparent;
+  color: #7c88a5;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.auth-page .password-toggle:hover,
+.auth-page .password-toggle:focus-visible,
+.auth-page .password-toggle.is-visible {
+  color: #5271c8;
+}
+
+.auth-page .password-toggle:focus-visible {
+  outline: 0;
+  box-shadow: 0 1px 0 currentColor;
+}
+
+/* 비밀번호 토글과 같은 오른쪽 여백을 써서 '보기'와 '비밀번호 찾기'가 한 줄로 정렬된다. */
+.auth-page .auth-help-link {
+  margin-top: 7px;
+  padding-right: 12px;
+  text-align: right;
+}
+
+.auth-page .auth-help-link a {
+  color: #7c88a5;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.auth-page .auth-submit {
+  height: 48px;
+  margin-top: 8px;
+  border-radius: 9px;
+  background: #18203b;
+  font-size: 13px;
+  box-shadow: none;
+}
+
+.auth-page .auth-submit:hover {
+  background: #11172c;
+  background-image: none;
+  box-shadow: none;
+  filter: none;
+  transform: none;
+}
+
+.auth-page .auth-divider {
+  margin: 14px 0;
+}
+
+.auth-page .social-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  margin-bottom: 8px;
+  padding: 0 44px;
+  border-radius: 12px;
+  box-shadow: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.auth-page .social-btn.kakao {
+  border: 1px solid #fee500;
+  background: #fee500;
+  color: rgba(0, 0, 0, .85);
+}
+
+.auth-page .social-btn.google {
+  border: 1px solid #747775;
+  background: #fff;
+  color: #1f1f1f;
+}
+
+.auth-page .social-icon {
+  position: absolute;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.auth-page .social-btn.kakao .social-icon {
+  width: 19px;
+  height: 19px;
+}
+
+.auth-page .social-btn:hover {
+  background-image: none;
+  box-shadow: none;
+  filter: none;
+  transform: none;
+}
+
+.auth-page :is(.auth-submit, .social-btn)::before,
+.auth-page :is(.auth-submit, .social-btn)::after {
+  content: none;
+  background: none;
+}
+
+.auth-page .social-btn.kakao:hover {
+  background: #f5dc00;
+}
+
+.auth-page .social-btn.google:hover {
+  background: #f8f9fa;
+}
+
+.auth-page :is(.auth-submit, .social-btn):focus-visible {
+  outline: 2px solid #5271c8;
+  outline-offset: 2px;
+}
+
+.auth-page .auth-switch {
+  margin: 16px 0 0;
+  color: #7c88a5;
+  font-size: 11px;
+  text-align: left;
+}
+
+.auth-page .auth-switch a {
+  color: #5271c8;
+}
+
+.auth-page .form-success {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.auth-page .field-error {
+  display: block;
+  margin-top: 5px;
+  font-size: 10px;
+}
+
+.auth-page .field-counter {
+  display: block;
+  margin-top: 4px;
+  color: #98a1b5;
+  font-size: 10px;
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  body.auth-page {
+    min-height: 520px;
+  }
+
+  .auth-page .auth-editorial {
+    padding: 14px 20px;
+  }
+
+  .auth-page .auth-card {
+    width: 100%;
+  }
+
+  .auth-page .auth-card h1 {
+    margin-bottom: 18px;
+    font-size: 26px;
+  }
+
+  .auth-page .form-field {
+    margin-bottom: 10px;
+  }
+
+  .auth-page .footer-contact {
+    display: none;
+  }
+}
+
+@media (max-height: 720px) {
+  body.auth-page {
+    min-height: 0;
+  }
+
+  .auth-page .auth-editorial {
+    padding-block: 10px;
+  }
+
+  .auth-page .auth-card h1 {
+    margin-bottom: 16px;
+    font-size: 26px;
+  }
+
+  .auth-page .form-field {
+    margin-bottom: 9px;
+  }
+
+  .auth-page .auth-divider {
+    margin: 10px 0;
+  }
+
+  .auth-page .social-btn {
+    height: 38px;
+    margin-bottom: 6px;
+  }
+
+  .auth-page .auth-switch {
+    margin-top: 10px;
+  }
+}

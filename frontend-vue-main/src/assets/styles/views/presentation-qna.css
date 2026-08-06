@@ -1,0 +1,1364 @@
+:root {
+  --qna-ink: #172346;
+  --qna-muted: #74809b;
+  --qna-line: #dce3ef;
+  --qna-soft: #f4f6fb;
+  --qna-blue: #4e6fc2;
+  --qna-green: #618a72;
+  --qna-red: #c75252;
+}
+
+body.presentation-qna-page {
+  min-height: 100svh;
+  margin: 0;
+  overflow-x: hidden;
+  background: #fff;
+  color: var(--qna-ink);
+}
+
+.presentation-qna-page .qna-page-shell {
+  width: min(1440px, calc(100% - 96px));
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 48px 0 42px;
+  box-sizing: border-box;
+}
+
+.presentation-qna-page .qna-page-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 30px;
+}
+
+.presentation-qna-page .qna-eyebrow {
+  margin: 0 0 8px;
+  color: var(--qna-blue);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.presentation-qna-page .qna-page-head h1 {
+  margin: 0;
+  font-size: clamp(34px, 3vw, 48px);
+  line-height: 1.15;
+  letter-spacing: -.045em;
+}
+
+.presentation-qna-page .qna-page-head > div > p:last-child {
+  margin: 10px 0 0;
+  color: var(--qna-muted);
+  font-size: 15px;
+}
+
+.presentation-qna-page .qna-progress {
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: #edf2ff;
+  color: var(--qna-blue);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.presentation-qna-page .qna-workspace {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  gap: clamp(40px, 5vw, 76px);
+  min-height: 690px;
+}
+
+.presentation-qna-page .qna-question-panel {
+  padding-right: 28px;
+  border-right: 1px solid var(--qna-line);
+}
+
+.presentation-qna-page .qna-panel-title,
+.presentation-qna-page .qna-transcript-head,
+.presentation-qna-page .qna-complete-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.presentation-qna-page .qna-panel-title {
+  margin-bottom: 18px;
+}
+
+.presentation-qna-page .qna-panel-title strong,
+.presentation-qna-page .qna-transcript-head strong {
+  font-size: 16px;
+}
+
+.presentation-qna-page .qna-panel-title span {
+  color: var(--qna-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.presentation-qna-page .qna-question-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.presentation-qna-page .qna-question-item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: start;
+  min-height: 96px;
+  padding: 20px 18px;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: var(--qna-soft);
+  transition: opacity .38s ease, transform .38s ease, max-height .38s ease, margin .38s ease, padding .38s ease;
+}
+
+.presentation-qna-page .qna-question-item.is-active {
+  border-color: #cdd9f8;
+  background: #edf2ff;
+}
+
+.presentation-qna-page .qna-question-item.is-leaving {
+  max-height: 0;
+  margin-bottom: -12px;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  transform: translateX(-48px);
+  overflow: hidden;
+}
+
+.presentation-qna-page .qna-question-item > span {
+  color: var(--qna-blue);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.presentation-qna-page .qna-question-item p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.presentation-qna-page .qna-answer-panel {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding-top: 32px;
+}
+
+.presentation-qna-page .qna-active-question > span {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--qna-blue);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.presentation-qna-page .qna-active-question h2 {
+  max-width: 900px;
+  min-height: 92px;
+  margin: 0;
+  font-size: clamp(25px, 2.2vw, 34px);
+  line-height: 1.45;
+  letter-spacing: -.035em;
+}
+
+.presentation-qna-page .qna-transcript-head {
+  margin: 26px 0 10px;
+}
+
+.presentation-qna-page .qna-transcript-head span {
+  color: var(--qna-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.presentation-qna-page .qna-transcript-head i {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: var(--qna-green);
+}
+
+.presentation-qna-page .qna-transcript {
+  min-height: 250px;
+  padding: 24px;
+  box-sizing: border-box;
+  border: 1px solid #e1e6f0;
+  border-radius: 16px;
+  background: var(--qna-soft);
+  color: #4e5b75;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.presentation-qna-page .qna-answer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 116px;
+  margin-top: 20px;
+  padding: 22px 28px;
+  box-sizing: border-box;
+  border-radius: 16px;
+  background: var(--qna-green);
+  color: #fff;
+  transition: background-color .35s ease;
+}
+
+.presentation-qna-page .qna-answer-bar.is-overtime {
+  background: var(--qna-red);
+}
+
+.presentation-qna-page .qna-answer-bar > div {
+  display: grid;
+  gap: 5px;
+}
+
+.presentation-qna-page .qna-answer-bar strong {
+  font-size: 34px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.presentation-qna-page .qna-answer-bar span {
+  color: rgba(255, 255, 255, .82);
+  font-size: 12px;
+}
+
+.presentation-qna-page .qna-answer-bar button,
+.presentation-qna-page #finishQnaBtn {
+  min-width: 150px;
+  height: 48px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--qna-ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.presentation-qna-page .qna-answer-bar button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.presentation-qna-page .qna-complete-row {
+  margin-top: 22px;
+}
+
+.presentation-qna-page .qna-complete-row p {
+  margin: 0;
+  color: var(--qna-muted);
+  font-size: 12px;
+}
+
+.presentation-qna-page #finishQnaBtn {
+  min-width: 180px;
+  background: var(--qna-ink);
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .presentation-qna-page .qna-page-shell {
+    width: min(100% - 40px, 680px);
+    padding: 30px 0 40px;
+  }
+
+  .presentation-qna-page .qna-workspace {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .presentation-qna-page .qna-question-panel {
+    padding-right: 0;
+    padding-bottom: 26px;
+    border-right: 0;
+    border-bottom: 1px solid var(--qna-line);
+  }
+
+  .presentation-qna-page .qna-question-list {
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .presentation-qna-page .qna-answer-panel {
+    padding-top: 0;
+  }
+}
+
+/* QNA shared title scale: match FAQ and archive title hierarchy. */
+.presentation-qna-page .qna-page-head h1 {
+  font-size: 52px;
+}
+
+@media (max-width: 600px) {
+  .presentation-qna-page .qna-page-head h1 {
+    font-size: 36px;
+  }
+}
+
+/* QNA compact four-card workspace with an always-visible shared footer. */
+body.presentation-qna-page {
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+}
+
+.presentation-qna-page .qna-page-shell {
+  width: min(1320px, calc(100% - 96px));
+  min-height: 0;
+  flex: 1 0 auto;
+  padding: 28px 0 36px;
+}
+
+.presentation-qna-page .qna-page-head {
+  margin-bottom: 20px;
+}
+
+.presentation-qna-page .qna-question-list {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.presentation-qna-page .qna-question-item {
+  min-height: 104px;
+}
+
+.presentation-qna-page .qna-answer-panel {
+  max-width: 900px;
+  margin: 0 auto;
+  padding-top: 28px;
+}
+
+.presentation-qna-page .qna-active-question {
+  min-height: 78px;
+}
+
+.presentation-qna-page .qna-answer-bar {
+  margin-top: 18px;
+}
+
+.presentation-qna-page #siteFooter {
+  display: block;
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .presentation-qna-page .qna-page-shell {
+    width: min(100% - 32px, 720px);
+  }
+
+  .presentation-qna-page .qna-question-list {
+    grid-template-columns: repeat(4, minmax(210px, 1fr));
+    overflow-x: auto;
+  }
+}
+
+/* Final QNA compact centered timer workspace overrides. */
+:root {
+  --qna-green: #4f8d72;
+  --qna-red: #d45d62;
+}
+
+.presentation-qna-page .qna-page-shell {
+  width: min(1040px, calc(100% - 48px));
+}
+
+.presentation-qna-page .qna-page-head {
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.presentation-qna-page .qna-page-head h1 {
+  width: 100%;
+  text-align: center;
+}
+
+.presentation-qna-page .qna-progress {
+  position: absolute;
+  right: 0;
+}
+
+.presentation-qna-page .qna-answer-panel {
+  width: 100%;
+  max-width: 900px;
+}
+
+.presentation-qna-page .qna-answer-bar {
+  min-height: 52px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--qna-ink);
+  transition: none;
+}
+
+.presentation-qna-page .qna-answer-bar.is-overtime {
+  background: transparent;
+}
+
+.presentation-qna-page .qna-answer-time,
+.presentation-qna-page .qna-answer-bar strong,
+.presentation-qna-page .qna-answer-bar.is-overtime .qna-answer-time,
+.presentation-qna-page .qna-answer-bar.is-overtime strong {
+  color: var(--qna-ink);
+}
+
+.presentation-qna-page .qna-answer-bar strong {
+  font-size: 28px;
+}
+
+.presentation-qna-page .qna-answer-bar span {
+  color: var(--qna-muted);
+}
+
+.presentation-qna-page .qna-answer-bar button {
+  background: var(--qna-ink);
+  color: #fff;
+}
+
+.presentation-qna-page .qna-answer-timeline {
+  height: 6px;
+  margin-top: 12px;
+}
+
+.presentation-qna-page .qna-answer-timeline-fill {
+  background: var(--qna-green);
+  transition: background-color .2s ease;
+  will-change: width;
+}
+
+.presentation-qna-page .qna-answer-timeline.is-overtime .qna-answer-timeline-fill {
+  background: var(--qna-red);
+}
+
+@media (max-width: 900px) {
+  .presentation-qna-page .qna-page-shell {
+    width: min(100% - 32px, 720px);
+  }
+}
+
+@media (max-width: 560px) {
+  .presentation-qna-page .qna-page-head {
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .presentation-qna-page .qna-progress {
+    position: static;
+  }
+}
+
+/* QNA compact centered timer workspace. */
+:root {
+  --qna-green: #4f8d72;
+  --qna-red: #d45d62;
+}
+
+.presentation-qna-page .qna-page-shell {
+  width: min(1040px, calc(100% - 48px));
+}
+
+.presentation-qna-page .qna-page-head {
+  position: relative;
+  justify-content: center;
+}
+
+.presentation-qna-page .qna-page-head h1 {
+  width: 100%;
+  text-align: center;
+}
+
+.presentation-qna-page .qna-progress {
+  position: absolute;
+  right: 0;
+}
+
+.presentation-qna-page .qna-answer-panel {
+  width: 100%;
+  max-width: 900px;
+}
+
+.presentation-qna-page .qna-answer-bar {
+  min-height: 52px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--qna-ink);
+  transition: none;
+}
+
+.presentation-qna-page .qna-answer-bar.is-overtime {
+  background: transparent;
+}
+
+.presentation-qna-page .qna-answer-time {
+  color: var(--qna-ink);
+}
+
+.presentation-qna-page .qna-answer-bar strong {
+  color: var(--qna-ink);
+  font-size: 28px;
+}
+
+.presentation-qna-page .qna-answer-bar span {
+  color: var(--qna-muted);
+}
+
+.presentation-qna-page .qna-answer-bar.is-overtime .qna-answer-time,
+.presentation-qna-page .qna-answer-bar.is-overtime strong {
+  color: var(--qna-ink);
+}
+
+.presentation-qna-page .qna-answer-bar button {
+  background: var(--qna-ink);
+  color: #fff;
+}
+
+.presentation-qna-page .qna-answer-timeline {
+  height: 6px;
+  margin-top: 12px;
+}
+
+.presentation-qna-page .qna-answer-timeline-fill {
+  background: var(--qna-green);
+  transition: background-color .2s ease;
+  will-change: width;
+}
+
+.presentation-qna-page .qna-answer-timeline.is-overtime .qna-answer-timeline-fill {
+  background: var(--qna-red);
+}
+
+@media (max-width: 900px) {
+  .presentation-qna-page .qna-page-shell {
+    width: min(100% - 32px, 720px);
+  }
+}
+
+@media (max-width: 560px) {
+  .presentation-qna-page .qna-page-head {
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .presentation-qna-page .qna-progress {
+    position: static;
+  }
+}
+
+/* QNA shared title scale: match FAQ and archive title hierarchy. */
+.presentation-qna-page .qna-page-head h1 {
+  font-size: 52px;
+}
+
+@media (max-width: 600px) {
+  .presentation-qna-page .qna-page-head h1 {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 560px) {
+  .presentation-qna-page .qna-page-head {
+    align-items: start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .presentation-qna-page .qna-answer-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .presentation-qna-page .qna-answer-bar button,
+  .presentation-qna-page #finishQnaBtn {
+    width: 100%;
+  }
+
+  .presentation-qna-page .qna-complete-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .presentation-qna-page .qna-question-item,
+  .presentation-qna-page .qna-answer-bar {
+    transition: none;
+  }
+}
+
+/* Compact shared-chrome composition. */
+.presentation-qna-page .qna-page-shell {
+  width: min(1180px, calc(100% - 160px));
+  min-height: calc(100svh - 79px - 52px);
+  padding: 28px 0 34px;
+}
+
+.presentation-qna-page .qna-page-head {
+  margin-bottom: 22px;
+}
+
+.presentation-qna-page .qna-eyebrow {
+  margin-bottom: 5px;
+}
+
+.presentation-qna-page .qna-page-head h1 {
+  font-size: clamp(30px, 2.4vw, 38px);
+}
+
+.presentation-qna-page .qna-page-head > div > p:last-child {
+  margin-top: 7px;
+  font-size: 14px;
+}
+
+.presentation-qna-page .qna-progress {
+  padding: 7px 12px;
+  font-size: 12px;
+}
+
+.presentation-qna-page .qna-workspace {
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 48px;
+  min-height: 0;
+}
+
+.presentation-qna-page .qna-question-panel {
+  padding-right: 24px;
+}
+
+.presentation-qna-page .qna-panel-title {
+  margin-bottom: 14px;
+}
+
+.presentation-qna-page .qna-panel-title strong,
+.presentation-qna-page .qna-transcript-head strong {
+  font-size: 15px;
+}
+
+.presentation-qna-page .qna-question-list {
+  gap: 10px;
+}
+
+.presentation-qna-page .qna-question-item {
+  grid-template-columns: 30px minmax(0, 1fr);
+  min-height: 78px;
+  padding: 15px 14px;
+  border-radius: 12px;
+}
+
+.presentation-qna-page .qna-question-item p {
+  font-size: 13px;
+}
+
+.presentation-qna-page .qna-answer-panel {
+  padding-top: 10px;
+}
+
+.presentation-qna-page .qna-active-question > span {
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.presentation-qna-page .qna-active-question h2 {
+  max-width: 760px;
+  min-height: 64px;
+  font-size: clamp(22px, 1.8vw, 28px);
+  line-height: 1.4;
+}
+
+.presentation-qna-page .qna-transcript-head {
+  margin: 18px 0 8px;
+}
+
+.presentation-qna-page .qna-transcript {
+  min-height: 190px;
+  padding: 20px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.presentation-qna-page .qna-answer-bar {
+  min-height: 92px;
+  margin-top: 14px;
+  padding: 17px 22px;
+  border-radius: 12px;
+}
+
+.presentation-qna-page .qna-answer-bar strong {
+  font-size: 28px;
+}
+
+.presentation-qna-page .qna-answer-bar button,
+.presentation-qna-page #finishQnaBtn {
+  min-width: 138px;
+  height: 44px;
+}
+
+.presentation-qna-page .qna-complete-row {
+  margin-top: 16px;
+}
+
+.presentation-qna-page #finishQnaBtn {
+  min-width: 156px;
+}
+
+@media (max-width: 1100px) {
+  .presentation-qna-page .qna-page-shell {
+    width: min(100% - 80px, 980px);
+  }
+
+  .presentation-qna-page .qna-workspace {
+    grid-template-columns: 270px minmax(0, 1fr);
+    gap: 34px;
+  }
+}
+
+@media (max-width: 900px) {
+  .presentation-qna-page .qna-page-shell {
+    width: min(100% - 40px, 680px);
+    padding: 26px 0 36px;
+  }
+
+  .presentation-qna-page .qna-workspace {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+}
+/* QNA five-card workspace: select a question, record, then analyze. */
+.presentation-qna-page .qna-page-shell {
+  width: min(1440px, calc(100% - 96px));
+  min-height: calc(100svh - 131px);
+  padding: 34px 0 42px;
+}
+
+.presentation-qna-page .qna-page-head {
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.presentation-qna-page .qna-page-head h1 {
+  font-size: 34px;
+}
+
+.presentation-qna-page .qna-question-panel {
+  padding: 0;
+  border: 0;
+}
+
+.presentation-qna-page .qna-question-list {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.presentation-qna-page .qna-question-item {
+  display: block;
+  min-width: 0;
+  min-height: 112px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #dce3ef;
+  border-radius: 12px;
+  background: #fff;
+  transition:
+    opacity 0.38s ease,
+    transform 0.38s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.presentation-qna-page .qna-question-item button {
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.presentation-qna-page .qna-question-item button span {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--qna-blue);
+  font-weight: 900;
+}
+
+.presentation-qna-page .qna-question-item button p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.presentation-qna-page .qna-question-item.is-active {
+  border-color: #4f6ff2;
+  background: #eef3ff;
+  box-shadow: 0 0 0 1px #4f6ff2 inset;
+}
+
+.presentation-qna-page .qna-question-item.is-leaving {
+  opacity: 0;
+  transform: translateY(-14px) scale(0.94);
+  pointer-events: none;
+}
+
+.presentation-qna-page .qna-answer-panel {
+  max-width: 900px;
+  margin: 0 auto;
+  padding-top: 36px;
+}
+
+.presentation-qna-page .qna-active-question {
+  min-height: 92px;
+  text-align: center;
+}
+
+.presentation-qna-page .qna-active-question .qna-eyebrow {
+  margin-bottom: 8px;
+}
+
+.presentation-qna-page .qna-active-question h2 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.45;
+}
+
+.presentation-qna-page .qna-answer-copy {
+  margin-top: 28px;
+}
+
+.presentation-qna-page .qna-answer-copy-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.presentation-qna-page .qna-answer-copy-head h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.presentation-qna-page .qna-answer-transcript {
+  min-height: 150px;
+  padding: 22px;
+  border: 1px solid #dce3ef;
+  border-radius: 12px;
+  background: #f7f9fc;
+  color: #59657b;
+  line-height: 1.75;
+}
+
+.presentation-qna-page .qna-answer-bar {
+  margin-top: 16px;
+  padding: 20px 22px;
+  border-radius: 12px;
+  background: #f7f9fc;
+}
+
+.presentation-qna-page .qna-answer-bar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.presentation-qna-page .qna-answer-time {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.presentation-qna-page .qna-answer-guide {
+  margin: 3px 0 0;
+  color: #7a859b;
+  font-size: 13px;
+}
+
+.presentation-qna-page .qna-answer-button,
+.presentation-qna-page .qna-finish-button {
+  min-width: 150px;
+  min-height: 48px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.presentation-qna-page .qna-answer-button {
+  background: #1f294a;
+  color: #fff;
+}
+
+.presentation-qna-page .qna-answer-timeline {
+  height: 8px;
+  margin-top: 16px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e8edf5;
+}
+
+.presentation-qna-page .qna-answer-timeline-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--qna-green);
+  transition:
+    width 0.25s linear,
+    background-color 0.25s ease;
+}
+
+.presentation-qna-page .qna-answer-timeline.is-overtime .qna-answer-timeline-fill {
+  background: var(--qna-red);
+}
+
+.presentation-qna-page .qna-answer-bar.is-overtime .qna-answer-time {
+  color: var(--qna-red);
+}
+
+.presentation-qna-page .qna-page-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.presentation-qna-page .qna-finish-button {
+  min-width: 190px;
+  background: #596fe8;
+  color: #fff;
+}
+
+.presentation-qna-page .qna-finish-button:disabled {
+  background: #e7ebf3;
+  color: #aab2c2;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .presentation-qna-page .qna-page-shell {
+    width: min(100% - 32px, 720px);
+    padding-top: 24px;
+  }
+
+  .presentation-qna-page .qna-question-list {
+    grid-template-columns: repeat(5, minmax(210px, 1fr));
+    padding-bottom: 8px;
+    overflow-x: auto;
+  }
+
+  .presentation-qna-page .qna-answer-panel {
+    padding-top: 28px;
+  }
+
+  .presentation-qna-page .qna-answer-bar-top {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .presentation-qna-page .qna-answer-button {
+    width: 100%;
+  }
+}
+
+/* QNA compact four-card workspace with an always-visible shared footer. */
+body.presentation-qna-page {
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+}
+
+.presentation-qna-page .qna-page-shell {
+  width: min(1320px, calc(100% - 96px));
+  min-height: 0;
+  flex: 1 0 auto;
+  padding: 28px 0 36px;
+}
+
+.presentation-qna-page .qna-page-head {
+  margin-bottom: 20px;
+}
+
+.presentation-qna-page .qna-question-list {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.presentation-qna-page .qna-question-item {
+  min-height: 104px;
+}
+
+.presentation-qna-page .qna-answer-panel {
+  max-width: 900px;
+  margin: 0 auto;
+  padding-top: 28px;
+}
+
+.presentation-qna-page .qna-active-question {
+  min-height: 78px;
+}
+
+.presentation-qna-page .qna-answer-bar {
+  margin-top: 18px;
+}
+
+.presentation-qna-page #siteFooter {
+  display: block;
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .presentation-qna-page .qna-page-shell {
+    width: min(100% - 32px, 720px);
+  }
+
+  .presentation-qna-page .qna-question-list {
+    grid-template-columns: repeat(4, minmax(210px, 1fr));
+    overflow-x: auto;
+  }
+}
+
+/* ============================================================
+   이하 presentation-qna-final.css 병합 (2026-07-28) — 원래 index.css에서 바로 뒤에 로드되던 override.
+   선언 순서가 캐스케이드를 결정하므로 이 블록은 파일 끝에 유지할 것.
+   ============================================================ */
+/* Final Q&A layout overrides loaded after the legacy presentation styles. */
+:root {
+  --qna-green: #4f8d72;
+  --qna-red: #d45d62;
+}
+
+.presentation-qna-page .qna-page-shell {
+  width: min(1040px, calc(100% - 48px));
+  padding-top: 56px;
+}
+
+.presentation-qna-page .qna-page-head {
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 34px;
+}
+
+.presentation-qna-page .qna-page-head h1 {
+  width: 100%;
+  text-align: center;
+}
+
+.presentation-qna-page .qna-progress {
+  position: absolute;
+  right: 0;
+}
+
+.presentation-qna-page .qna-question-list {
+  width: 100%;
+  max-width: calc(var(--qna-question-count, 4) * 250px + (var(--qna-question-count, 4) - 1) * 14px);
+  margin-right: auto;
+  margin-left: auto;
+  grid-template-columns: repeat(var(--qna-question-count, 4), minmax(0, 1fr));
+  justify-content: center;
+  transition: max-width .32s ease;
+}
+
+.presentation-qna-page .qna-answer-panel {
+  width: 100%;
+  max-width: 900px;
+  padding-top: 40px;
+}
+
+.presentation-qna-page .qna-active-question,
+.presentation-qna-page .qna-active-question > span,
+.presentation-qna-page .qna-active-question h2 {
+  text-align: center;
+}
+
+.presentation-qna-page .qna-active-question h2 {
+  width: 100%;
+  max-width: none;
+  text-align: center;
+}
+
+.presentation-qna-page .qna-answer-bar {
+  min-height: 52px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--qna-ink);
+  transition: none;
+}
+
+.presentation-qna-page .qna-answer-bar.is-overtime {
+  background: transparent;
+}
+
+.presentation-qna-page .qna-answer-time {
+  color: var(--qna-ink);
+}
+
+.presentation-qna-page .qna-answer-bar strong,
+.presentation-qna-page .qna-answer-bar.is-overtime .qna-answer-time,
+.presentation-qna-page .qna-answer-bar.is-overtime strong {
+  color: var(--qna-ink);
+}
+
+.presentation-qna-page .qna-answer-bar strong {
+  font-size: 28px;
+}
+
+.presentation-qna-page .qna-answer-bar span {
+  color: var(--qna-muted);
+}
+
+.presentation-qna-page .qna-answer-bar button {
+  background: var(--qna-ink);
+  color: #fff;
+  transition: background-color .2s ease, color .2s ease, transform .2s ease;
+}
+
+.presentation-qna-page #answerActionBtn.is-start {
+  background: #202946;
+}
+
+.presentation-qna-page #answerActionBtn.is-complete {
+  background: #4f6ff2;
+}
+
+.presentation-qna-page #answerActionBtn.is-complete:hover,
+.presentation-qna-page #answerActionBtn.is-complete:focus-visible {
+  background: #405fd8;
+}
+
+.presentation-qna-page .qna-complete-row {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin-top: 30px;
+  text-align: center;
+}
+
+.presentation-qna-page .qna-complete-row p {
+  margin: 0;
+}
+
+.presentation-qna-page #finishQnaBtn {
+  min-width: 176px;
+}
+
+.presentation-qna-page #finishQnaBtn:disabled {
+  background: #dfe3ec;
+  color: #9ba3b5;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.presentation-qna-page .qna-answer-timeline {
+  height: 6px;
+  margin-top: 12px;
+}
+
+.presentation-qna-page .qna-answer-timeline-fill {
+  background: var(--qna-green);
+  transition: background-color .2s ease;
+  will-change: width;
+}
+
+.presentation-qna-page .qna-answer-timeline.is-overtime .qna-answer-timeline-fill {
+  background: var(--qna-red);
+}
+
+@media (max-width: 900px) {
+  .presentation-qna-page .qna-page-shell {
+    width: min(100% - 32px, 720px);
+    padding-top: 36px;
+  }
+
+  .presentation-qna-page .qna-question-list {
+    width: 100%;
+    max-width: none;
+    grid-template-columns: repeat(var(--qna-question-count, 4), minmax(210px, 1fr));
+    justify-content: start;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .presentation-qna-page .qna-page-head {
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .presentation-qna-page .qna-progress {
+    position: static;
+  }
+}
+.presentation-qna-page :is(.qna-answer-log-q, .qna-answer-log-a) {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Stable three-question session layout. Completed or skipped cards stay mounted so
+   the question panel and action buttons never jump between questions. */
+.presentation-qna-page .qna-question-panel {
+  min-height: 196px;
+}
+
+.presentation-qna-page .qna-question-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 900px;
+  min-height: 176px;
+}
+
+.presentation-qna-page .qna-question-item {
+  min-height: 176px;
+}
+
+.presentation-qna-page .qna-question-item button p {
+  display: -webkit-box;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+}
+
+.presentation-qna-page .qna-question-item button span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.presentation-qna-page .qna-question-item button span small {
+  color: #7a849c;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.presentation-qna-page .qna-question-item:is(.is-answered, .is-skipped) {
+  border-color: #d8deea;
+  background: #f6f7fa;
+  box-shadow: none;
+}
+
+.presentation-qna-page .qna-question-item.is-answered { opacity: .78; }
+.presentation-qna-page .qna-question-item.is-skipped { opacity: .58; }
+.presentation-qna-page .qna-question-item button:disabled { cursor: default; }
+
+.presentation-qna-page .qna-active-question {
+  min-height: 116px;
+}
+
+.presentation-qna-page .qna-live-caption-slot {
+  min-height: 74px;
+}
+
+.presentation-qna-page .qna-answer-log-slot {
+  min-height: 148px;
+  max-height: 148px;
+  overflow-y: auto;
+}
+
+.presentation-qna-page .qna-answer-log { margin-top: 0; }
+
+.presentation-qna-page .qna-complete-row {
+  min-height: 238px;
+}
+
+.presentation-qna-page .qna-feedback-notice {
+  min-height: 38px;
+  max-width: 560px;
+  padding: 9px 12px;
+  border: 1px solid #dbe1ec;
+  border-radius: 10px;
+  background: #f7f8fb;
+  color: #657089;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.presentation-qna-page .qna-feedback-notice.is-warning {
+  border-color: #f2c9aa;
+  background: #fff8f1;
+  color: #9a4f24;
+}
+
+@media (max-width: 900px) {
+  .presentation-qna-page .qna-question-list {
+    grid-template-columns: repeat(3, minmax(240px, 1fr));
+    max-width: none;
+    overflow-x: auto;
+  }
+}
+
+/* 질문 카드의 번호(Q1)와 질문 글씨가 너무 작다는 피드백 → 한 단계 키우고
+   번호 칸도 그만큼 넓힌다. (실제 글자는 button 안에 있으므로 button 기준으로
+   지정해야 앞선 button 스코프 규칙을 이긴다.) */
+.presentation-qna-page .qna-question-item button span {
+  font-size: 19px;
+  font-weight: 850;
+}
+
+.presentation-qna-page .qna-question-item button span small {
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.presentation-qna-page .qna-question-item button p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.presentation-qna-page .qna-active-question > span {
+  font-size: 16px;
+}
+
+/* 답변이 끝난 카드는 '답변 완료' 글씨가 작아 눌러도 되는 카드처럼 보였다.
+   → 카드 글씨를 한 단계 연하게 눌러 "이미 끝난 카드"로 읽히게 하고, 그만큼
+   '답변 완료'·'건너뜀' 배지를 또렷하게 세워 상태가 먼저 보이게 한다. */
+.presentation-qna-page .qna-question-item.is-answered,
+.presentation-qna-page .qna-question-item.is-skipped {
+  opacity: 1;
+}
+
+.presentation-qna-page .qna-question-item:is(.is-answered, .is-skipped) button span,
+.presentation-qna-page .qna-question-item:is(.is-answered, .is-skipped) button p {
+  color: #a3abbd;
+}
+
+.presentation-qna-page .qna-question-item:is(.is-answered, .is-skipped) button span small {
+  padding: 3px 9px;
+  border: 1px solid #cfd6e6;
+  border-radius: 999px;
+  background: #fff;
+  color: #5b6580;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.presentation-qna-page .qna-question-item.is-answered button span small {
+  border-color: #b9c8ea;
+  background: #eef3ff;
+  color: #3f5bb5;
+}

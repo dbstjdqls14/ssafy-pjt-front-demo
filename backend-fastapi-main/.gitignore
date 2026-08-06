@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime files
+*.log
+uploads/
+tmp/
+models/*
+!models/filer/
+models/filer/*
+!models/filer/src/
+!models/filer/src/**
+cache/
+
+# Docker / build
+dist/
+build/
+
+fluency_analysis_bundle/

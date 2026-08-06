@@ -1,0 +1,297 @@
+.presentation-setup-page [hidden] {
+  display: none !important;
+}
+
+/* 자료 업로드 헤더 — 라벨 오른쪽에 '이 폴더의 기존 자료 사용' 진입점을 둔다.
+   (예전에는 폴더 선택 화면에 '자료 변경'으로 있었지만, 자료를 고르는 자리는
+   설정 화면의 자료 업로드 영역이 맞다.) */
+.presentation-flow-page .upload-field-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+/* '자료 업로드' 라벨은 이 헤더 div 안에 있어서 `.form-field > label` 규칙(12px/750)에
+   걸리지 않고 기본 라벨 스타일로 떨어졌다 → 연습 이름·연습 설명 라벨과 같은 크기·
+   굵기·색으로 맞춘다. */
+.presentation-flow-page .setup-form-panel .upload-field-head > label {
+  display: block;
+  margin-bottom: 0;
+  color: #172346;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.presentation-flow-page .reuse-open-btn {
+  flex: 0 0 auto;
+  padding: 5px 11px;
+  border: 1px solid #cdd6ea;
+  border-radius: 999px;
+  background: #fff;
+  color: #4e6fc2;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.presentation-flow-page .reuse-open-btn:hover:not(:disabled) {
+  border-color: #4e6fc2;
+  background: #f4f7ff;
+}
+
+.presentation-flow-page .reuse-open-btn:disabled {
+  color: #a6adc0;
+  cursor: not-allowed;
+}
+
+/* 재사용 자료 카드는 업로드된 파일 카드와 같은 형태(.upload-file-row.show)를 쓴다. */
+.presentation-flow-page .reused-file-row > div > small.upload-state-label {
+  flex: 0 0 auto;
+}
+
+/* 기존 자료 선택 모달 -------------------------------------------------------- */
+.reuse-modal-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(20, 27, 52, .42);
+  backdrop-filter: blur(4px);
+}
+
+.reuse-modal {
+  width: min(520px, 100%);
+  max-height: min(560px, calc(100vh - 40px));
+  overflow-y: auto;
+  padding: 28px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(20, 27, 52, .22);
+}
+
+.reuse-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.reuse-modal-head > div > span {
+  color: #687de2;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.reuse-modal-head h3 {
+  margin: 6px 0 0;
+  color: #202844;
+  font-size: 19px;
+  letter-spacing: -.02em;
+}
+
+.reuse-modal-head p {
+  margin: 7px 0 0;
+  color: #929bb0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.reuse-modal-head > button {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 10px;
+  background: #f2f4f9;
+  color: #6c7691;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.reuse-modal-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reuse-modal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #e2e7f1;
+  border-radius: 12px;
+  background: #fff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.reuse-modal-item:hover {
+  border-color: #b9c6ea;
+  background: #f7f9ff;
+}
+
+.reuse-modal-item.active {
+  border-color: #4e6fc2;
+  background: #eef2ff;
+}
+
+.reuse-modal-item-main {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.reuse-modal-item-main > strong {
+  overflow: hidden;
+  color: #202844;
+  font-size: 14px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reuse-modal-item-main > small {
+  overflow: hidden;
+  color: #8c95ab;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reuse-modal-item > time {
+  flex: 0 0 auto;
+  color: #8c95ab;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.reuse-modal-state {
+  margin: 0;
+  padding: 34px 16px;
+  border: 1px dashed #d9dde6;
+  border-radius: 12px;
+  color: #8c95ab;
+  font-size: 13px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.reuse-modal-state.is-error {
+  border-color: #f0c9c9;
+  background: #fff7f7;
+  color: #c0524a;
+}
+
+/* '다음'을 누른 뒤 자료를 처리하는 동안은 설정을 못 바꾼다(입력칸은 disabled).
+   왜 안 되는지 보이게 잠긴 상태를 시각적으로도 표시한다. */
+.presentation-setup-page .setup-form-panel .setup-lock-note {
+  display: block;
+  margin-top: 6px;
+  color: #6b7794;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.presentation-setup-page .setup-form-panel.is-locked :is(input, textarea):disabled {
+  border-color: #e4e8f1;
+  background: #f6f7fb;
+  color: #7a8296;
+  cursor: not-allowed;
+}
+
+.presentation-setup-page .setup-form-panel.is-locked :is(.qna-toggle, .stepper-btn, .reuse-open-btn):disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+.presentation-setup-page .setup-form-panel.is-locked .upload-dropzone.is-disabled {
+  border-color: #e4e8f1;
+  background: #f6f7fb;
+  cursor: not-allowed;
+}
+
+.presentation-upload-leave-backdrop {
+  position: fixed;
+  z-index: 1100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(20, 27, 52, .44);
+  backdrop-filter: blur(4px);
+}
+
+.presentation-upload-leave-modal {
+  width: min(460px, 100%);
+  padding: 30px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(20, 27, 52, .24);
+  text-align: center;
+}
+
+.presentation-upload-leave-modal h2 {
+  margin: 0;
+  color: #202844;
+  font-size: 21px;
+  letter-spacing: -.02em;
+}
+
+.presentation-upload-leave-modal p {
+  margin: 12px 0 0;
+  color: #7f899f;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.presentation-upload-leave-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.presentation-upload-leave-actions button {
+  min-height: 42px;
+  padding: 0 17px;
+  border-radius: 11px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.presentation-upload-leave-continue {
+  border: 1px solid #d7deea;
+  background: #fff;
+  color: #4b5873;
+}
+
+.presentation-upload-leave-confirm {
+  border: 1px solid #4e6fc2;
+  background: #4e6fc2;
+  color: #fff;
+}
+
+@media (max-width: 520px) {
+  .presentation-upload-leave-modal {
+    padding: 26px 20px 22px;
+  }
+
+  .presentation-upload-leave-actions {
+    flex-direction: column;
+  }
+}

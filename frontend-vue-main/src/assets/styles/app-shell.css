@@ -1,0 +1,602 @@
+/* ==========================================================================
+   Routed-content transition (App.vue keyed `.route-view` wrapper).
+   Only the routed wizard/content animates — the header, StepProgress rail and
+   footer stay put — so stepping through the flow feels continuous instead of a
+   hard cut. Deliberately ENTER-ONLY (a CSS animation, NOT a Vue <Transition>
+   out-in): the keyed wrapper is re-created each navigation, so the new view
+   mounts INSTANTLY and just fades up. There is no "leave" phase to stall, which
+   is what previously left pages blank / needing a refresh (out-in waits on a
+   frame callback that never resolved, so the incoming view never mounted).
+   ========================================================================== */
+.route-view {
+  flex: 1 0 auto;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+  animation: routeEnter .3s cubic-bezier(.33, 1, .68, 1);
+}
+
+@keyframes routeEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 발표·면접 플로우 단계 전환은 opacity만 사용한다(모든 플로우 페이지가
+   presentation-flow-page를 공유). routeEnter의 translateY(10px)는 전환되는 0.3s
+   동안 .route-view를 fixed 상태의 <>/이전·다음 버튼의 containing block으로 만들어
+   버튼이 콘텐츠와 함께 밀려 움직인다. opacity는 containing block을 만들지 않으므로
+   버튼은 화면에 고정된 채 안쪽 콘텐츠만 부드럽게 바뀐다. */
+@keyframes routeEnterFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+body.presentation-flow-page .route-view {
+  animation-name: routeEnterFade;
+}
+
+/* Immersive wrapper: layout-transparent (no box, no animation), so home/
+   recording lay out as if there were no wrapper at all. */
+.route-view-bare {
+  display: contents;
+}
+
+/* ============================================================
+   FLOW WIZARD VERTICAL RHYTHM — one common place for EVERY step.
+   ------------------------------------------------------------
+   Every presentation AND interview wizard step shares the body class
+   `presentation-flow-page` and the same shell structure
+   (`.presentation-flow-shell` › `.wizard-shell` › `.workflow-stage`), so this
+   single rule set spaces them all identically — no more per-page copies. The
+   routed content block is centered between the step bar and the footer, so the
+   gap ABOVE (step bar → content) always equals the gap BELOW (content → footer).
+   If a step's content is taller than the screen it top-anchors and the page
+   scrolls (auto block margins) instead of clipping.
+
+   ┌──────────────────────────────────────────────────────────┐
+   │  ▶ To change the spacing on ALL flow steps at once,       │
+   │    edit  --flow-gap  right below. That's the ONE knob.    │
+   └──────────────────────────────────────────────────────────┘
+   Covers: 연습 설정 · 슬라이드별 핵심 내용 · 장치 확인 · 설정 확인(발표),
+           면접 정보 설정 · 면접관 스타일 · 질문 확인 · 장치 확인(면접).
+   (연습 폴더 선택은 구조가 달라 아래 별도 블록에서 같은 --flow-gap 을 씀.)
+   ============================================================ */
+:root {
+  --flow-footer-gap: 35px; /* 버튼↔푸터 간격 (폴더 선택 페이지 기준). 모든 플로우 페이지 공통 — 여기 한 곳만 바꾸면 전부 반영 */
+  --flow-top-min: 20px;     /* 콘텐츠가 화면보다 길 때 스텝바 아래로 남기는 최소 여백 */
+}
+
+/* Let a step grow & scroll when its content is taller than the screen (the base
+   flow grid is otherwise fixed-height and would clip). */
+body.presentation-flow-page {
+  height: auto !important;
+  min-height: 100svh;
+  overflow-y: auto;
+  /* The body grid was authored for 3 children (header/content/footer);
+     DefaultLayout adds a 4th (StepProgress), so declare 4 rows to keep the
+     flexible row on the CONTENT, not the step bar. */
+  grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+}
+
+/* Bottom-anchor the content block so the button→footer gap is UNIFORM on every
+   step (= --flow-footer-gap, the folder-select standard). The extra space goes
+   above (below the step bar); when content is taller than the screen it keeps a
+   --flow-top-min top gap and the page scrolls. content→button stays 32px (the
+   .workflow-footer-actions margin-top, already common). */
+body.presentation-flow-page .route-view {
+  align-self: end !important;
+  min-height: 0;
+  padding-block: var(--flow-top-min) var(--flow-footer-gap);
+}
+
+/* ── '설정 확인'(ready) 페이지 전용: 콘텐츠(체크리스트)를 세로 중앙에 배치 ──────
+   콘텐츠가 짧아 위 공통(bottom-anchor) 규칙을 그대로 쓰면 진행바↔콘텐츠 간격이
+   과하거나(아래붙임) 부족(상단붙임)해 어색하다. 이 페이지에선 콘텐츠를 진행바와
+   푸터 사이 정중앙에 놓아 위·아래 여백을 균형 있게 한다(발표/면접 ready 공용).
+   콘텐츠가 화면보다 커지면 최소 여백(padding-block)만 두고 스크롤된다. */
+body.presentation-ready-page .route-view {
+  align-self: center !important;
+  padding-block: clamp(24px, 4vh, 56px) !important;
+}
+
+/* Stop the shell filling the viewport + drop its lopsided vertical padding so
+   the fixed gaps aren't thrown off. */
+body.presentation-flow-page .presentation-flow-shell {
+  min-height: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* No gap under the step bar (the top space is a single clean gap). */
+body.presentation-flow-page .aivo-persistent-flow-progress {
+  margin-bottom: 0 !important;
+}
+
+/* Zero the content's built-in top margin so the block is vertically symmetric. */
+body.presentation-flow-page .workflow-stage,
+body.presentation-flow-page .workflow-stage-content {
+  margin-top: 0 !important;
+}
+
+/* Ready step wrapper is a 2-row grid (checklist + hidden slide-review); only one
+   child shows, so collapse its dead row-gap that would push the card off-center. */
+body.presentation-ready-page .ready-flow-content,
+body.interview-ready-page .ready-flow-content {
+  row-gap: 0 !important;
+}
+
+/* 연습 폴더 선택/생성 — different shell (no step bar), same button→footer rhythm. */
+body.folder-picker-page {
+  height: auto !important;
+  min-height: 100svh;
+  overflow-y: auto;
+  /* No step bar here (not a flow route), so a 3-row grid: header / content / footer. */
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+}
+
+body.folder-picker-page .route-view {
+  align-self: end !important;
+  min-height: 0;
+  padding-block: var(--flow-top-min) var(--flow-footer-gap);
+}
+
+body.folder-picker-page .practice-flow-shell {
+  min-height: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Post-flow result screens (분석 중 / 발표·면접 리포트) have no step rail, so the
+   body is a 3-row grid (header / content / footer). Their shells keep their
+   natural height and sit at the top of the content row, leaving a big gap below.
+   Center the routed content in that row so the header↔content and content↔footer
+   gaps match. */
+body.presentation-analyzing-page .route-view,
+body.presentation-result-page .route-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Legacy outcome CSS gives the analysis shell `flex: 1 0 auto` + a top-anchored
+   `align-self` (authored for the old App.vue scene wrapper), which pins it to the
+   top of the now-flex route-view instead of centering. Neutralize both so the
+   shell takes its natural height and centers. */
+body.presentation-analyzing-page .presentation-analysis-shell,
+body.presentation-result-page .presentation-result-shell {
+  flex: 0 0 auto !important;
+  align-self: center !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-view {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   Unified common header (AppHeader).
+   Loaded AFTER the legacy bundle so it wins on source order. The legacy CSS
+   restyled the shared `.top-nav` differently per flow (practice = floating
+   glass pill, presentation/interview = another variant), which broke the
+   "공통 헤더는 단색 79px, 별도 변형 헤더 없음" decision (PROJECT_CONTEXT §6.8).
+   These rules normalize every common page (home/record use their own layout
+   and have no `.top-nav`) to one solid header with a visible bottom divider.
+   ========================================================================== */
+.top-nav {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 60 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-bottom: 1px solid #e4e7f0 !important; /* header ↔ body divider */
+  border-radius: 0 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  overflow: visible !important;
+}
+
+/* Kill the glass-rim / refraction pseudo-elements some flows add. */
+.top-nav::before,
+.top-nav::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Typeface must be pinned on the header itself. The header inherits the page
+   font, and some flows restyle <body> (`.practice-flow-page` switches to
+   Pretendard Variable) — so the SAME 15px rendered visibly larger on 새 연습/
+   FAQ than on 마이페이지, which keeps the base Noto Sans KR. That was the
+   "헤더 글씨 크기가 페이지마다 다르다" report. Lock the header to My Page's
+   stack (the app base) so every route renders one identical header. */
+.top-nav {
+  font-family: 'Noto Sans KR', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif !important;
+}
+
+/* Consistent inner bar. 3-column grid [logo | nav | actions] with equal side
+   columns so the nav sits at the TRUE viewport center (a flex `justify-content:
+   center` only centers between logo and actions, which skews left because the
+   right block is wider). The container width + inline padding are matched to
+   the home page's logo anchor so the shared-header logo lands on the exact same
+   x-position: home uses `left: max(24px, (100vw - 1424px)/2 + clamp(24px,
+   2.35vw, 45px))` → a 1424px centered container with that inline padding. */
+/* Reserve the scrollbar gutter on the root scroller at ALL times, so a page
+   that doesn't scroll (e.g. /practice) keeps the same content width as a page
+   that does (e.g. /faq). Otherwise the viewport-centered nav jumps ~7px (half a
+   scrollbar) between routes — the "글씨 위치가 조금 바뀌는" shift. */
+html {
+  scrollbar-gutter: stable !important;
+}
+
+.top-nav .nav-inner {
+  display: flex !important;
+  position: relative !important; /* containing block for the absolutely-centered nav */
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0 !important;
+  width: 100% !important;
+  height: 72px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  grid-template-columns: none !important;
+}
+
+/* Logo: a clean, deterministic scaled-down replica of the HOME logo crop, so
+   the shared header shows the exact same wordmark, just smaller (home box is
+   104×39; here 80×30 — same 2.67 ratio, same crop region). It also sits at the
+   identical x to the home logo at every width (home's own anchor formula). The
+   explicit box + crop override the layered legacy `.practice-*` treatments that
+   otherwise forced a wrong 76×42 box. Equal side columns keep the nav at the
+   true viewport center regardless of the logo/actions widths. */
+.top-nav .nav-logo {
+  flex: 0 0 auto !important;
+  position: relative !important;
+  display: block !important;
+  width: 80px !important;
+  height: 30px !important;
+  aspect-ratio: auto !important;
+  overflow: hidden !important;
+  margin-left: max(24px, calc((100vw - 1424px) / 2 + clamp(24px, 2.35vw, 45px))) !important;
+}
+
+.top-nav .nav-logo-crop {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  overflow: hidden !important;
+}
+
+.top-nav .nav-logo-crop img {
+  position: absolute !important;
+  inset: 0 !important; /* top:0/left:0 anchor — home's crop relies on this */
+  display: block !important;
+  width: 213% !important;
+  height: auto !important;
+  max-width: none !important;
+  transform: translate(-26.8%, -28%) !important;
+}
+
+/* Categories: absolutely centered on the true viewport center — immune to the
+   logo/actions widths and to the legacy grid rules that were skewing the middle
+   track. nav-inner is full-width, so left:50% is the viewport center. */
+.top-nav .nav-links {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  justify-self: auto !important;
+  display: flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.top-nav .nav-links .nav-link {
+  position: relative !important;
+  padding: 8px 14px !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: #5b647a !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  transition: color .15s ease !important;
+}
+
+.top-nav .nav-links .nav-link:hover,
+.top-nav .nav-links .nav-link:focus-visible {
+  color: #1a2340 !important;
+  outline: none !important;
+}
+
+/* Kill legacy per-item underline pseudo-elements (practice/presentation flows
+   add a `.nav-links a::after` line) — the single sliding `.nav-underline`
+   element is the only indicator now, so these would double up. */
+.top-nav .nav-links .nav-link::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* Non-active categories get a hover draw-underline identical to the top-right
+   마이페이지 link: it's always present but scaleX(0), then draws left→right on
+   hover. The ACTIVE item is excluded (it owns the sliding `.nav-underline`), so
+   the two indicators never double up. Length matches the label (padding 14px
+   each side = label width, same as the sliding underline). */
+.top-nav .nav-links .nav-link:not(.active)::after {
+  content: '' !important;
+  display: block !important;
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: -2px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: #2f6bff;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform .28s cubic-bezier(.22, 1, .36, 1);
+  pointer-events: none;
+}
+
+.top-nav .nav-links .nav-link:not(.active):hover::after,
+.top-nav .nav-links .nav-link:not(.active):focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+/* Active category keeps only the sliding underline. */
+.top-nav .nav-links .nav-link.active::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Active differs only by color — same size AND weight as the rest, so the
+   sliding underline moves between items with no width/metrics jump. */
+.top-nav .nav-links .nav-link.active {
+  background: transparent !important;
+  color: #2f6bff !important;
+  font-weight: 500 !important;
+}
+
+/* One shared underline that slides between items (position/width set by
+   AppHeader JS via inline style; NO !important here so the inline style wins). */
+.top-nav .nav-underline {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  border-radius: 2px;
+  background: #2f6bff;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.top-nav .nav-underline.is-animated {
+  transition:
+    transform .3s cubic-bezier(.4, 0, .2, 1),
+    width .3s cubic-bezier(.4, 0, .2, 1),
+    opacity .2s ease;
+}
+
+/* Right actions: mirror the logo gutter so the bar is symmetric. */
+.top-nav .nav-right {
+  flex: 0 0 auto !important;
+  justify-self: auto !important;
+  align-items: center;
+  gap: 11px;
+  margin-left: 0 !important;
+  margin-right: max(24px, calc((100vw - 1424px) / 2 + clamp(24px, 2.35vw, 45px))) !important;
+}
+
+/* Right-cluster size/weight must be identical on EVERY page. It was only unified
+   under .practice-type-page, so pages whose body lacks that class (마이페이지 등)
+   fell back to the base 13px/500 — the 님·마이페이지·로그아웃 grew, the weight
+   changed, and the cluster shifted left. Pin the unified look on .top-nav itself
+   so the header is 1px-identical regardless of route. */
+.top-nav .nav-right :is(.nav-name, .nav-link-small, .nav-login-btn),
+.top-nav .nav-right a.nav-link-small {
+  font-size: 12px;
+  font-weight: 560;
+}
+
+/* Same for the cluster's ink: `.practice-type-page` painted 로그아웃 as dark as
+   마이페이지, while My Page kept the quieter muted button. My Page is the
+   reference — link = navy, button = muted — on every route. */
+.top-nav .nav-right :is(.nav-name, .nav-login-btn),
+.top-nav .nav-right a.nav-link-small {
+  color: var(--aivo-navy) !important;
+}
+
+.top-nav .nav-right button.nav-link-small {
+  color: var(--aivo-muted) !important;
+}
+
+.top-nav .nav-right button.nav-link-small:hover,
+.top-nav .nav-right button.nav-link-small:focus-visible {
+  color: var(--aivo-navy) !important;
+}
+
+.top-nav .nav-right .nav-name {
+  font-size: 13px;
+  min-width: 0;
+  max-width: 120px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.top-nav .nav-right .nav-profile-label {
+  display: flex;
+  width: fit-content;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.top-nav .nav-right .nav-profile-nickname {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-nav .nav-right .nav-profile-suffix {
+  flex: 0 0 auto;
+}
+
+.top-nav .nav-right .nav-avatar {
+  width: 36px;
+  height: 36px;
+  font-size: 12px;
+}
+
+/* Unify every flow: kill the per-flow header ENTRY animations / opacity resets
+   (practice = practiceHeaderFade + practiceNavSettle, etc.) so the shared header
+   is visually identical and static on all pages — no fade/settle motion when
+   entering a flow. (Does NOT touch .nav-underline, whose opacity the slide JS
+   owns, nor the nav's translate centering.) */
+.top-nav .nav-logo,
+.top-nav .nav-links .nav-link,
+.top-nav .nav-right,
+.top-nav .nav-right > * {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+/* The current DefaultLayout renders AppHeader directly, without the legacy
+   #siteHeader wrapper. Keep the responsive rules here so they actually apply. */
+@media (min-width: 761px) and (max-width: 1040px) {
+  .top-nav .nav-logo {
+    margin-left: 20px !important;
+  }
+
+  .top-nav .nav-links {
+    gap: 0 !important;
+  }
+
+  .top-nav .nav-links .nav-link {
+    padding-inline: 10px !important;
+    font-size: 14px !important;
+  }
+
+  .top-nav .nav-right {
+    gap: 8px !important;
+    margin-right: 20px !important;
+  }
+
+  .top-nav .nav-right .nav-name {
+    max-width: 80px;
+  }
+}
+
+@media (max-width: 760px) {
+  .top-nav {
+    min-height: 112px !important;
+  }
+
+  .top-nav .nav-inner {
+    display: grid !important;
+    grid-template-columns: 76px minmax(0, 1fr) auto !important;
+    grid-template-rows: 58px 44px !important;
+    width: min(calc(100% - 32px), 560px) !important;
+    height: 112px !important;
+    margin: 0 auto !important;
+    padding: 5px 0 !important;
+    gap: 0 12px !important;
+  }
+
+  .top-nav .nav-logo {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    align-self: center !important;
+    width: 76px !important;
+    height: 32px !important;
+    margin-left: 0 !important;
+  }
+
+  .top-nav .nav-links {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    justify-self: start !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    height: 38px !important;
+    gap: 0 !important;
+    transform: none !important;
+  }
+
+  .top-nav .nav-links .nav-link {
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+  }
+
+  .top-nav .nav-right {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    align-self: center !important;
+    min-width: 0 !important;
+    gap: 8px !important;
+    margin-right: 0 !important;
+  }
+
+  .top-nav .nav-right :is(.nav-avatar, .nav-name, #navLogoutBtn) {
+    display: none !important;
+  }
+}
+
+/* Any flow that padded the (now-unused) #siteHeader mount must not add a gap. */
+#siteHeader {
+  padding: 0 !important;
+}
+
+/* ==========================================================================
+   Flow progress rail (StepProgress). The legacy CSS positioned
+   `.aivo-persistent-flow-progress` absolutely (top: var(--flow-pad-y)) for the
+   old App.vue shell, and reserved space in the content shell with a matching
+   padding-top. In the new DefaultLayout the rail is a normal-flow element
+   between the header and the routed content, so it must be static (else it
+   overlaps the sticky header) and the content must not reserve extra space.
+   ========================================================================== */
+.aivo-persistent-flow-progress,
+body.presentation-flow-page .aivo-persistent-flow-progress {
+  position: static !important;
+  transform: none !important;
+  width: min(1040px, calc(100% - 48px)) !important;
+  margin: 44px auto 0 !important; /* extra top gap so the rail isn't glued to the header; no bottom gap so the flow-centering block keeps the top/bottom content gaps symmetric */
+  left: auto !important;
+  top: auto !important;
+}
+
+/* ==========================================================================
+   Footer divider — 모든 페이지에서 상단 구분선이 보이도록 통일.
+   일부 페이지(마이페이지·연습 플로우 등)는 .site-footer 의 border-top 이
+   near-white(rgba(255,255,255,…))로 덮여 구분선이 사실상 안 보였다. 헤더
+   구분선과 같은 색(#e4e7f0)으로 고정하고, 비홈 페이지는 글래스(반투명 배경·
+   backdrop blur)도 해제해 흰 배경 위 선명한 한 줄로 통일한다.
+   ========================================================================== */
+.site-footer {
+  border-top: 1px solid #e4e7f0 !important;
+}
+
+body:not(.home-page) .site-footer {
+  background: #fff !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}

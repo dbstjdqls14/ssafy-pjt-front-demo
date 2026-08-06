@@ -1,0 +1,27 @@
+# 의존성·빌드 산출물
+node_modules/
+dist/
+.vite/
+npm-debug.log*
+coverage/
+
+# 에이전트·로컬 도구
+.claude/
+.superpowers/
+.agents/
+
+# 환경 변수·시크릿 (백엔드 연동 시 .env 사용 예정)
+.env
+.env.*
+!.env.example
+
+# 데이터·산출물 — 저장소에 올리지 않음
+outputs/
+figma-export*/
+*.zip
+*.pptx
+*.ndjson
+
+# OS·에디터 부산물
+.DS_Store
+Thumbs.db

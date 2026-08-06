@@ -1,0 +1,1469 @@
+.archive-report-page { min-width: 320px; overflow-x: hidden; overflow-y: auto; background: #fff; color: #172346; }
+.archive-report-shell { width: min(1080px, calc(100% - 48px)); margin: 0 auto; padding: 44px 0 80px; }
+.archive-report-back { display: inline-flex; align-items: center; color: #53617d; font-size: 13px; font-weight: 750; text-decoration: none; }
+.archive-report-back::before { content: '←'; margin-right: 8px; }
+.archive-report-summary { display: grid; grid-template-columns: minmax(270px, .72fr) minmax(0, 1.28fr); gap: 42px; align-items: start; margin-top: 30px; }
+.archive-report-info { padding-top: 10px; }
+.archive-report-info h1 { margin: 0; font-size: clamp(28px, 2.4vw, 36px); font-weight: 880; letter-spacing: -.05em; line-height: 1.2; }
+.archive-report-meta { display: grid; gap: 11px; margin: 30px 0 0; }
+.archive-report-meta div { display: flex; justify-content: space-between; gap: 24px; }
+.archive-report-meta dt, .archive-report-metrics dt { color: #74809b; font-size: 12px; font-weight: 700; }
+.archive-report-meta dd { margin: 0; font-size: 14px; font-weight: 800; }
+.archive-report-metrics { padding: 22px 24px; border: 1px solid #d8dfec; border-radius: 16px; background: #fff; }
+.archive-report-metrics header div { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; }
+.archive-report-metrics header span { font-size: 18px; font-weight: 850; }
+.archive-report-metrics header strong { color: #6972dc; font-size: 34px; font-weight: 900; }
+.archive-report-metrics header small { display: block; margin-top: 1px; color: #4f8d72; font-size: 11px; font-weight: 750; text-align: right; }
+.archive-report-metrics dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0 0; padding-top: 16px; border-top: 1px solid #e1e6f0; }
+.archive-report-metrics dl div { display: grid; gap: 6px; min-width: 0; }
+.archive-report-metrics dd { margin: 0; font-size: 18px; font-weight: 850; white-space: nowrap; }
+.archive-metric-status { width: fit-content; padding: 4px 9px; border-radius: 999px; background: #f0f3ff; color: #5968cd; font-size: 11px; font-weight: 800; }
+.archive-report-content { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr); gap: 30px; margin-top: 46px; padding-top: 36px; border-top: 1px solid #d8dfec; }
+.archive-slide-review, .archive-report-script { min-width: 0; }
+.archive-report-content header, .archive-report-feedback > header { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
+.archive-report-content h2, .archive-report-feedback h2 { margin: 0; font-size: 21px; font-weight: 850; letter-spacing: -.03em; }
+.archive-report-content header span { color: #74809b; font-size: 12px; font-weight: 700; }
+.report-video-box { position: relative; aspect-ratio: 16 / 9; min-height: 0; padding: 38px; overflow: hidden; border-radius: 15px; background: #202545; color: #fff; }
+.report-video-box.has-video { padding: 0; background: #11162b; }
+.report-video-empty { display: grid; place-items: center; width: 100%; height: 100%; color: rgba(255, 255, 255, .6); font-size: 13px; font-weight: 700; }
+/* 녹화 미리보기는 좌우반전(셀피)로 촬영되므로, 리포트 영상도 같은 방향으로 맞춘다. */
+.report-video-player { display: block; width: 100%; height: 100%; border: 0; object-fit: contain; background: #11162b; transform: scaleX(-1); }
+/* 재생 전: 살짝 블러 처리(가운데 재생 버튼과 함께 프리뷰 느낌). */
+.report-video-player.is-preview { filter: blur(7px); }
+.report-video-box .report-video-play {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 74px;
+  height: 74px;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(17, 22, 43, .52);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color .16s ease, transform .16s ease;
+}
+.report-video-box .report-video-play:hover,
+.report-video-box .report-video-play:focus-visible {
+  background: rgba(17, 22, 43, .72);
+  transform: scale(1.06);
+}
+.report-video-box .report-video-play svg { width: 30px; height: 30px; margin-left: 3px; fill: currentColor; }
+
+/* 재생 시작 후: 평소엔 숨고, 화면에 호버하면(또는 일시정지 상태) 나타나는 재생/일시정지 토글. */
+.report-video-box .report-video-hoverctl {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(17, 22, 43, .5);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .16s ease, background-color .16s ease, transform .16s ease;
+}
+.report-video-box .report-video-hoverctl svg { width: 26px; height: 26px; fill: currentColor; }
+.report-video-box .report-video-hoverctl.is-paused svg { margin-left: 3px; }
+.report-video-box:hover .report-video-hoverctl,
+.report-video-box .report-video-hoverctl:focus-visible,
+.report-video-box .report-video-hoverctl.is-paused {
+  opacity: 1;
+}
+.report-video-box .report-video-hoverctl:hover {
+  background: rgba(17, 22, 43, .72);
+  transform: scale(1.06);
+}
+.report-video-state { display: grid; height: 100%; margin: 0; place-items: center; padding: 28px; color: #d8def5; font-size: 13px; line-height: 1.6; text-align: center; }
+.report-video-copy { display: grid; align-content: center; height: 100%; }
+.report-video-copy small { color: #9ca7ff; font-size: 11px; font-weight: 850; letter-spacing: .08em; }
+.report-video-copy strong { margin-top: 14px; font-size: clamp(25px, 2.3vw, 34px); line-height: 1.25; }
+.report-video-copy p { max-width: 430px; margin: 14px 0 0; color: #cbd1e9; font-size: 13px; line-height: 1.65; }
+.archive-slide-strip { display: grid; grid-template-columns: 34px minmax(0, 1fr) 34px; gap: 8px; align-items: center; margin-top: 12px; }
+.archive-slide-arrow { width: 34px; height: 34px; border: 1px solid #d8dfec; border-radius: 50%; background: #fff; color: #5968dc; font-size: 22px; cursor: pointer; }
+.archive-slide-thumbnails { display: flex; gap: 10px; overflow-x: auto; padding: 2px; scrollbar-width: thin; }
+.archive-slide-thumb { flex: 0 0 145px; min-height: 74px; padding: 12px; border: 1px solid #e0e5ef; border-radius: 10px; background: #fff; color: #172346; text-align: left; cursor: pointer; }
+.archive-slide-thumb.is-active { border-color: #6573dd; box-shadow: 0 0 0 2px rgba(101,115,221,.12); }
+.archive-slide-thumb small { display: block; color: #6573dd; font-size: 10px; font-weight: 850; }
+.archive-slide-thumb strong { display: block; margin-top: 7px; overflow: hidden; font-size: 12px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.archive-report-script { padding-left: 24px; border-left: 1px solid #e1e6f0; }
+.archive-report-tabs, .archive-feedback-tabs { display: flex; gap: 6px; }
+.archive-report-tabs { margin-bottom: 10px; }
+.archive-report-tabs > button, .archive-feedback-tabs > button { padding: 9px 14px; border: 1px solid #e0e5ef; background: #fff; color: #66718b; font-size: 12px; font-weight: 800; cursor: pointer; }
+.archive-report-tabs > button { border-radius: 8px; }
+.archive-report-tabs > button.is-active { border-color: #202545; background: #202545; color: #fff; }
+.transcript-timeline { display: grid; gap: 9px; max-height: 392px; overflow-y: auto; padding-right: 5px; }
+.archive-transcript-card { display: grid; grid-template-columns: 1fr auto; gap: 7px 12px; width: 100%; padding: 14px; border: 0; border-left: 3px solid #8b96e9; border-radius: 9px; background: #f5f6fa; color: #172346; text-align: left; cursor: pointer; }
+.archive-transcript-card.is-filler, .archive-transcript-card.is-evidence { border-left-color: #e0a94a; background: #fff9ec; }
+.archive-transcript-card span { color: #5968dc; font-size: 11px; font-weight: 800; }
+.archive-transcript-card em { color: #4f8d72; font-size: 10px; font-style: normal; font-weight: 850; }
+.archive-transcript-card.is-filler em, .archive-transcript-card.is-evidence em { color: #b47119; }
+.archive-transcript-card p { grid-column: 1 / -1; margin: 0; color: #4f5c75; font-size: 12px; line-height: 1.6; }
+.archive-report-feedback { margin-top: 46px; padding-top: 34px; border-top: 1px solid #d8dfec; }
+.archive-report-feedback > header { align-items: flex-end; }
+.archive-report-feedback > header p { margin: 0; color: #74809b; font-size: 13px; }
+.archive-feedback-tabs { border-bottom: 1px solid #e1e6f0; }
+.archive-feedback-tabs button { margin-bottom: -1px; border: 0; border-bottom: 2px solid transparent; }
+.archive-feedback-tabs button.is-active { color: #5968dc; border-bottom-color: #5968dc; }
+#feedbackCards { margin-top: 18px; }
+.archive-feedback-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.archive-feedback-grid article, .archive-feedback-stack article { padding: 20px; border: 1px solid #e1e6f0; border-radius: 12px; background: #fff; }
+.archive-feedback-grid span { color: #6573dd; font-size: 11px; font-weight: 850; }
+.archive-feedback-grid strong { display: block; margin-top: 10px; font-size: 17px; }
+.archive-feedback-grid p, .archive-feedback-stack p { margin: 12px 0 0; color: #53617d; font-size: 13px; line-height: 1.7; }
+.archive-empty-state { margin: 0; padding: 26px; border: 1px dashed #d8dfec; border-radius: 12px; color: #74809b; font-size: 13px; text-align: center; }
+.archive-qna-empty strong { color: #172346; font-size: 15px; }
+.archive-qna-empty p { margin: 8px 0 0; }
+@media (max-width: 900px) {
+  .archive-report-summary, .archive-report-content { grid-template-columns: 1fr; gap: 30px; }
+  .archive-report-script { padding: 0; border-left: 0; }
+  .archive-feedback-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .archive-report-shell { width: calc(100% - 32px); padding: 30px 0 60px; }
+  .archive-report-metrics dl { grid-template-columns: 1fr; }
+  .archive-report-feedback > header { display: block; }
+  .archive-report-feedback > header p { margin-top: 8px; }
+  .archive-feedback-tabs { overflow-x: auto; }
+  .archive-feedback-tabs button { flex: 0 0 auto; }
+  .report-video-box { padding: 28px 24px; }
+}
+
+/* Archive report summary hierarchy polish. */
+.archive-report-meta dt {
+  font-size: 14px;
+}
+
+.archive-report-meta dd {
+  font-size: 17px;
+}
+
+.archive-report-metrics {
+  border-radius: 10px;
+}
+
+.archive-report-metrics header,
+.archive-report-metrics header div {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+}
+
+.archive-report-metrics header div {
+  width: 100%;
+  gap: 4px;
+}
+
+.archive-report-metrics header span {
+  align-self: flex-end;
+  font-size: 0;
+}
+
+.archive-report-metrics header span::after {
+  content: "연습 결과";
+  font-size: 18px;
+}
+
+.archive-report-metrics header small {
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+/* Report interaction and timeline polish. */
+.archive-report-info {
+  padding-top: 22px;
+}
+
+.archive-report-metrics header {
+  align-items: stretch;
+}
+
+.archive-report-metrics header div {
+  align-items: flex-start;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.archive-report-metrics header span {
+  align-self: flex-start;
+  font-size: 18px;
+}
+
+.archive-report-metrics header span::after {
+  content: none;
+}
+
+.archive-report-metrics header strong {
+  align-self: flex-start;
+}
+
+.archive-report-metrics header.is-short-presentation {
+  display: flex;
+  min-height: 0;
+  padding: 0;
+  align-items: stretch;
+  flex-direction: column;
+  gap: 0;
+}
+
+.archive-report-metrics header.is-short-presentation .archive-short-presentation-state {
+  display: flex;
+  width: 100%;
+  align-items: baseline;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.archive-report-metrics header.is-short-presentation .archive-short-presentation-state > span {
+  align-self: flex-start;
+  color: #d94f4a;
+  font-size: clamp(22px, 2.2vw, 30px);
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.archive-report-metrics header.is-short-presentation .archive-short-presentation-state > span::after {
+  content: none;
+}
+
+.archive-report-metrics header.is-short-presentation .archive-short-presentation-state strong {
+  align-self: flex-start;
+  color: #7d85b5;
+  font-size: clamp(50px, 4.8vw, 64px);
+  font-weight: 900;
+  letter-spacing: -.04em;
+  line-height: 1;
+}
+
+.archive-report-metrics .archive-short-presentation-message {
+  min-height: 108px;
+  margin-top: 28px;
+  padding: 28px 24px 20px 46px;
+  border-top: 1px solid #e1e6f0;
+  color: #5f6981;
+  font-size: clamp(14px, 1.2vw, 16px);
+  font-weight: 750;
+  line-height: 1.6;
+  list-style: disc;
+  text-align: left;
+}
+
+.archive-short-presentation-message li + li {
+  margin-top: 4px;
+}
+
+.archive-slide-arrow {
+  display: none;
+}
+
+.archive-slide-strip {
+  grid-template-columns: minmax(0, 1fr);
+  margin-top: 16px;
+}
+
+.archive-slide-thumbnails {
+  gap: 12px;
+  padding: 2px 2px 12px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(83, 97, 125, .34) transparent;
+}
+
+.archive-slide-thumbnails::-webkit-scrollbar {
+  height: 3px;
+}
+
+.archive-slide-thumbnails::-webkit-scrollbar-track {
+  margin: 0 10px;
+  background: transparent;
+}
+
+.archive-slide-thumbnails::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(83, 97, 125, .34);
+}
+
+.archive-slide-thumb {
+  flex: 0 0 176px;
+  min-height: 88px;
+  padding: 15px;
+}
+
+.archive-issue-timeline {
+  margin-top: 46px;
+  padding-top: 30px;
+  border-top: 1px solid #d8dfec;
+}
+
+.archive-issue-timeline > header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.archive-issue-timeline h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 850;
+}
+
+.archive-issue-timeline p {
+  margin: 7px 0 0;
+  color: #74809b;
+  font-size: 12px;
+}
+
+.archive-issue-timeline header span {
+  color: #74809b;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.archive-issue-track {
+  position: relative;
+  height: 54px;
+  margin-top: 18px;
+}
+
+.archive-issue-track-line {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  left: 0;
+  height: 8px;
+  border-radius: 999px;
+  background: #e8ecf4;
+}
+
+.archive-issue-marker {
+  position: absolute;
+  top: 15px;
+  left: var(--issue-left);
+  width: var(--issue-width);
+  min-width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  background: #df5b62;
+  box-shadow: 0 0 0 1px rgba(194, 57, 66, .22);
+  cursor: pointer;
+  transform: translateX(-50%);
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.archive-issue-marker:hover,
+.archive-issue-marker:focus-visible {
+  z-index: 2;
+  box-shadow: 0 0 0 4px rgba(223, 91, 98, .17);
+  transform: translateX(-50%) scale(1.08);
+}
+
+.archive-issue-marker span {
+  position: absolute;
+  top: 23px;
+  left: 50%;
+  color: #a83f46;
+  font-size: 10px;
+  font-weight: 800;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.archive-report-content {
+  margin-top: 32px;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.archive-transcript-card.is-issue-focus {
+  background: #fff0f1;
+  box-shadow: inset 0 0 0 1px rgba(223, 91, 98, .16);
+}
+
+@media (max-width: 600px) {
+  .archive-issue-timeline > header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* Compact transcript navigation. */
+#videoTag {
+  display: none;
+}
+
+.archive-report-tabs {
+  gap: 24px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #e1e6f0;
+}
+
+.archive-report-tabs > button {
+  padding: 0 0 9px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: #74809b;
+}
+
+.archive-report-tabs > button.is-active {
+  border-color: transparent;
+  border-bottom-color: #4e6fc2;
+  background: transparent;
+  color: #172346;
+}
+
+.transcript-timeline {
+  max-height: 420px;
+  gap: 6px;
+  padding-right: 6px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(83, 97, 125, .3) transparent;
+}
+
+.transcript-timeline::-webkit-scrollbar {
+  width: 4px;
+}
+
+.transcript-timeline::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(83, 97, 125, .3);
+}
+
+.archive-transcript-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 38px;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 7px 12px;
+  border: 0;
+  border-left: 0;
+  border-radius: 0;
+  background: #f5f6fa;
+  transition: color .16s ease;
+}
+
+.archive-transcript-card span {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.archive-transcript-card p {
+  grid-column: 2;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  transition: color .16s ease;
+}
+
+.archive-transcript-card:hover p {
+  color: #4e6fc2;
+}
+
+.archive-transcript-card:focus-visible p {
+  color: #4e6fc2;
+}
+
+.archive-transcript-brief em {
+  display: none;
+}
+
+.archive-transcript-detail {
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 9px 12px;
+}
+
+.archive-transcript-detail span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.archive-transcript-detail p {
+  grid-column: 1 / -1;
+}
+
+.archive-transcript-brief.is-filler,
+.archive-transcript-brief.is-evidence {
+  background: #fff0f1;
+}
+
+.archive-transcript-detail.is-filler {
+  background: #fff8e8;
+}
+
+.archive-transcript-detail.is-evidence {
+  background: #fff0f1;
+}
+
+.archive-qna-list {
+  display: grid;
+  gap: 12px;
+}
+
+.archive-feedback-stack .archive-qna-item {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.archive-qna-question {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 16px 18px 0;
+  color: #172346;
+  font-size: 14px;
+}
+
+.archive-qna-question span {
+  color: #6573dd;
+  font-size: 11px;
+}
+
+.archive-feedback-stack .archive-qna-answer {
+  margin: 0;
+  padding: 12px 18px 16px;
+  color: #53617d;
+  line-height: 1.75;
+}
+
+.archive-qna-problem {
+  display: inline;
+  margin: 0 2px;
+  padding: 1px 2px;
+  border: 0;
+  background: #fff0f1;
+  color: #c23d46;
+  font: inherit;
+  line-height: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.archive-qna-problem:hover,
+.archive-qna-problem[aria-expanded="true"] {
+  color: #9f2630;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* 문제 구간 피드백 — 대본 카드 안에 이어붙는 대신, 그 아래 완전히 분리된
+   카드로 따로 띄운다(같은 카드 속에서 늘어나던 걸 분리해 "다른 정보"라는
+   게 시각적으로도 분명해지도록). 나타나고 사라지는 모션은 아래
+   .qna-issue-* Transition 클래스가 담당. */
+.archive-qna-issue-panel {
+  padding: 16px 18px;
+  border: 1px solid #f0d8da;
+  border-radius: 12px;
+  background: #fff7f7;
+  box-shadow: 0 6px 18px rgba(194, 61, 70, .1);
+}
+
+.archive-qna-issue-panel b {
+  color: #c23d46;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.archive-qna-issue-panel p {
+  margin: 6px 0 0;
+  color: #6b4650;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+/* Vue <Transition name="qna-issue"> — 부드럽게 살짝 미끄러지듯 나타난다. */
+.qna-issue-enter-active,
+.qna-issue-leave-active {
+  transition: opacity .22s ease, transform .22s ease;
+}
+
+.qna-issue-enter-from,
+.qna-issue-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* Uploaded slide image rendering (report slide review). */
+.report-video-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #11162b;
+  border-radius: 15px;
+}
+
+.report-video-box.has-image .report-video-copy {
+  display: none;
+}
+
+.archive-slide-thumb.has-image {
+  padding-top: 0;
+  overflow: hidden;
+}
+
+.archive-slide-thumb-img {
+  display: block;
+  width: calc(100% + 30px);
+  height: 84px;
+  margin: 0 -15px 10px;
+  object-fit: cover;
+  background: #11162b;
+}
+
+/* 폴더 상세 페이지와 상단 여백 통일 */
+.archive-report-page .archive-report-shell {
+  padding-top: 32px;
+}
+
+/* ============================================================
+   리포트 슬라이드 썸네일: 번호/제목 없이 슬라이드 이미지만 꽉 채워 표시
+   ============================================================ */
+.archive-slide-thumb.has-image {
+  padding: 0;
+  overflow: hidden;
+  height: 99px;          /* 176(폭) 기준 16:9 — 모든 썸네일 높이 통일 */
+  min-height: 0;
+}
+.archive-slide-thumb.has-image .archive-slide-thumb-img {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  object-fit: cover;
+}
+
+/* ============================================================
+   발화 필터 (우상단 버튼 → 모달)
+   ============================================================ */
+.archive-report-script-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.report-filter-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #dce1ee;
+  border-radius: 10px;
+  background: #fff;
+  color: #4b5a86;
+  cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+}
+.report-filter-btn svg { width: 18px; height: 18px; }
+.report-filter-btn:hover,
+.report-filter-btn:focus-visible { border-color: #6573dd; color: #4655c8; background: #f3f5ff; outline: none; }
+.report-filter-btn.has-active { border-color: #5968dc; color: #4655c8; background: #eef1ff; }
+.report-filter-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #5968dc;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.report-filter-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(23, 35, 70, .38);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.report-filter-dialog {
+  width: min(440px, 100%);
+  max-height: 86vh;
+  overflow-y: auto;
+  padding: 22px 24px 20px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(20, 27, 52, .28);
+}
+.report-filter-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.report-filter-dialog-head h3 { margin: 0; color: #172346; font-size: 18px; font-weight: 900; }
+.report-filter-close {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #8b93a7;
+  font-size: 20px;
+  cursor: pointer;
+}
+.report-filter-close:hover { background: #f1f3f9; color: #4b5470; }
+.report-filter-desc { margin: 6px 0 16px; color: #7c88a5; font-size: 13px; }
+.report-filter-groups { display: grid; gap: 10px; }
+.report-filter-group {
+  overflow: hidden;
+  border: 1px solid #e3e7f1;
+  border-radius: 12px;
+  transition: border-color .15s ease;
+}
+.report-filter-group.is-on { border-color: #b9c2f2; background: #fbfcff; }
+.report-filter-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+}
+.report-filter-check {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.report-filter-check input { width: 18px; height: 18px; accent-color: #5968dc; cursor: pointer; }
+.report-filter-check strong { color: #172346; font-size: 15px; font-weight: 850; }
+.report-filter-expand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #8b93a7;
+  cursor: pointer;
+}
+.report-filter-expand svg { width: 18px; height: 18px; transition: transform .2s ease; }
+.report-filter-group.is-expanded .report-filter-expand svg { transform: rotate(180deg); }
+.report-filter-expand:hover { background: #f1f3f9; }
+.report-filter-metrics {
+  display: grid;
+  gap: 4px;
+  padding: 2px 14px 12px 40px;
+}
+.report-filter-metric {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  color: #45506e;
+  font-size: 13.5px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.report-filter-metric:hover { background: #f5f6fb; }
+.report-filter-metric.is-on { color: #3a45a8; font-weight: 800; }
+.report-filter-metric input { width: 16px; height: 16px; accent-color: #5968dc; cursor: pointer; }
+.report-filter-dialog-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+.report-filter-reset {
+  height: 42px;
+  padding: 0 18px;
+  border: 1px solid #dce1ee;
+  border-radius: 10px;
+  background: #fff;
+  color: #66718b;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.report-filter-reset:hover { border-color: #b9c2f2; color: #4655c8; }
+.report-filter-apply {
+  height: 42px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 10px;
+  background: #5968dc;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 850;
+  cursor: pointer;
+}
+.report-filter-apply:hover { background: #4655c8; }
+
+/* 문제 구간 토글: 객관적 지표 목록 */
+.archive-transcript-stats {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.archive-transcript-stats li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid #f0e0d3;
+  border-radius: 8px;
+  background: #fffaf2;
+}
+.archive-transcript-stats li span {
+  color: #6b5c4a;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.archive-transcript-stats li b {
+  color: #b4741f;
+  font-size: 13.5px;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 발화 필터: 전체/문제 탭 줄 오른쪽 끝에 배치. 탭 텍스트보다 버튼이 커서 구분선에
+   닿지 않도록 살짝 위로(-6px) 띄운다. */
+.archive-report-tabs .report-filter-wrap {
+  position: relative;
+  z-index: 50;
+  margin-left: auto;
+  align-self: center;
+  transform: translateY(-6px);
+}
+.report-filter-btn {
+  width: 34px;
+  height: 34px;
+}
+
+/* 필터 드롭다운(모달 대신 버튼 아래로 펼침) */
+.report-filter-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+.report-filter-pop {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 41;
+  display: grid;
+  gap: 12px;
+  width: 248px;
+  padding: 14px 14px 10px;
+  border: 1px solid #e0e5ef;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(23, 35, 70, .16);
+}
+.report-filter-cat {
+  display: grid;
+  gap: 7px;
+}
+/* 대분류 태그 (음성/영상/내용 일치) — 직사각형 pill(radius 99), 내용 폭에 맞춤 */
+.report-filter-cat-tag {
+  justify-self: start;
+  padding: 5px 13px;
+  border: 1px solid #d8dfec;
+  border-radius: 99px;
+  background: #f4f6fb;
+  color: #33405f;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+}
+.report-filter-cat-tag.is-on {
+  border-color: #5968dc;
+  background: #eef1ff;
+  color: #4453c4;
+}
+/* 세부 지표 칩 — 각각 하나의 pill 태그로 구분 */
+.report-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-left: 2px;
+}
+.report-filter-chip {
+  padding: 5px 12px;
+  border: 1px solid #dfe4ef;
+  border-radius: 99px;
+  background: #fff;
+  color: #66718b;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+}
+.report-filter-chip.is-on {
+  border-color: #5968dc;
+  background: #5968dc;
+  color: #fff;
+}
+.report-filter-pop-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2px;
+}
+.report-filter-pop-foot .report-filter-reset {
+  border: 0;
+  background: transparent;
+  color: #8a93aa;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
+.report-filter-pop-foot .report-filter-reset:disabled {
+  opacity: .5;
+  cursor: default;
+}
+
+/* 음성 세부 지표 (문제 구간 → 음성 문장 클릭 시) */
+.archive-voice-detail {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.archive-voice-detail > li {
+  display: grid;
+  gap: 2px;
+}
+.archive-voice-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.archive-voice-row span {
+  color: #4c3b31;
+  font-size: 13px;
+  font-weight: 750;
+}
+.archive-voice-row span::before {
+  content: '•';
+  margin-right: 8px;
+  color: #4c3b31;
+}
+.archive-voice-row b {
+  color: #172346;
+  font-size: 13px;
+  font-weight: 850;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.archive-voice-detail > li > small {
+  margin-left: 16px;
+  color: #7c6a60;
+  font-size: 11.5px;
+  font-weight: 650;
+}
+.archive-voice-note {
+  margin: 4px 0 2px;
+  color: #66718b;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+/* AI 피드백: 범주별 마크다운 보고서 */
+.archive-feedback-report {
+  padding: 22px 26px;
+  border: 1px solid #e3e7f1;
+  border-radius: 14px;
+  background: #fff;
+  color: #2f3a56;
+  line-height: 1.7;
+}
+.archive-feedback-report > :first-child { margin-top: 0; }
+.archive-feedback-report > :last-child { margin-bottom: 0; }
+.archive-feedback-report h2 { margin: 0 0 6px; color: #172346; font-size: 20px; font-weight: 900; }
+.archive-feedback-report h3 { margin: 22px 0 8px; color: #3a45a8; font-size: 15px; font-weight: 850; }
+.archive-feedback-report h4 { margin: 16px 0 6px; color: #45506e; font-size: 14px; font-weight: 800; }
+.archive-feedback-report p { margin: 8px 0; font-size: 14px; }
+.archive-feedback-report ul { margin: 8px 0; padding-left: 20px; }
+.archive-feedback-report li { margin: 5px 0; font-size: 14px; }
+.archive-feedback-report strong { color: #172346; font-weight: 800; }
+.archive-feedback-report code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: #eef1fb;
+  color: #4655c8;
+  font-size: 13px;
+}
+
+/* ============================================================
+   이하 archive-report-final.css 병합 (2026-07-28) — 원래 index.css에서 바로 뒤에 로드되던 override.
+   선언 순서가 캐스케이드를 결정하므로 이 블록은 파일 끝에 유지할 것.
+   ============================================================ */
+/* Final presentation report interactions and score hierarchy. */
+.archive-report-section-nav {
+  position: fixed;
+  top: 50%;
+  right: clamp(16px, 2.2vw, 40px);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 10px 0;
+  border-left: 0;
+  background: rgba(255, 255, 255, .94);
+  transform: translateY(-50%);
+}
+
+.archive-report-section-nav a {
+  display: flex;
+  min-height: 34px;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  padding: 7px 8px;
+  color: #8a93aa;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .18s ease, font-size .18s ease;
+}
+
+.archive-report-section-nav a span {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: #cfd5e4;
+  transition: background-color .18s ease, transform .18s ease;
+}
+
+.archive-report-section-nav a:hover,
+.archive-report-section-nav a:focus-visible,
+.archive-report-section-nav a.is-active {
+  color: #5f6fe5;
+}
+
+/* Hover: 색상 변화에 더해 글씨를 살짝 키운다. */
+.archive-report-section-nav a:hover,
+.archive-report-section-nav a:focus-visible {
+  font-size: 13.5px;
+}
+
+.archive-report-section-nav a.is-active span {
+  background: #5f6fe5;
+  transform: scale(1.45);
+}
+
+#reportSummary,
+#reportReview,
+#reportFeedback {
+  scroll-margin-top: 96px;
+}
+
+.archive-report-metrics {
+  overflow: visible;
+}
+
+.archive-report-metrics dl {
+  overflow: visible;
+}
+
+.archive-score-metric {
+  position: relative;
+  padding: 10px 8px;
+  border-radius: 8px;
+  outline: none;
+  cursor: help;
+}
+
+/* Hover: 배경 대신 제목·점수만 파란색으로 강조. */
+.archive-score-metric > dt,
+.archive-score-metric > dd {
+  transition: color .16s ease;
+}
+
+.archive-score-metric:hover > dt,
+.archive-score-metric:focus-visible > dt,
+.archive-score-metric:hover > dd,
+.archive-score-metric:focus-visible > dd {
+  color: #4e6fc2;
+}
+
+.archive-score-metric dd {
+  color: #172346;
+  font-size: 28px;
+}
+
+/* '?' 힌트 배지 — 점수에 호버 가능함을 알려준다. */
+.archive-score-metric > dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.archive-score-hint {
+  display: inline-grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #d7ddec;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+  transition: background-color .16s ease;
+}
+
+.archive-score-metric:hover .archive-score-hint,
+.archive-score-metric:focus-visible .archive-score-hint {
+  background: #4e6fc2;
+}
+
+.archive-score-detail {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 30;
+  width: min(300px, 76vw);
+  padding: 14px 16px;
+  border: 1px solid #d8dfec;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(23, 35, 70, .12);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-5px);
+  transition: opacity .16s ease, transform .16s ease;
+}
+
+/* 점수 ↔ 카드 사이 10px 간격을 덮는 투명 브리지. 이게 있어야 점수에서
+   카드로 마우스를 옮길 때 호버가 끊기지 않고 카드가 유지된다. */
+.archive-score-detail::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+}
+
+.archive-score-metric:nth-child(3) .archive-score-detail {
+  right: 0;
+  left: auto;
+}
+
+.archive-score-metric:hover .archive-score-detail,
+.archive-score-metric:focus-visible .archive-score-detail {
+  opacity: 1;
+  transform: translateY(0);
+  /* 카드 위로 마우스를 올려도 호버가 유지되도록 포인터 이벤트를 켠다. */
+  pointer-events: auto;
+}
+
+.archive-score-detail strong,
+.archive-score-detail span {
+  display: block;
+}
+
+.archive-score-detail strong {
+  color: #172346;
+  font-size: 15px;
+}
+
+.archive-score-detail span {
+  margin-top: 7px;
+  color: #4e6fc2;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+.archive-score-detail p {
+  margin: 7px 0 0;
+  color: #66718b;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.archive-score-breakdown {
+  display: grid;
+  gap: 3px;
+  margin: 10px 0 0;
+}
+
+.archive-report-metrics .archive-score-breakdown {
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  /* Beats `.archive-report-metrics dl { gap/margin/padding }` so the breakdown
+     rows sit tighter and the title↔divider↔body gaps aren't so airy. */
+  gap: 3px;
+  margin-top: 10px; /* 제목 ↔ 구분선 간격 */
+  padding-top: 10px; /* 구분선 ↔ 본문 간격 */
+}
+
+.archive-score-breakdown > div {
+  display: grid;
+  width: 100%;
+  min-height: 19px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  border-top: 0;
+}
+
+.archive-score-breakdown dt,
+.archive-score-breakdown dd {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.archive-score-breakdown dt {
+  color: #4c3b31;
+  white-space: nowrap;
+}
+
+.archive-score-breakdown dt::before {
+  content: '•';
+  margin-right: 8px;
+  color: #4c3b31;
+}
+
+.archive-score-breakdown dd {
+  color: #4c3b31;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.archive-score-metric > dt {
+  font-size: 15px;
+}
+
+.archive-report-metrics header span,
+.archive-issue-timeline h2 {
+  font-size: 21px;
+}
+
+.archive-issue-track {
+  min-height: 76px;
+  overflow: visible;
+}
+
+.archive-issue-range {
+  position: absolute;
+  top: 20px;
+  left: var(--range-left);
+  width: var(--range-width);
+  min-width: 24px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(212, 93, 98, .28);
+  pointer-events: none;
+}
+
+/* Pin: the teardrop is drawn by ::before (so the button itself is NOT rotated).
+   That lets the time label + number stay upright and lets the time sit at the
+   pin's true centre-bottom. */
+.archive-issue-pin {
+  top: -24px;
+  z-index: var(--pin-order);
+  display: grid;
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  box-shadow: none;
+  transform: translateX(-50%);
+}
+
+.archive-issue-pin::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  background: #d45d62;
+  transform: rotate(-45deg);
+  transform-origin: center;
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.archive-issue-pin::after {
+  display: none;
+}
+
+.archive-issue-pin b {
+  position: relative;
+  z-index: 1;
+  font-size: 11px;
+  transform: none;
+}
+
+/* hover: grow slightly + white ring */
+.archive-issue-pin:hover,
+.archive-issue-pin:focus-visible {
+  z-index: 50;
+  outline: none;
+}
+
+.archive-issue-pin:hover::before,
+.archive-issue-pin:focus-visible::before {
+  transform: rotate(-45deg) scale(1.18);
+  box-shadow: 0 0 0 3px #fff, 0 4px 12px rgba(180, 60, 66, .35);
+}
+
+/* time label: true centre, below the bar(track-line) itself, not just the pin */
+.archive-issue-pin span {
+  top: 64px;
+  left: 50%;
+  opacity: 0;
+  transform: translateX(-50%);
+  color: #a83f46;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: opacity .16s ease;
+}
+
+.archive-issue-pin:hover span,
+.archive-issue-pin:focus-visible span {
+  opacity: 1;
+}
+
+.transcript-timeline {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.archive-transcript-brief {
+  background: #f5f6fa;
+}
+
+.archive-transcript-brief:hover p {
+  color: #2455d6;
+  font-weight: 800;
+}
+
+.archive-transcript-issue {
+  overflow: hidden;
+  background: #fff5f5;
+}
+
+.archive-transcript-issue .archive-transcript-card {
+  background: transparent;
+}
+
+/* AI 피드백 탭과 그 아래 카드 사이 간격 확대 */
+.archive-report-feedback .archive-feedback-tabs {
+  margin-bottom: 26px;
+}
+
+.archive-transcript-evidence {
+  max-height: 0;
+  padding: 0 14px;
+  overflow: hidden;
+  border-top: 1px solid transparent;
+  background: #fff;
+  opacity: 0;
+  transition: max-height .32s cubic-bezier(.22, 1, .36, 1), opacity .22s ease, padding .32s cubic-bezier(.22, 1, .36, 1), border-color .22s ease;
+}
+
+.archive-transcript-evidence.is-open {
+  max-height: 260px;
+  padding: 12px 14px 14px;
+  border-top-color: #f0d8da;
+  opacity: 1;
+}
+
+.archive-transcript-evidence strong {
+  color: #c23d46;
+  font-size: 11px;
+}
+
+.archive-transcript-evidence p {
+  margin: 5px 0 0;
+  color: #6b4650;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 1180px) {
+  .archive-report-section-nav {
+    position: sticky;
+    top: 76px;
+    right: auto;
+    width: max-content;
+    max-width: 100%;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin: 12px 0 26px auto;
+    padding: 6px 0;
+    overflow-x: auto;
+    border-bottom: 1px solid #e0e4ef;
+    border-left: 0;
+    background: rgba(255, 255, 255, .96);
+    transform: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .archive-report-section-nav {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .archive-report-section-nav a {
+    justify-content: center;
+    padding-inline: 5px;
+  }
+
+  .archive-score-detail {
+    position: fixed;
+    top: auto;
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    width: auto;
+  }
+}

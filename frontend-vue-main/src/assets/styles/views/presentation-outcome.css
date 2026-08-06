@@ -1,0 +1,288 @@
+body.presentation-analyzing-page,
+body.presentation-result-page {
+  min-height: 100svh;
+}
+
+.presentation-analysis-shell,
+.presentation-result-shell {
+  width: min(1424px, calc(100% - 48px));
+}
+
+.presentation-analysis-shell .page-head {
+  margin-top: 44px;
+}
+
+.presentation-analysis-shell .page-head h1 {
+  font-size: 38px;
+  line-height: 1.15;
+}
+
+.presentation-analysis-shell .page-head p {
+  display: none;
+}
+
+.presentation-analysis-shell .analysis-status-panel {
+  display: block;
+  width: min(620px, 100%);
+  margin: 38px auto 0;
+}
+
+.presentation-analysis-shell .analysis-status-panel > div:first-child {
+  display: none !important;
+}
+
+.presentation-analysis-shell .analysis-status-content,
+.presentation-analysis-shell .analysis-status-panel > div:last-child {
+  width: 100%;
+}
+
+.presentation-analysis-shell #progressHeadline {
+  font-size: 22px !important;
+}
+
+.presentation-analysis-shell .analyzing-status {
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.presentation-analysis-shell .analyzing-status li {
+  position: relative;
+  padding-right: 38px;
+  font-size: 18px;
+}
+
+.presentation-analysis-shell .analyzing-status li:has(~ li.active)::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  color: #4f8d72;
+  font-size: 20px;
+  font-weight: 900;
+  transform: translateY(-50%);
+}
+
+.presentation-result-shell .score-reveal {
+  gap: 12px;
+  transform: translateY(-18px);
+}
+
+.presentation-result-shell .score-ring {
+  position: relative;
+  display: grid;
+  width: 220px;
+  height: 220px;
+  place-items: center;
+  align-content: center;
+  margin: 0 auto 8px;
+  isolation: isolate;
+}
+
+.presentation-result-shell .score-ring::before {
+  inset: 20px;
+  z-index: 0;
+}
+
+.presentation-result-shell .score-value {
+  position: relative;
+  z-index: 1;
+}
+
+.presentation-result-shell .score-ring span,
+.presentation-result-shell .score-ring small {
+  transform: none;
+  line-height: 1;
+}
+
+.presentation-result-shell .score-ring span {
+  position: relative;
+  z-index: 1;
+  font-size: 54px;
+}
+
+.presentation-result-shell .score-ring small {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 6px;
+  font-size: 16px;
+}
+
+.presentation-result-shell .score-reveal h2 {
+  font-size: 30px;
+}
+
+.presentation-result-shell .score-reveal p {
+  margin: 0 0 8px;
+  font-size: 17px;
+}
+
+.presentation-result-shell .score-actions {
+  margin-top: 6px;
+}
+
+.presentation-result-shell .score-actions :is(a, button) {
+  display: inline-flex;
+  min-width: 180px;
+  min-height: 54px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 28px;
+  border-radius: 99px;
+  line-height: 1;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .presentation-analysis-shell .device-check {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
+.presentation-analysis-shell {
+  align-self: start;
+  box-sizing: border-box;
+  padding-top: 100px;
+}
+
+.presentation-analysis-shell .page-head {
+  margin-top: 0;
+}
+
+/* Outcome lower hierarchy: focus analysis on status and lower both content groups. */
+.presentation-analysis-shell {
+  padding-top: 100px;
+}
+
+.presentation-analysis-shell .analyzing-status li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 0;
+}
+
+.presentation-analysis-shell .analyzing-status li:has(~ li.active)::after {
+  position: static;
+  flex: 0 0 auto;
+  transform: none;
+}
+
+.presentation-result-shell .score-reveal {
+  transform: translateY(18px);
+}
+
+.presentation-result-shell .score-reveal p {
+  font-weight: 400;
+}
+
+/* Analysis compact measure: shorter progress line and quieter type scale. */
+.presentation-analysis-shell .analysis-status-panel {
+  width: min(520px, 100%);
+}
+
+.presentation-analysis-shell #progressHeadline {
+  font-size: 20px !important;
+}
+
+.presentation-analysis-shell .analyzing-status {
+  font-size: 16px;
+}
+
+.presentation-analysis-shell .analyzing-status li {
+  font-size: 16px;
+}
+
+body.presentation-analyzing-page {
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+}
+
+.presentation-analyzing-page .presentation-analysis-shell {
+  min-height: 0;
+  flex: 1 0 auto;
+}
+
+.presentation-analyzing-page #siteFooter {
+  display: block;
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.presentation-result-shell .score-actions .btn-secondary {
+  border: 1px solid #cfd8eb;
+  background: #fff;
+  color: #202946;
+}
+
+.presentation-result-shell .score-actions .btn-secondary:hover,
+.presentation-result-shell .score-actions .btn-secondary:focus-visible {
+  border-color: #4f6ff2;
+  color: #4f6ff2;
+}
+
+/* ============================================================
+   분석 진행 · 분석 완료 화면 세로 중앙 정렬 (사용자 피드백)
+   · 헤더-콘텐츠 간격 = 푸터-콘텐츠 간격 이 되도록 중앙 배치
+   · #app 이 display:contents 라서 실제 세로 축은 routeViewport 가 가진다.
+     따라서 routeViewport → route-scene → shell 로 이어지는 flex 사슬을
+     모두 늘려야 shell 이 헤더/푸터 사이 공간을 꽉 채워 중앙 정렬된다.
+   ============================================================ */
+body.presentation-analyzing-page .aivo-route-viewport,
+body.presentation-result-page .aivo-route-viewport {
+  display: flex;
+  flex-direction: column;
+}
+
+body.presentation-analyzing-page .aivo-route-scene,
+body.presentation-result-page .aivo-route-scene {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+}
+
+body.presentation-analyzing-page .presentation-analysis-shell,
+body.presentation-result-page .presentation-result-shell {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* 중앙 정렬을 방해하던 상단 오프셋 제거 */
+body.presentation-analyzing-page .analysis-status-panel {
+  margin: 0 auto;
+}
+
+body.presentation-result-page .score-reveal {
+  transform: none;
+}
+
+/* 진행 중인 단계는 완료 단계의 ✓와 같은 자리에 회전 스피너를 둔다 —
+   멈춘 화면처럼 보이지 않게(발표·면접 분석 화면 공통 마크업). */
+.presentation-analysis-shell .analyzing-status li.active::after {
+  content: "";
+  flex: 0 0 auto;
+  position: static;
+  width: 15px;
+  height: 15px;
+  border: 2px solid #ccd5f3;
+  border-top-color: #4e6fc2;
+  border-radius: 50%;
+  transform: none;
+  animation: analyzing-step-spin .8s linear infinite;
+}
+
+@keyframes analyzing-step-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .presentation-analysis-shell .analyzing-status li.active::after {
+    animation-duration: 2.4s;
+  }
+}

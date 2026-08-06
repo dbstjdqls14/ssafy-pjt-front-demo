@@ -1,0 +1,4 @@
+24 c_subtitle column
+26 c_filler band
+28 c_feedback replace
+29 c_replay column
