@@ -1,84 +1,156 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useMediaDevices } from '../../composables/useMediaDevices.js'
-import { useRealtimePresentationAnalysis } from '../../composables/useRealtimePresentationAnalysis.js'
+import CameraZoomControl from '../../components/common/CameraZoomControl.vue'
+import { useFaceAnalysis } from '../../composables/useFaceAnalysis.js'
+import { INTERVIEW_MEDIA_CONSTRAINTS, useMediaDevices } from '../../composables/useMediaDevices.js'
+import { useMicLevel } from '../../composables/useMicLevel.js'
+import { useRecordingStore } from '../../stores/recordingStore.js'
 
 const router = useRouter()
-const { stream, error, checkDevices, stopStream } = useMediaDevices()
-const analysis = useRealtimePresentationAnalysis()
+const recording = useRecordingStore()
+const {
+  stream,
+  videoTrack,
+  audioTrack,
+  videoState,
+  audioState,
+  error,
+  isChecking,
+  checkDevices,
+  requestVideo,
+  requestAudio,
+  releaseVideo,
+  releaseAudio,
+  refreshPermissionStates,
+  stopStream,
+} = useMediaDevices()
+const faceAnalysis = useFaceAnalysis()
+const { level: micLevel, start: startMicLevel, stop: stopMicLevel } = useMicLevel()
 
 const videoEl = ref(null)
 const camOn = ref(true)
 const micOn = ref(true)
 
-const hasStream = computed(() => Boolean(stream.value) && !error.value)
-const deviceReady = computed(() => hasStream.value && camOn.value && micOn.value)
-const canProceed = computed(() => deviceReady.value && analysis.isReady.value)
+const isLive = (track) => track?.readyState !== 'ended'
+const videoReady = computed(() => videoState.value === 'granted' && isLive(videoTrack.value))
+const audioReady = computed(() => audioState.value === 'granted' && isLive(audioTrack.value))
+const deviceReady = computed(() => videoReady.value && audioReady.value && camOn.value && micOn.value)
+const canProceed = computed(() => deviceReady.value && faceAnalysis.ready.value)
 const analysisStateLabel = computed(() => {
-  if (analysis.modelStatus.value === 'loading') return 'AI 분석 모델 불러오는 중'
-  if (analysis.modelStatus.value === 'error') return 'AI 분석 모델 준비 실패'
-  if (analysis.isReady.value) return `AI 분석 모델 준비 완료 · ${analysis.delegate.value || 'CPU'}`
+  if (faceAnalysis.failed.value) return 'AI 분석 모델 준비 실패'
+  if (faceAnalysis.ready.value) return '면접과 동일한 AI 분석 모델 준비 완료'
   return 'AI 분석 모델 준비 대기'
 })
+const deviceErrorMessage = computed(() => {
+  if (videoReady.value && audioReady.value) return ''
+  if (videoState.value === 'denied' && audioState.value === 'denied') {
+    return '브라우저 주소창의 카메라와 마이크 권한을 허용해주세요.'
+  }
+  if (videoState.value === 'denied') return '브라우저 주소창의 카메라 권한을 허용해주세요.'
+  if (audioState.value === 'denied') return '브라우저 주소창의 마이크 권한을 허용해주세요.'
+  if (!error.value) return '카메라와 마이크 연결 상태를 확인해주세요.'
+  if (error.value.name === 'NotAllowedError' || error.value.name === 'SecurityError') {
+    return '브라우저 주소창의 카메라와 마이크 권한을 허용해주세요.'
+  }
+  if (error.value.name === 'NotFoundError') return '사용 가능한 카메라 또는 마이크를 찾지 못했습니다.'
+  if (error.value.name === 'NotReadableError') return '다른 앱이 카메라 또는 마이크를 사용 중인지 확인해주세요.'
+  return '카메라와 마이크 연결을 확인한 뒤 다시 요청해주세요.'
+})
 
-// 14-bar mic level meter, 9 active — matches the legacy static preview.
-const micBars = Array.from({ length: 14 }, (_, i) => i < 9)
+const MIC_BAR_COUNT = 14
+const micBars = computed(() => {
+  const activeCount = Math.round(micLevel.value * MIC_BAR_COUNT)
+  return Array.from({ length: MIC_BAR_COUNT }, (_, index) => index < activeCount)
+})
 
 const connStatus = computed(() => {
-  if (error.value) return '장치 권한 필요'
-  return hasStream.value ? '장치 연결 정상' : '장치 연결 확인 중'
+  if (videoReady.value && audioReady.value) return '장치 연결 정상'
+  if (!videoReady.value && !audioReady.value) return '카메라·마이크 연결 필요'
+  return videoReady.value ? '마이크 연결 필요' : '카메라 연결 필요'
 })
 const cameraState = computed(() => {
   if (!camOn.value) return '카메라 · 꺼짐'
-  if (error.value) return '카메라 · 권한 필요'
-  return hasStream.value ? '카메라 · 연결 정상' : '카메라 · 확인 중'
+  if (videoState.value === 'denied') return '카메라 · 권한 필요'
+  return videoReady.value ? '카메라 · 연결 정상' : '카메라 · 확인 중'
 })
 const cameraDevice = computed(() => {
   if (!camOn.value) return '사용 안 함'
-  if (error.value) return '연결 안 됨'
-  return hasStream.value ? 'HD Web Camera' : '연결 대기'
+  if (videoState.value === 'denied') return '연결 안 됨'
+  return videoReady.value ? 'HD Web Camera' : '연결 대기'
 })
 const micStateLabel = computed(() => {
   if (!micOn.value) return '마이크 · 꺼짐'
-  if (error.value) return '마이크 · 권한 필요'
-  return hasStream.value ? '마이크 · 입력 정상' : '마이크 · 확인 중'
+  if (audioState.value === 'denied') return '마이크 · 권한 필요'
+  return audioReady.value ? '마이크 · 입력 정상' : '마이크 · 확인 중'
 })
 const micDevice = computed(() => {
   if (!micOn.value) return '사용 안 함'
-  if (error.value) return '연결 안 됨'
-  return hasStream.value ? 'Default Microphone' : '연결 대기'
+  if (audioState.value === 'denied') return '연결 안 됨'
+  return audioReady.value ? 'Default Microphone' : '연결 대기'
 })
 
 watch(stream, (value) => {
   if (videoEl.value) videoEl.value.srcObject = value ?? null
 })
 
-const applyTrackState = () => {
-  stream.value?.getVideoTracks().forEach((track) => { track.enabled = camOn.value })
-  stream.value?.getAudioTracks().forEach((track) => { track.enabled = micOn.value })
+const syncMicLevel = () => {
+  if (audioReady.value && micOn.value && stream.value) startMicLevel(stream.value)
+  else stopMicLevel()
 }
-const toggleCam = () => { camOn.value = !camOn.value; applyTrackState() }
-const toggleMic = () => { micOn.value = !micOn.value; applyTrackState() }
+const toggleCam = async () => {
+  if (videoReady.value) {
+    releaseVideo()
+    camOn.value = false
+    return
+  }
+  camOn.value = true
+  try { await requestVideo(INTERVIEW_MEDIA_CONSTRAINTS.video) } catch { /* 상태 ref가 UI를 갱신한다. */ }
+}
+const toggleMic = async () => {
+  if (audioReady.value) {
+    releaseAudio()
+    micOn.value = false
+    syncMicLevel()
+    return
+  }
+  micOn.value = true
+  try { await requestAudio(INTERVIEW_MEDIA_CONSTRAINTS.audio) } catch { /* 상태 ref가 UI를 갱신한다. */ }
+  syncMicLevel()
+}
+
+const requestDevices = async () => {
+  if (isChecking.value) return
+  try {
+    await checkDevices(INTERVIEW_MEDIA_CONSTRAINTS)
+    camOn.value = videoReady.value
+    micOn.value = audioReady.value
+    syncMicLevel()
+    if (videoEl.value) videoEl.value.srcObject = stream.value ?? null
+  } catch {
+    camOn.value = videoReady.value || videoState.value === 'denied'
+    micOn.value = audioReady.value || audioState.value === 'denied'
+    syncMicLevel()
+  }
+}
 
 const goNext = () => {
   if (!canProceed.value) return
+  faceAnalysis.stop()
+  stopMicLevel()
   stopStream()
   router.push('/presentation/ready')
 }
 
-const retryModels = () => { void analysis.loadModels() }
+onMounted(() => {
+  void faceAnalysis.prepare()
+  void Promise.resolve(refreshPermissionStates({ notify: false })).finally(requestDevices)
+})
 
-onMounted(async () => {
-  const modelLoad = analysis.loadModels()
-  try {
-    await checkDevices({ video: true, audio: true })
-    applyTrackState()
-  } catch {
-    /* error ref drives the "권한 필요" UI */
-  }
-  await modelLoad
+onBeforeUnmount(() => {
+  faceAnalysis.stop()
+  stopMicLevel()
 })
 </script>
 
@@ -93,9 +165,10 @@ onMounted(async () => {
                 <span class="device-live-indicator"><i aria-hidden="true"></i>LIVE</span>
                 <span>{{ connStatus }}</span>
               </div>
-              <div class="camera-stage">
-                <video v-show="hasStream && camOn" ref="videoEl" autoplay muted playsinline></video>
-                <div v-show="!(hasStream && camOn)" class="avatar-silhouette"><span class="head"></span><span class="shoulders"></span></div>
+              <div class="camera-stage" :style="{ '--camera-zoom': recording.cameraZoom }">
+                <video v-show="videoReady && camOn" ref="videoEl" autoplay muted playsinline></video>
+                <div v-show="!(videoReady && camOn)" class="avatar-silhouette"><span class="head"></span><span class="shoulders"></span></div>
+                <CameraZoomControl :model-value="recording.cameraZoom" @update:model-value="recording.setCameraZoom" />
                 <span class="camera-guide">얼굴과 어깨가 화면 중앙에 오도록 조정해주세요.</span>
               </div>
               <div class="device-preview-controls">
@@ -126,18 +199,24 @@ onMounted(async () => {
 
             <div class="confirm-panel">
               <h3>장치 상태</h3>
-              <div class="confirm-row" :class="{ 'is-off': !camOn }"><span>{{ cameraState }}</span><b>{{ cameraDevice }}</b></div>
-              <div class="confirm-row" :class="{ 'is-off': !micOn }"><span>{{ micStateLabel }}</span><b>{{ micDevice }}</b></div>
+              <div data-testid="camera-status" class="confirm-row" :class="{ 'is-off': !videoReady }"><span>{{ cameraState }}</span><b>{{ cameraDevice }}</b></div>
+              <div data-testid="microphone-status" class="confirm-row" :class="{ 'is-off': !audioReady }"><span>{{ micStateLabel }}</span><b>{{ micDevice }}</b></div>
               <div class="confirm-row"><span>스피커 · 출력 정상</span><b>Realtek Audio</b></div>
-              <div class="confirm-row analysis-ready-row" :class="{ 'is-off': analysis.modelStatus.value === 'error' }">
+              <div class="confirm-row analysis-ready-row" :class="{ 'is-off': faceAnalysis.failed.value }">
                 <span>{{ analysisStateLabel }}</span>
+                <b>{{ faceAnalysis.ready.value ? 'READY' : faceAnalysis.failed.value ? 'ERROR' : 'LOADING' }}</b>
+              </div>
+              <div v-if="!videoReady || !audioReady" class="device-permission-retry" role="alert">
+                <p>{{ deviceErrorMessage }}</p>
                 <button
-                  v-if="analysis.modelStatus.value === 'error'"
                   type="button"
                   class="analysis-retry-button"
-                  @click="retryModels"
-                >다시 시도</button>
-                <b v-else>{{ analysis.isReady.value ? 'READY' : 'LOADING' }}</b>
+                  data-testid="retry-device-permission"
+                  :disabled="isChecking"
+                  @click="requestDevices"
+                >
+                  {{ isChecking ? '요청 중' : '권한 다시 요청' }}
+                </button>
               </div>
               <ul class="device-check-guidance" aria-label="장치 확인 안내">
                 <li>얼굴이 화면 중앙에 있고 충분히 밝은지 확인하세요.</li>

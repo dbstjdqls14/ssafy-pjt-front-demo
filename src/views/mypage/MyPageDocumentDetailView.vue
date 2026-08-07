@@ -8,19 +8,37 @@ const route = useRoute()
 const router = useRouter()
 const store = useDocumentsStore()
 const documentItem = ref(store.find(route.params.id))
+const loading = ref(true)
+const loadError = ref('')
 const deleteOpen = ref(false)
 
 const typeLabel = computed(() => documentItem.value?.type === 'portfolio' ? '포트폴리오' : '자소서')
-const canPreview = computed(() => Boolean(documentItem.value?.previewUrl))
+const contentLabel = computed(() => documentItem.value?.type === 'portfolio' ? '포트폴리오 요약' : '자소서 추출 내용')
+const extractedContent = computed(() => {
+  if (!documentItem.value) return ''
+  return documentItem.value.type === 'portfolio'
+    ? documentItem.value.summary
+    : documentItem.value.content
+})
 
 onMounted(async () => {
-  documentItem.value = await store.loadDocument(route.params.id)
+  try {
+    documentItem.value = await store.loadDocument(route.params.id)
+  } catch {
+    loadError.value = '지원 자료를 불러오지 못했습니다.'
+  } finally {
+    loading.value = false
+  }
 })
 
 const remove = async () => {
   if (!documentItem.value) return
-  await store.removeDocument(documentItem.value.id)
-  await router.replace({ name: 'mypage-documents' })
+  try {
+    await store.removeDocument(documentItem.value.id)
+    await router.replace({ name: 'mypage-documents' })
+  } catch {
+    deleteOpen.value = false
+  }
 }
 </script>
 
@@ -28,30 +46,35 @@ const remove = async () => {
   <section class="mypage-panel document-detail-panel">
     <RouterLink :to="{ name: 'mypage-documents' }" class="document-detail-back">← 지원 자료 목록</RouterLink>
 
-    <div v-if="documentItem" class="document-detail-card">
+    <p v-if="loading" class="doc-state-message">지원 자료를 불러오는 중입니다.</p>
+
+    <div v-else-if="loadError" class="doc-state-message is-error" role="alert">
+      <strong>{{ loadError }}</strong>
+      <RouterLink :to="{ name: 'mypage-documents' }" class="btn-secondary">목록으로 돌아가기</RouterLink>
+    </div>
+
+    <div v-else-if="documentItem" class="document-detail-card">
       <header>
         <span class="doc-tag" :class="{ portfolio: documentItem.type === 'portfolio' }">{{ typeLabel }}</span>
-        <h2>{{ documentItem.name }}</h2>
-        <p>{{ documentItem.date }} · {{ documentItem.size }}</p>
+        <h2 :title="documentItem.name">{{ documentItem.name }}</h2>
+        <p>{{ documentItem.date }}</p>
       </header>
 
-      <div class="document-preview" :class="{ 'has-preview': canPreview }">
-        <iframe v-if="canPreview && documentItem.mimeType === 'application/pdf'" :src="documentItem.previewUrl" :title="`${documentItem.name} 미리보기`"></iframe>
-        <div v-else>
-          <span aria-hidden="true">PDF</span>
-          <strong>등록된 지원 자료</strong>
-          <p>서버에서 미리보기 주소를 제공하면 이 영역에서 문서를 바로 확인할 수 있어요.</p>
-        </div>
-      </div>
+      <section class="document-content" data-testid="document-extracted-content">
+        <span>{{ contentLabel }}</span>
+        <h3>{{ contentLabel }}</h3>
+        <p v-if="extractedContent" class="is-breakable">{{ extractedContent }}</p>
+        <p v-else class="document-content-empty">서버에 저장된 분석 내용이 아직 없습니다.</p>
+      </section>
 
       <footer>
-        <button type="button" class="doc-danger-outline" @click="deleteOpen = true">자료 삭제</button>
-        <a v-if="documentItem.downloadUrl || documentItem.previewUrl" class="btn-primary" :href="documentItem.downloadUrl || documentItem.previewUrl" target="_blank" rel="noopener">새 창에서 열기</a>
+        <button type="button" class="doc-danger-outline" data-testid="open-detail-delete" @click="deleteOpen = true">자료 삭제</button>
       </footer>
     </div>
 
-    <div v-else class="doc-empty-state">
+    <div v-else class="doc-empty-state" data-testid="document-not-found">
       <strong>지원 자료를 찾을 수 없어요.</strong>
+      <p>삭제되었거나 접근할 수 없는 자료입니다.</p>
       <RouterLink :to="{ name: 'mypage-documents' }" class="btn-primary">목록으로 돌아가기</RouterLink>
     </div>
   </section>
@@ -64,7 +87,7 @@ const remove = async () => {
         <p>삭제한 자료는 복구할 수 없습니다.</p>
         <div class="doc-confirm-actions">
           <button type="button" class="btn-secondary" @click="deleteOpen = false">취소</button>
-          <button type="button" class="doc-danger-button" :disabled="store.loading" @click="remove">삭제</button>
+          <button type="button" class="doc-danger-button" data-testid="confirm-detail-delete" :disabled="store.loading" @click="remove">삭제</button>
         </div>
       </section>
     </div>

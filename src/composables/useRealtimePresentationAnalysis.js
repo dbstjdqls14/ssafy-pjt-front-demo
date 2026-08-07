@@ -16,6 +16,38 @@ export const calculateWpm = (text = '', elapsedSeconds = 0) => {
   return Math.round(words / (elapsedSeconds / 60))
 }
 
+// 면접 실시간 분석과 같은 방식으로 한국어 음절 수를 실제 경과 시간으로 나눈다.
+// Chrome STT가 공백을 적게 넣더라도 공백 기반 WPM처럼 계속 '느림'으로 치우치지 않는다.
+export const calculateSyllablesPerSecond = (text = '', elapsedSeconds = 0) => {
+  const syllables = (String(text).match(/[가-힣]/g) || []).length
+  const seconds = Math.max(1, Number(elapsedSeconds) || 0)
+  return syllables ? Math.round((syllables / seconds) * 10) / 10 : 0
+}
+
+export const calculateGazeHold = (scores = [], {
+  threshold = 70,
+  windowSize = 20,
+} = {}) => {
+  const recentScores = scores
+    .slice(-windowSize)
+    .filter((score) => Number.isFinite(score))
+  if (!recentScores.length) return null
+  const maintained = recentScores.filter((score) => score >= threshold).length
+  return Math.round((maintained / recentScores.length) * 100)
+}
+
+export const calculatePostureAverage = (scores = [], {
+  windowSize = 20,
+} = {}) => {
+  const recentScores = scores
+    .slice(-windowSize)
+    .filter((score) => Number.isFinite(score))
+  if (!recentScores.length) return null
+  return Math.round(
+    recentScores.reduce((total, score) => total + score, 0) / recentScores.length,
+  )
+}
+
 export const useRealtimePresentationAnalysis = () => {
   const modelStatus = ref('idle')
   const modelError = ref(null)
@@ -34,16 +66,21 @@ export const useRealtimePresentationAnalysis = () => {
   let audioContext = null
   let analyser = null
   let audioBuffer = null
-  let gazeSamples = 0
-  let gazeGoodSamples = 0
-  let postureSamples = 0
-  let postureTotal = 0
+  const gazeSamples = ref(0)
+  const gazeGoodSamples = ref(0)
+  const postureSamples = ref(0)
+  const postureTotal = ref(0)
+  const sampleListeners = new Set()
 
   const gazeHold = computed(() => (
-    gazeSamples ? Math.round((gazeGoodSamples / gazeSamples) * 100) : null
+    gazeSamples.value
+      ? Math.round((gazeGoodSamples.value / gazeSamples.value) * 100)
+      : null
   ))
   const postureAverage = computed(() => (
-    postureSamples ? Math.round(postureTotal / postureSamples) : null
+    postureSamples.value
+      ? Math.round(postureTotal.value / postureSamples.value)
+      : null
   ))
   const isReady = computed(() => modelStatus.value === 'ready' || modelStatus.value === 'running')
 
@@ -102,14 +139,21 @@ export const useRealtimePresentationAnalysis = () => {
 
       if (result.gazeScore != null) {
         gazeScore.value = result.gazeScore
-        gazeSamples += 1
-        if (result.gazeScore >= 70) gazeGoodSamples += 1
+        gazeSamples.value += 1
+        if (result.gazeScore >= 70) gazeGoodSamples.value += 1
       }
       if (result.postureScore != null) {
         postureScore.value = result.postureScore
-        postureSamples += 1
-        postureTotal += result.postureScore
+        postureSamples.value += 1
+        postureTotal.value += result.postureScore
       }
+      sampleListeners.forEach((listener) => {
+        try {
+          listener({ ...result })
+        } catch {
+          // 분석 프레임은 UI 보조 수집기의 오류와 무관하게 계속 처리한다.
+        }
+      })
     } catch (error) {
       modelStatus.value = 'error'
       modelError.value = error
@@ -158,10 +202,16 @@ export const useRealtimePresentationAnalysis = () => {
     voiceDb.value = null
     faceDetected.value = false
     poseDetected.value = false
-    gazeSamples = 0
-    gazeGoodSamples = 0
-    postureSamples = 0
-    postureTotal = 0
+    gazeSamples.value = 0
+    gazeGoodSamples.value = 0
+    postureSamples.value = 0
+    postureTotal.value = 0
+  }
+
+  const subscribeSamples = (listener) => {
+    if (typeof listener !== 'function') return () => {}
+    sampleListeners.add(listener)
+    return () => sampleListeners.delete(listener)
   }
 
   onBeforeUnmount(() => { void stop() })
@@ -183,6 +233,7 @@ export const useRealtimePresentationAnalysis = () => {
     start,
     pause,
     resume,
+    subscribeSamples,
     stop,
     reset,
   }

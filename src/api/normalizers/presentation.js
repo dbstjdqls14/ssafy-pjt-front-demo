@@ -7,7 +7,7 @@ export const normalizePresentationSlide = (slide = {}, index = 0) => {
     id: slide.id ?? slide.slideId ?? slide.pageId ?? number,
     number: Number.isFinite(number) ? number : index + 1,
     title: slide.title ?? slide.name ?? slide.extractedTitle ?? `슬라이드 ${index + 1}`,
-    keyPoints: slide.keyPoints ?? slide.coreContent ?? slide.script ?? slide.speakerNotes ?? slide.notes ?? '',
+    keyPoints: slide.keyPoints ?? slide.description ?? slide.coreContent ?? slide.script ?? slide.speakerNotes ?? slide.notes ?? '',
     previewUrl: slide.previewUrl ?? slide.previewImageUrl ?? slide.imageUrl ?? slide.renderedImageUrl ?? slide.convertedImageUrl ?? slide.thumbnailUrl ?? slide.fileUrl ?? null,
     thumbnailUrl: slide.thumbnailUrl ?? slide.thumbnailImageUrl ?? slide.previewUrl ?? slide.previewImageUrl ?? slide.imageUrl ?? null,
     extractedText: slide.extractedText ?? slide.text ?? slide.content ?? '',

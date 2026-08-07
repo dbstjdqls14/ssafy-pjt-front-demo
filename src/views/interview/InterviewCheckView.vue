@@ -2,49 +2,138 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useMediaDevices } from '../../composables/useMediaDevices.js'
+import CameraZoomControl from '../../components/common/CameraZoomControl.vue'
+import {
+  INTERVIEW_MEDIA_CONSTRAINTS,
+  useMediaDevices,
+} from '../../composables/useMediaDevices.js'
+import { useMicLevel } from '../../composables/useMicLevel.js'
+import { useRecordingStore } from '../../stores/recordingStore.js'
 
 const router = useRouter()
-const { stream, error, checkDevices, stopStream } = useMediaDevices()
+const recording = useRecordingStore()
+// 사이트 설정에서 권한을 껐다 켜면 브라우저가 기존 트랙을 끊는다. 그 신호를 받아
+// 새로고침 없이 다시 요청한다(발표 장치 확인과 동일).
+const onDevicesChanged = () => {
+  const hasLiveVideo = stream.value?.getVideoTracks?.().some((track) => track.readyState !== 'ended')
+  const hasLiveAudio = stream.value?.getAudioTracks?.().some((track) => track.readyState !== 'ended')
+  if (hasLiveVideo && hasLiveAudio) return
+  void requestDevices()
+}
+const {
+  stream,
+  videoTrack,
+  audioTrack,
+  videoState,
+  audioState,
+  isChecking,
+  checkDevices,
+  requestVideo,
+  requestAudio,
+  releaseVideo,
+  releaseAudio,
+  refreshPermissionStates,
+  stopStream,
+} = useMediaDevices({ onDevicesChanged })
+const { level: micLevel, start: startMicLevel, stop: stopMicLevel } = useMicLevel()
 
 const videoEl = ref(null)
 const camOn = ref(true)
 const micOn = ref(true)
 
-const hasStream = computed(() => Boolean(stream.value) && !error.value)
-const deviceReady = computed(() => hasStream.value && camOn.value && micOn.value)
-const micBars = Array.from({ length: 14 }, (_, i) => i < 9)
+const isLive = (track) => track?.readyState !== 'ended'
+const videoReady = computed(() => videoState.value === 'granted' && isLive(videoTrack.value))
+const audioReady = computed(() => audioState.value === 'granted' && isLive(audioTrack.value))
+const deviceReady = computed(() => videoReady.value && audioReady.value && camOn.value && micOn.value)
 
-const connStatus = computed(() => (error.value ? '장치 권한 필요' : hasStream.value ? '장치 연결 정상' : '장치 연결 확인 중'))
-const cameraState = computed(() => (!camOn.value ? '카메라 · 꺼짐' : error.value ? '카메라 · 권한 필요' : hasStream.value ? '카메라 · 연결 정상' : '카메라 · 확인 중'))
-const cameraDevice = computed(() => (!camOn.value ? '사용 안 함' : error.value ? '연결 안 됨' : hasStream.value ? 'HD Web Camera' : '연결 대기'))
-const micStateLabel = computed(() => (!micOn.value ? '마이크 · 꺼짐' : error.value ? '마이크 · 권한 필요' : hasStream.value ? '마이크 · 입력 정상' : '마이크 · 확인 중'))
-const micDevice = computed(() => (!micOn.value ? '사용 안 함' : error.value ? '연결 안 됨' : hasStream.value ? 'Default Microphone' : '연결 대기'))
+// 실제 마이크 입력 음량(0~1)에 맞춰 막대가 실시간으로 오르내린다(통화 앱의
+// 마이크 테스트와 동일한 방식). 막대 개수만큼 threshold를 나눠 몇 개를 켤지 정한다.
+const MIC_BAR_COUNT = 14
+const micBars = computed(() => {
+  const activeCount = Math.round(micLevel.value * MIC_BAR_COUNT)
+  return Array.from({ length: MIC_BAR_COUNT }, (_, i) => i < activeCount)
+})
+
+const connStatus = computed(() => {
+  if (videoReady.value && audioReady.value) return '장치 연결 정상'
+  if (!videoReady.value && !audioReady.value) return '카메라·마이크 연결 필요'
+  return videoReady.value ? '마이크 연결 필요' : '카메라 연결 필요'
+})
+const cameraState = computed(() => {
+  if (!camOn.value) return '카메라 · 꺼짐'
+  if (videoState.value === 'denied') return '카메라 · 권한 필요'
+  return videoReady.value ? '카메라 · 연결 정상' : '카메라 · 확인 중'
+})
+const cameraDevice = computed(() => {
+  if (!camOn.value) return '사용 안 함'
+  if (videoState.value === 'denied') return '연결 안 됨'
+  return videoReady.value ? 'HD Web Camera' : '연결 대기'
+})
+const micStateLabel = computed(() => {
+  if (!micOn.value) return '마이크 · 꺼짐'
+  if (audioState.value === 'denied') return '마이크 · 권한 필요'
+  return audioReady.value ? '마이크 · 입력 정상' : '마이크 · 확인 중'
+})
+const micDevice = computed(() => {
+  if (!micOn.value) return '사용 안 함'
+  if (audioState.value === 'denied') return '연결 안 됨'
+  return audioReady.value ? 'Default Microphone' : '연결 대기'
+})
 
 watch(stream, (value) => {
   if (videoEl.value) videoEl.value.srcObject = value ?? null
 })
 
-const applyTrackState = () => {
-  stream.value?.getVideoTracks().forEach((track) => { track.enabled = camOn.value })
-  stream.value?.getAudioTracks().forEach((track) => { track.enabled = micOn.value })
+const syncMicLevelAnalysis = () => {
+  if (stream.value && audioReady.value && micOn.value) startMicLevel(stream.value)
+  else stopMicLevel()
 }
-const toggleCam = () => { camOn.value = !camOn.value; applyTrackState() }
-const toggleMic = () => { micOn.value = !micOn.value; applyTrackState() }
+
+const toggleCam = async () => {
+  if (videoReady.value) {
+    releaseVideo()
+    camOn.value = false
+    return
+  }
+  camOn.value = true
+  try { await requestVideo(INTERVIEW_MEDIA_CONSTRAINTS.video) } catch { /* 상태 ref가 UI를 갱신한다. */ }
+}
+const toggleMic = async () => {
+  if (audioReady.value) {
+    releaseAudio()
+    micOn.value = false
+    syncMicLevelAnalysis()
+    return
+  }
+  micOn.value = true
+  try { await requestAudio(INTERVIEW_MEDIA_CONSTRAINTS.audio) } catch { /* 상태 ref가 UI를 갱신한다. */ }
+  syncMicLevelAnalysis()
+}
 
 const goNext = () => {
   if (!deviceReady.value) return
+  stopMicLevel()
   stopStream()
   router.push('/interview/ready')
 }
 
-onMounted(async () => {
+const requestDevices = async () => {
+  if (isChecking.value) return
   try {
-    await checkDevices({ video: true, audio: true })
-    applyTrackState()
+    await checkDevices(INTERVIEW_MEDIA_CONSTRAINTS)
+    camOn.value = videoReady.value
+    micOn.value = audioReady.value
+    syncMicLevelAnalysis()
+    if (videoEl.value) videoEl.value.srcObject = stream.value ?? null
   } catch {
-    /* error ref drives the "권한 필요" UI */
+    camOn.value = videoReady.value || videoState.value === 'denied'
+    micOn.value = audioReady.value || audioState.value === 'denied'
+    syncMicLevelAnalysis()
   }
+}
+
+onMounted(() => {
+  void Promise.resolve(refreshPermissionStates({ notify: false })).finally(requestDevices)
 })
 </script>
 
@@ -59,9 +148,10 @@ onMounted(async () => {
                 <span class="device-live-indicator"><i aria-hidden="true"></i>LIVE</span>
                 <span>{{ connStatus }}</span>
               </div>
-              <div class="camera-stage">
-                <video v-show="hasStream && camOn" ref="videoEl" autoplay muted playsinline></video>
-                <div v-show="!(hasStream && camOn)" class="avatar-silhouette"><span class="head"></span><span class="shoulders"></span></div>
+              <div class="camera-stage" :style="{ '--camera-zoom': recording.cameraZoom }">
+                <video v-show="videoReady && camOn" ref="videoEl" autoplay muted playsinline></video>
+                <div v-show="!(videoReady && camOn)" class="avatar-silhouette"><span class="head"></span><span class="shoulders"></span></div>
+                <CameraZoomControl :model-value="recording.cameraZoom" @update:model-value="recording.setCameraZoom" />
                 <span class="camera-guide">얼굴과 어깨가 화면 중앙에 오도록 조정해주세요.</span>
               </div>
               <div class="device-preview-controls">
@@ -78,8 +168,8 @@ onMounted(async () => {
 
             <div class="confirm-panel">
               <h3>장치 상태</h3>
-              <div class="confirm-row" :class="{ 'is-off': !camOn }"><span>{{ cameraState }}</span><b>{{ cameraDevice }}</b></div>
-              <div class="confirm-row" :class="{ 'is-off': !micOn }"><span>{{ micStateLabel }}</span><b>{{ micDevice }}</b></div>
+              <div data-testid="camera-status" class="confirm-row" :class="{ 'is-off': !videoReady }"><span>{{ cameraState }}</span><b>{{ cameraDevice }}</b></div>
+              <div data-testid="microphone-status" class="confirm-row" :class="{ 'is-off': !audioReady }"><span>{{ micStateLabel }}</span><b>{{ micDevice }}</b></div>
               <div class="confirm-row"><span>스피커 · 출력 정상</span><b>Realtek Audio</b></div>
               <ul class="device-check-guidance" aria-label="장치 확인 안내">
                 <li>얼굴이 화면 중앙에 있고 충분히 밝은지 확인하세요.</li>
@@ -95,7 +185,7 @@ onMounted(async () => {
         </div>
 
         <div class="workflow-footer-actions">
-          <RouterLink class="workflow-side-button workflow-side-prev" to="/interview/questions" aria-label="면접 질문 확인으로 돌아가기">
+          <RouterLink class="workflow-side-button workflow-side-prev" to="/interview/questions" aria-label="면접 질문 생성으로 돌아가기">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 6-6 6 6 6" /></svg>
           </RouterLink>
           <button type="button" class="workflow-side-button workflow-side-next" aria-label="설정 확인으로 이동" :disabled="!deviceReady" @click="goNext">

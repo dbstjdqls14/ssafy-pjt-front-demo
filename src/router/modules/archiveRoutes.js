@@ -8,6 +8,7 @@ export const archiveRoutes = [
       area: 'archive',
       title: '내 기록',
       bodyClass: 'archive-page practice-flow-page practice-type-page',
+      requiresAuth: true,
     },
   },
   {
@@ -19,17 +20,19 @@ export const archiveRoutes = [
       area: 'archive',
       title: '연습 폴더 상세',
       bodyClass: 'folder-detail-page',
+      requiresAuth: true,
     },
   },
   {
     path: '/archive/detail/:id?',
     name: 'archive-detail',
-    component: () => import('../../views/archive/ArchiveDetailView.vue'),
+    component: () => import('../../views/presentation/PresentationReportDetailView.vue'),
     meta: {
       layout: 'default',
       area: 'archive',
       title: '발표 리포트 상세',
       bodyClass: 'archive-report-page',
+      requiresAuth: true,
     },
   },
 ]

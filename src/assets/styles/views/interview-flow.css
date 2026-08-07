@@ -48,6 +48,22 @@
 
 .interview-flow-page .iv-form-panel {
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 134, 194, .32) transparent;
+}
+
+.interview-flow-page .iv-form-panel::-webkit-scrollbar {
+  width: 6px;
+}
+.interview-flow-page .iv-form-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+.interview-flow-page .iv-form-panel::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(120, 134, 194, .32);
+}
+.interview-flow-page .iv-form-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 134, 194, .5);
 }
 
 .interview-flow-page .presentation-panel-head strong {
@@ -124,6 +140,39 @@
   border-color: var(--iv-blue);
   color: var(--iv-blue-dark);
   background: var(--iv-blue-soft);
+}
+
+.interview-flow-page .iv-doc-upload-choice {
+  position: relative;
+  padding-inline: 58px;
+}
+
+.interview-flow-page .iv-doc-upload-choice > span {
+  display: block;
+  text-align: center;
+}
+
+.interview-flow-page .iv-doc-upload-choice > small {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: #9aa3b5;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .interview-flow-page .iv-doc-upload-choice {
+    padding-inline: 48px;
+  }
+
+  .interview-flow-page .iv-doc-upload-choice > small {
+    right: 7px;
+    font-size: 9px;
+  }
 }
 
 .interview-flow-page .iv-docs-chosen {
@@ -290,6 +339,26 @@
   font-weight: 600;
 }
 
+.iv-modal-doc-delete {
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border: 0;
+  background: transparent;
+  color: #d14343;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.iv-modal-doc-delete:hover {
+  text-decoration: underline;
+}
+
+.iv-modal-doc-delete:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
 .iv-modal-check {
   display: grid;
   place-items: center;
@@ -350,9 +419,9 @@
   font-weight: 750;
 }
 
-.interview-flow-page .iv-loose-field input {
+.interview-flow-page .iv-loose-field input,
+.interview-flow-page .iv-loose-field textarea {
   width: 100%;
-  height: 42px;
   padding: 0 12px;
   border: 1px solid #dbe1ec;
   border-radius: 9px;
@@ -362,13 +431,30 @@
   font-size: 13px;
 }
 
-.interview-flow-page .iv-loose-field input:focus {
+.interview-flow-page .iv-loose-field input {
+  height: 42px;
+}
+
+/* 연습 설명(100자)이 스크롤 없이 다 보이도록 4줄 높이를 주고, 아래쪽 26px은
+   입력칸 내부 우측 아래 글자 수 카운터 자리로 비워 둔다. */
+.interview-flow-page .iv-loose-field textarea {
+  height: 104px;
+  min-height: 104px;
+  padding-top: 10px;
+  padding-bottom: 26px;
+  line-height: 1.45;
+  resize: none;
+}
+
+.interview-flow-page .iv-loose-field input:focus,
+.interview-flow-page .iv-loose-field textarea:focus {
   border-color: var(--iv-blue);
   outline: 3px solid rgba(78, 111, 194, 0.14);
 }
 
 /* Kill the legacy inset highlight / soft drop-shadow on flow inputs — flat fields. */
 .interview-flow-page .iv-loose-field input,
+.interview-flow-page .iv-loose-field textarea,
 .interview-flow-page .iv-form-panel :is(input, select) {
   box-shadow: none;
 }
@@ -1059,11 +1145,29 @@
   overflow-y: auto;
   flex: 1;
   min-height: 0;
+  /* 얇은 스크롤바(녹화 화면 .ivr-qlist와 동일 톤) */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 134, 194, .32) transparent;
+}
+
+.interview-flow-page .iv-question-list::-webkit-scrollbar {
+  width: 6px;
+}
+.interview-flow-page .iv-question-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.interview-flow-page .iv-question-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(120, 134, 194, .32);
+}
+.interview-flow-page .iv-question-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 134, 194, .5);
 }
 
 .interview-flow-page .iv-question-item {
   display: flex;
-  align-items: center;
+  /* 질문이 여러 줄이어도 카테고리·삭제 버튼은 첫 줄에 맞춘다. */
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px;
@@ -1146,47 +1250,11 @@
   cursor: not-allowed;
 }
 
-/* 질문 페이지네이션 (마지막 질문 아래 < N/M >) */
-.interview-flow-page .iv-question-pager {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  flex-shrink: 0;
-  margin-top: 4px;
-}
-
-.interview-flow-page .iv-question-pager button {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border: 1px solid #d7deea;
-  border-radius: 50%;
-  background: #fff;
-  color: #5a637a;
-  font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease;
-}
-
-.interview-flow-page .iv-question-pager button:hover:not(:disabled) {
-  border-color: var(--iv-blue);
-  color: var(--iv-blue-dark);
-}
-
-.interview-flow-page .iv-question-pager button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.interview-flow-page .iv-question-pager span {
-  min-width: 44px;
-  color: var(--iv-muted);
-  font-size: 12.5px;
-  font-weight: 800;
-  text-align: center;
+/* 질문 추가 입력칸의 글자 수 카운터 — 입력칸 안쪽, '추가' 버튼 왼쪽에 둔다. */
+.interview-flow-page .iv-question-add .field-counter {
+  flex: 0 0 auto;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .interview-flow-page .iv-question-empty {
@@ -1201,7 +1269,8 @@
 
 /* 설정 확인(ready)의 질문 리뷰 패널 — '질문 확인하러가기'로 진입, 확인 완료 시 체크 */
 .interview-flow-page .iv-question-review {
-  width: min(600px, 100%);
+  /* 면접 정보 설정(iv-single-column) 페이지와 같은 가로 폭으로 맞춘다. */
+  width: min(760px, 100%);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -1268,22 +1337,26 @@
 }
 
 /* 질문 확인 카드: 높이를 고정해 질문이 적어도 카드가 줄지 않는다(빈 공간으로 둠).
-   추가 행 + 최대 5문항이 보이고, 그 이상은 하단 페이지네이션으로 넘긴다. */
+   질문 개수·길이에 상관없이 목록 안에서 스크롤한다(페이지네이션 없음). */
 .interview-flow-page .iv-questions-card {
-  height: 470px;
+  height: 520px;
 }
 
 .interview-flow-page .iv-questions-card .iv-question-list {
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
   align-content: start; /* 문항이 적으면 위에서부터 채우고 아래는 비워둔다 */
 }
 
+/* 질문은 길이에 상관없이 전문을 보여준다(예전에는 2줄에서 잘렸다). */
 .interview-flow-page .iv-question-text {
+  min-width: 0;
   color: var(--iv-ink);
   font-size: 13px;
   font-weight: 650;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
 }
 
 .interview-flow-page .iv-question-text b {
