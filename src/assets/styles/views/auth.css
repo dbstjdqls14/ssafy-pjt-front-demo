@@ -174,14 +174,13 @@ body.auth-page .route-view {
 }
 
 .auth-page .password-control input {
-  padding-right: 70px;
+  padding-right: 54px;
 }
 
-/* 토글은 입력칸 오른쪽 끝(밑줄 끝)에 붙지 않고 한 칸 안쪽에 둔다. */
 .auth-page .password-toggle {
   position: absolute;
   top: 50%;
-  right: 12px;
+  right: 0;
   padding: 7px 0 7px 12px;
   border: 0;
   background: transparent;
@@ -204,10 +203,8 @@ body.auth-page .route-view {
   box-shadow: 0 1px 0 currentColor;
 }
 
-/* 비밀번호 토글과 같은 오른쪽 여백을 써서 '보기'와 '비밀번호 찾기'가 한 줄로 정렬된다. */
 .auth-page .auth-help-link {
   margin-top: 7px;
-  padding-right: 12px;
   text-align: right;
 }
 
@@ -326,14 +323,6 @@ body.auth-page .route-view {
   display: block;
   margin-top: 5px;
   font-size: 10px;
-}
-
-.auth-page .field-counter {
-  display: block;
-  margin-top: 4px;
-  color: #98a1b5;
-  font-size: 10px;
-  text-align: right;
 }
 
 @media (max-width: 640px) {

@@ -294,6 +294,16 @@
   font-weight: 800;
 }
 
+.mypage-page .avatar-upload-caption {
+  margin: 14px 0 12px;
+  overflow: hidden;
+  color: var(--mypage-muted);
+  font-size: 13px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .mypage-page .google-badge-block {
   width: 100%;
   padding: 13px 14px;
@@ -406,7 +416,6 @@
 }
 
 .mypage-page .doc-card {
-  min-width: 0;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -928,8 +937,7 @@
   .mypage-info-page:not(.is-editing) .account-info-box {
     min-height: 70px;
     padding: 12px 15px;
-    /* 계정 정보는 위·아래 실선 한 줄로 구분하는 평면 표이므로 모서리를 굴리지 않는다. */
-    border-radius: 0;
+    border-radius: 12px;
   }
 
   .mypage-info-page:not(.is-editing) .account-info-box strong {
@@ -1725,9 +1733,7 @@ body.mypage-page .mypage-nav a {
   padding: 4px 0 0 4px;
 }
 
-/* .account-info-box 제외 — 위·아래 실선으로만 구분하는 평면 표라, 모서리를 굴리면
-   구분선 끝이 휘어 보인다(위 .mypage-page .account-info-box의 border-radius:0 유지). */
-.mypage-page :is(.mypage-profile-surface, .doc-card, .trend-summary-item, .trend-section) {
+.mypage-page :is(.mypage-profile-surface, .account-info-box, .doc-card, .trend-summary-item, .trend-section) {
   border-radius: 14px;
 }
 
@@ -1779,8 +1785,7 @@ body.mypage-page .mypage-nav a {
   text-align: center;
 }
 
-/* 마이페이지 보조 버튼(예: '비밀번호 변경'): 그라데이션·그림자·글래스 제거
-   → 테두리 + 호버 강조. */
+/* '다른 기기 로그아웃' 버튼: 그라데이션·그림자·글래스 제거 → 테두리 + 호버 강조. */
 body.mypage-page .btn-ghost-sm {
   background: #fff;
   border: 1px solid var(--mypage-line, #e4e9f3);
@@ -1796,44 +1801,36 @@ body.mypage-page .btn-ghost-sm:focus-visible {
   color: var(--mypage-blue, #5276df);
   outline: none;
 }
-/* 비밀번호 입력칸 오른쪽 '보기' 토글 — 버튼 폭만큼 입력칸 안쪽 여백을 비워
-   글자와 겹치지 않게 한다. */
-.mypage-security-form .password-field {
-  position: relative;
+.mypage-session-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: none;
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--mypage-line);
+}
+.mypage-session-row strong {
   display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: #1f2440;
 }
-.mypage-security-form .password-field input {
-  width: 100%;
-  padding-right: 78px;
+.mypage-session-row small {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 600;
 }
-.mypage-security-form .password-reveal-btn {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  min-width: 58px;
-  min-height: 34px;
-  padding: 0 12px;
-  border: 1px solid var(--mypage-line, #e4e9f3);
-  border-radius: 9px;
-  background: #fff;
-  color: #64708a;
-  font: inherit;
+.mypage-session-notice {
+  max-width: none;
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #eef2ff;
+  color: #4338ca;
   font-size: 12px;
-  font-weight: 750;
-  transform: translateY(-50%);
-  cursor: pointer;
-  transition: border-color .16s ease, background-color .16s ease, color .16s ease;
-}
-.mypage-security-form .password-reveal-btn:hover,
-.mypage-security-form .password-reveal-btn:focus-visible {
-  border-color: var(--mypage-blue, #5276df);
-  background: var(--mypage-blue-soft, #edf1ff);
-  color: var(--mypage-blue, #5276df);
-  outline: none;
-}
-.mypage-security-form .password-reveal-btn[aria-pressed='true'] {
-  border-color: var(--mypage-blue, #5276df);
-  color: var(--mypage-blue, #5276df);
+  font-weight: 700;
 }
 
 /* 자소서·포트폴리오 카드 정돈 — 플랫 compact 톤의 촌스러움 완화 */
@@ -1876,13 +1873,9 @@ body.mypage-page .btn-ghost-sm:focus-visible {
   transform: translateY(-2px);
 }
 .mypage-page .doc-card strong {
-  display: block;
-  min-width: 0;
   margin-top: 12px;
-  overflow-wrap: anywhere;
   font-size: 14px;
   line-height: 1.4;
-  word-break: break-word;
 }
 .mypage-page .doc-card > small,
 .mypage-page .doc-footer small {
@@ -2015,168 +2008,6 @@ body.mypage-page .doc-empty-state .btn-primary { display: inline-flex; align-ite
   text-align: center;
 }
 
-.doc-registration-modal {
-  width: min(560px, 100%);
-  padding: 30px;
-  border-radius: 22px;
-  background: #fff;
-  box-shadow: 0 24px 70px rgba(20, 27, 52, .22);
-}
-
-.doc-registration-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.doc-registration-head span {
-  color: #6377dd;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.doc-registration-head h3 {
-  margin-top: 7px;
-  color: #202844;
-  font-size: 22px;
-}
-
-.doc-registration-head p {
-  margin-top: 7px;
-  color: #838da3;
-  font-size: 13px;
-}
-
-.doc-registration-head > button {
-  flex: 0 0 auto;
-  border: 0;
-  color: #8c95a9;
-  background: transparent;
-  font-size: 26px;
-}
-
-.doc-type-options {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 26px;
-}
-
-.doc-type-options button {
-  min-height: 132px;
-  padding: 22px;
-  border: 1px solid #dfe4ef;
-  border-radius: 15px;
-  background: #fff;
-  text-align: left;
-  transition: border-color .2s ease, background-color .2s ease, transform .2s ease;
-}
-
-.doc-type-options button:hover {
-  border-color: #667be1;
-  background: #f6f7ff;
-  transform: translateY(-2px);
-}
-
-.doc-type-options strong {
-  display: block;
-  color: #202844;
-  font-size: 17px;
-}
-
-.doc-type-options span {
-  display: block;
-  margin-top: 10px;
-  color: #7e889e;
-  font-size: 13px;
-  line-height: 1.55;
-}
-
-.doc-form-field,
-.doc-file-field {
-  display: block;
-  margin-top: 24px;
-}
-
-.doc-form-field > span,
-.doc-file-field > span {
-  display: block;
-  margin-bottom: 9px;
-  color: #303953;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.doc-form-field input {
-  width: 100%;
-  height: 48px;
-  padding: 0 14px;
-  border: 1px solid #dce2ed;
-  border-radius: 11px;
-  color: #202844;
-  background: #fff;
-}
-
-.doc-form-field small {
-  display: block;
-  margin-top: 6px;
-  color: #9aa2b4;
-  font-size: 11px;
-  text-align: right;
-}
-
-.doc-file-field {
-  position: relative;
-  padding: 18px;
-  border: 1px dashed #cbd4e6;
-  border-radius: 12px;
-  background: #f8f9fc;
-  cursor: pointer;
-}
-
-.doc-file-field input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-}
-
-.doc-file-field strong {
-  color: #68738b;
-  font-size: 13px;
-  word-break: break-all;
-}
-
-.doc-file-field .doc-file-help {
-  display: block;
-  margin-top: 7px;
-  color: #8d96aa;
-  font-size: 11px;
-}
-
-.doc-form-error {
-  margin-top: 14px;
-  color: #dc2626;
-  font-size: 13px;
-}
-
-.doc-registration-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 26px;
-}
-
-.doc-registration-actions button {
-  min-width: 110px;
-  min-height: 44px;
-  border-radius: 11px;
-}
-
-body.mypage-page .doc-state-message > p { margin: 0; }
-body.mypage-page .doc-state-message > button { margin-top: 14px; }
-
 .doc-confirm-icon {
   display: grid;
   place-items: center;
@@ -2212,38 +2043,17 @@ body.mypage-page .document-detail-card {
 }
 
 body.mypage-page .document-detail-card > header { padding: 28px 30px 22px; }
-body.mypage-page .document-detail-card h2 {
-  display: -webkit-box;
-  overflow: hidden;
-  margin-top: 12px;
-  color: #202844;
-  font-size: 24px;
-  overflow-wrap: anywhere;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
+body.mypage-page .document-detail-card h2 { margin-top: 12px; color: #202844; font-size: 24px; }
 body.mypage-page .document-detail-card header p { margin-top: 7px; color: #929bb0; font-size: 13px; }
-body.mypage-page .document-content {
-  min-height: 260px;
-  margin: 0 30px;
-  padding: 28px;
-  border: 1px solid #e5e9f1;
-  border-radius: 14px;
-  background: #f8f9fc;
-}
-body.mypage-page .document-content > span { color: #687de2; font-size: 12px; font-weight: 800; }
-body.mypage-page .document-content h3 { margin-top: 8px; color: #303953; font-size: 18px; }
-body.mypage-page .document-content p { margin-top: 20px; color: #4d5870; font-size: 14px; line-height: 1.9; overflow-wrap: anywhere; white-space: pre-wrap; word-break: break-word; }
-body.mypage-page .document-content p.document-content-empty { color: #929bb0; }
+body.mypage-page .document-preview { display: grid; place-items: center; min-height: 390px; margin: 0 30px; border-radius: 14px; background: #f6f7fb; }
+body.mypage-page .document-preview iframe { width: 100%; height: 520px; border: 0; border-radius: inherit; }
+body.mypage-page .document-preview > div { max-width: 360px; text-align: center; }
+body.mypage-page .document-preview span { display: inline-grid; place-items: center; width: 68px; height: 80px; border-radius: 8px; color: #fff; background: #687de2; font-size: 15px; font-weight: 900; }
+body.mypage-page .document-preview strong { display: block; margin-top: 18px; color: #303953; }
+body.mypage-page .document-preview p { margin-top: 8px; color: #8a94aa; font-size: 13px; line-height: 1.6; }
 body.mypage-page .document-detail-card > footer { display: flex; justify-content: flex-end; gap: 10px; padding: 22px 30px 28px; }
 body.mypage-page .document-detail-card > footer > * { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 0 18px; border-radius: 10px; font-size: 13px; font-weight: 800; }
 body.mypage-page .doc-danger-outline { border: 1px solid #fecaca; color: #dc2626; background: #fff; }
-
-@media (max-width: 640px) {
-  .doc-registration-modal { padding: 24px 20px; }
-  .doc-type-options { grid-template-columns: 1fr; }
-  .doc-registration-actions button { flex: 1; min-width: 0; }
-}
 
 /* 마이페이지 푸터도 다른 페이지와 동일한 공용 푸터(.footer-inner: min(1440px,100%),
    좌우 32px)를 그대로 쓴다. 기존엔 본문(1080)에 맞춰 좁히고 좌우 패딩을 0으로 둬
@@ -2376,58 +2186,6 @@ body.mypage-page .password-change-btn:focus-visible {
   color: #fff;
 }
 
-/* 프로필 이미지는 기존 원형 영역을 유지하면서 실제 파일 입력과 연결한다. */
-.mypage-page .mypage-profile-surface .avatar,
-.mypage-page .avatar-upload {
-  overflow: hidden;
-}
-
-.mypage-page .mypage-profile-surface .avatar img,
-.mypage-page .avatar-upload img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.mypage-page button.avatar-upload {
-  position: relative;
-  padding: 0;
-  border: 0;
-  cursor: pointer;
-}
-
-.mypage-page button.avatar-upload:focus-visible {
-  outline: 3px solid rgba(82, 118, 223, .35);
-  outline-offset: 4px;
-}
-
-.mypage-page .profile-image-input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-.mypage-page .profile-image-reset {
-  margin-top: 12px;
-  border: 0;
-  background: transparent;
-  color: #667be1;
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.mypage-page .profile-image-error {
-  display: block;
-  max-width: 220px;
-  margin-top: 10px;
-  text-align: center;
-}
-
 /* ============================================================
    좌측 카테고리(네비) 위치를 모든 마이페이지 탭에서 통일.
    '내 정보(overview)' 페이지만 shell 상단 패딩(52)·네비 컬럼 폭(184)·gap(26)을
@@ -2461,67 +2219,5 @@ body.mypage-page .password-change-btn:focus-visible {
   }
   body.mypage-page .mypage-nav {
     padding: 4px 20px 4px 0 !important;
-  }
-}
-.mypage-page .mypage-profile-surface .name-block > strong,
-.mypage-page .mypage-profile-surface .name-block > span,
-.mypage-page .account-info-box strong {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.mypage-page .doc-card .doc-card-title {
-  display: -webkit-box;
-  max-width: 100%;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-.mypage-page .doc-file-field .doc-file-name,
-.mypage-page .doc-delete-title {
-  display: block;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Final responsive safeguards: the legacy 3-column mobile grid forced the long
-   document label into its neighbours. Tabs now keep their natural width and
-   use horizontal scrolling, while profile text can shrink inside its grid. */
-body.mypage-page .mypage-profile-surface .name-block {
-  min-width: 0;
-}
-
-body.mypage-page .mypage-profile-surface .name-block > strong,
-body.mypage-page .mypage-profile-surface .name-block > span {
-  display: block;
-}
-
-@media (max-width: 900px) {
-  body.mypage-page .mypage-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  body.mypage-page .mypage-nav {
-    display: flex;
-    width: 100%;
-    gap: 8px;
-    padding: 0 0 12px !important;
-    overflow-x: auto;
-    border-right: 0 !important;
-    border-bottom: 1px solid var(--mypage-line);
-    scrollbar-width: thin;
-  }
-
-  body.mypage-page .mypage-nav > a {
-    flex: 0 0 auto;
-    min-width: max-content;
-    padding-inline: 14px;
-    white-space: nowrap;
   }
 }

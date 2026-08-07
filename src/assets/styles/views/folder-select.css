@@ -34,10 +34,10 @@ html {
   flex: 0 0 206px;
   height: 48px;
   padding: 0 20px;
-  border: 1px solid #6f82df;
+  border: 1px solid #d8e0f0;
   border-radius: 12px 12px 0 0;
-  background: #6f82df;
-  color: #fff;
+  background: #fff;
+  color: #192343;
   font-size: 14px;
   font-weight: 700;
   outline: none;
@@ -53,16 +53,14 @@ html {
   box-shadow: inset 0 0 0 2px rgba(37, 58, 132, .56);
 }
 
-/* 활성 탭이 흰색이라야 바로 아래 흰 패널과 이어져 보인다(비활성 탭이 흰색이면
-   오히려 활성 탭처럼 보인다는 피드백으로 배경색을 반전했다). */
 .folder-picker-page.practice-type-page .folder-mode-tabs button.active {
   position: relative;
   z-index: 1;
-  border: 1px solid #d8e0f0;
+  border: 1px solid #6f82df;
   border-bottom-color: #fff;
   border-radius: 12px 12px 0 0;
-  background: #fff;
-  color: #192343;
+  background: #6f82df;
+  color: #fff;
   box-shadow: none;
 }
 
@@ -94,9 +92,9 @@ html {
   width: 100%;
   height: 100%;
   min-height: 0;
-  /* 오른쪽 요약은 260~280px로 유지하고 왼쪽 목록만 유연하게 줄어들도록 한다. */
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 280px);
-  gap: 32px;
+  /* 오른쪽(미리보기)은 ~300px로 고정 유지, 왼쪽(목록)만 줄어들도록. */
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 300px);
+  gap: 40px;
 }
 
 .folder-picker-page.practice-type-page .folder-list-pane {
@@ -206,6 +204,7 @@ html {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   min-height: 64px;
+  height: 25%;
   align-items: center;
   gap: 5px 14px;
   padding: 12px 14px;
@@ -240,28 +239,18 @@ html {
 }
 
 .folder-picker-page.practice-type-page .folder-row strong {
-  display: block;
-  min-width: 0;
-  overflow: hidden;
   color: #192343;
   font-size: 17px;
   font-weight: 700;
   line-height: 1.35;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .folder-picker-page.practice-type-page .folder-row small {
-  display: block;
-  min-width: 0;
-  overflow: hidden;
   margin: 4px 0 0;
   color: #7c88a5;
   font-size: 13px;
   font-weight: 450;
   line-height: 1.4;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .folder-picker-page.practice-type-page .folder-badge {
@@ -275,311 +264,38 @@ html {
   text-align: center;
 }
 
-.folder-picker-page.practice-type-page .folder-row-score {
-  min-width: 90px;
-  padding: 9px 12px;
-  border-radius: 999px;
-  background: #edf2ff;
-  color: #5271c8;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.2;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.folder-picker-page.practice-type-page .folder-row-score.is-empty {
-  min-width: 32px;
-  padding-right: 4px;
-  padding-left: 4px;
-  background: transparent;
-  color: #8b95aa;
-}
-
-.folder-picker-page.practice-type-page .folder-row.selected .folder-badge,
-.folder-picker-page.practice-type-page .folder-row.selected .folder-row-score {
+.folder-picker-page.practice-type-page .folder-row.selected .folder-badge {
   background: #fff;
-}
-
-.folder-picker-page.practice-type-page .folder-row.selected .folder-row-score.is-empty {
-  background: transparent;
 }
 
 .folder-picker-page.practice-type-page .folder-preview {
   position: relative;
   display: flex;
   min-width: 0;
-  justify-content: flex-start;
+  justify-content: center;
   flex-direction: column;
   align-items: stretch;
-  padding: 34px 24px 24px 28px;
+  padding: 24px 4px 24px 40px;
   border-left: 1px solid #e1e7f1;
   outline: none;
 }
 
 .folder-picker-page.practice-type-page .folder-preview-summary {
-  display: flex;
   width: 100%;
-  flex-direction: column;
-  align-items: stretch;
   text-align: left;
 }
 
-.folder-picker-page.practice-type-page .folder-preview-visual {
-  display: grid;
-  width: 132px;
-  height: 104px;
-  margin: 0 0 28px;
-  place-items: center;
-  border-radius: 28px;
-  background: #f2f4ff;
-  color: #687bdb;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-visual svg {
-  width: 104px;
-  height: 80px;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-visual-back {
-  fill: #cfd7fb;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-visual-front {
-  fill: #7f8ee2;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-visual-line {
-  fill: none;
-  stroke: #fff;
-  stroke-linecap: round;
-  stroke-width: 4;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-empty {
-  display: grid;
-  width: 100%;
-  justify-items: center;
-  gap: 9px;
-  padding: 28px 18px;
-  color: #7c88a5;
-  text-align: center;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-empty-icon {
-  display: grid;
-  width: 54px;
-  height: 54px;
-  margin-bottom: 5px;
-  place-items: center;
-  border-radius: 18px;
-  background: #f0f2ff;
-  color: #6578da;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-empty-icon svg {
-  width: 27px;
-  height: 27px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.7;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-empty > strong {
-  color: #192343;
-  font-size: 18px;
-  font-weight: 800;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-empty p {
-  max-width: 240px;
-  margin: 0;
-  font-size: 11px;
-  font-weight: 550;
-  line-height: 1.55;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-empty button {
-  margin-top: 9px;
-  padding: 9px 16px;
-  border: 1px solid #687bdb;
-  border-radius: 999px;
-  background: #687bdb;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-title-row {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-title-row > strong {
+.folder-picker-page.practice-type-page .folder-preview-summary > strong {
   display: block;
-  min-width: 0;
-  overflow: hidden;
+}
+
+.folder-picker-page.practice-type-page .folder-preview-summary > strong {
+  margin-top: 0;
   color: #192343;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 800;
   line-height: 1.35;
   letter-spacing: -.025em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-delete {
-  display: inline-grid;
-  position: relative;
-  flex: 0 0 auto;
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  place-items: center;
-  border: 1px solid #d9deeb;
-  border-radius: 50%;
-  background: #fff;
-  color: #8a94aa;
-  cursor: pointer;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-delete > span {
-  position: relative;
-  display: block;
-  width: 14px;
-  height: 14px;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-delete > span::before,
-.folder-picker-page.practice-type-page .folder-preview-delete > span::after {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 14px;
-  height: 2px;
-  border-radius: 999px;
-  background: currentcolor;
-  content: '';
-  transform-origin: center;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-delete > span::before {
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.folder-picker-page.practice-type-page .folder-preview-delete > span::after {
-  transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-.folder-picker-page.practice-type-page .folder-preview-delete:hover:not(:disabled),
-.folder-picker-page.practice-type-page .folder-preview-delete:focus-visible {
-  border-color: #e57878;
-  color: #c94f4f;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-delete:focus-visible {
-  outline: 3px solid rgb(229 120 120 / 18%);
-  outline-offset: 2px;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-delete:disabled {
-  cursor: wait;
-  opacity: .55;
-}
-
-.folder-delete-backdrop {
-  position: fixed;
-  z-index: 1200;
-  inset: 0;
-  display: grid;
-  padding: 24px;
-  place-items: center;
-  background: rgb(16 24 48 / 56%);
-}
-
-.folder-delete-dialog {
-  width: min(420px, 100%);
-  padding: 32px;
-  border: 1px solid #e0e5f0;
-  border-radius: 22px;
-  background: #fff;
-  box-shadow: 0 22px 60px rgb(18 28 58 / 22%);
-  text-align: center;
-}
-
-.folder-delete-dialog h2 {
-  margin: 0;
-  color: #192343;
-  font-size: 23px;
-  line-height: 1.4;
-}
-
-.folder-delete-dialog > p {
-  margin: 12px 0 0;
-  color: #68738f;
-  font-size: 14px;
-  line-height: 1.65;
-}
-
-.folder-delete-dialog .folder-delete-name {
-  overflow: hidden;
-  color: #303b5b;
-  font-weight: 750;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.folder-delete-dialog .folder-delete-error {
-  color: #c94f4f;
-}
-
-.folder-delete-actions {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 26px;
-}
-
-.folder-delete-actions button {
-  min-width: 108px;
-  padding: 12px 18px;
-  border: 1px solid #d9deeb;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.folder-delete-actions button:disabled {
-  cursor: wait;
-  opacity: .6;
-}
-
-.folder-delete-cancel {
-  background: #fff;
-  color: #35405f;
-}
-
-.folder-delete-confirm {
-  border-color: #cc5a5a !important;
-  background: #cc5a5a;
-  color: #fff;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-description {
-  margin: 24px 0 0;
-  color: #6f7b98;
-  font-size: 13px;
-  font-weight: 550;
-  line-height: 1.75;
-  overflow-wrap: anywhere;
-  white-space: pre-line;
 }
 
 .folder-picker-page.practice-type-page .folder-preview-score {
@@ -588,48 +304,47 @@ html {
   justify-content: space-between;
   gap: 16px;
   margin: 22px 0 0;
-  padding-bottom: 12px;
+  padding-bottom: 18px;
   border-bottom: 1px solid #e1e7f1;
 }
 
 .folder-picker-page.practice-type-page .folder-preview-score dt {
   color: #7c88a5;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 650;
 }
 
 .folder-picker-page.practice-type-page .folder-preview-score dd {
   margin: 0;
   color: #5271c8;
-  font-size: 20px;
+  font-size: 26px;
   font-weight: 800;
   letter-spacing: -.04em;
 }
 
 .folder-picker-page.practice-type-page .folder-preview-history {
-  width: 100%;
-  margin-top: 12px;
+  margin-top: 18px;
 }
 
 .folder-picker-page.practice-type-page .folder-preview-history h2 {
   margin: 0;
   color: #33415f;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 750;
 }
 
 .folder-picker-page.practice-type-page .folder-preview-history ol {
   display: grid;
   gap: 0;
-  margin: 5px 0 0;
+  margin: 8px 0 0;
   padding: 0;
   list-style: none;
 }
 
 .folder-picker-page.practice-type-page .folder-preview-history li {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) auto;
-  min-height: 30px;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  min-height: 36px;
   align-items: center;
   gap: 8px;
   border-bottom: 1px solid #edf1f7;
@@ -640,37 +355,6 @@ html {
 .folder-picker-page.practice-type-page .folder-preview-history li strong {
   color: #33415f;
   font-size: 12px;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-history-empty {
-  width: 100%;
-  margin: 14px 0 0;
-  padding: 14px 12px;
-  border: 1px dashed #d8dfec;
-  border-radius: 10px;
-  background: #f8f9fc;
-  color: #8b95aa;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.5;
-  text-align: center;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-history-empty.is-empty {
-  margin-top: 8px;
-  padding: 6px 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: #8b95aa;
-  font-size: 14px;
-  text-align: left;
-}
-
-.folder-picker-page.practice-type-page .folder-preview-history-empty.is-error {
-  border-color: #efcdd4;
-  background: #fff8f9;
-  color: #c94d68;
 }
 
 .folder-picker-page.practice-type-page .folder-visual {
@@ -884,10 +568,8 @@ html {
   padding: 0 16px;
 }
 
-/* padding-right는 밑줄 우측 위에 얹히는 글자 수 카운터 자리(ID 선택자라 공통
-   .limited-field 규칙보다 특이도가 높으므로 여기서 함께 비워 둔다). */
 .folder-picker-page.practice-type-page .folder-new-form #newFolderName {
-  padding: 0 52px 8px 0;
+  padding: 0 0 8px;
   border-width: 0 0 1px;
   border-radius: 0;
   background: transparent;
@@ -997,7 +679,8 @@ html {
     border-left: 0;
   }
 
-  .folder-picker-page.practice-type-page .folder-preview-title-row > strong {
+  .folder-picker-page.practice-type-page .folder-preview-summary > strong {
+    margin-top: 0;
     font-size: 18px;
   }
 
@@ -1008,10 +691,6 @@ html {
 
   .folder-picker-page.practice-type-page .folder-preview-history {
     margin-top: 10px;
-  }
-
-  .folder-picker-page.practice-type-page .folder-preview-title-row {
-    gap: 9px;
   }
 
   .folder-picker-page.practice-type-page .folder-visual {

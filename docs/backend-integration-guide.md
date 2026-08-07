@@ -58,7 +58,7 @@ location / { try_files $uri $uri/ /index.html; }
 
 ## 4. 현재 mock 저장소와 백엔드 전환 포인트
 
-데이터는 각 Pinia store가 관리합니다. 연습 폴더와 면접 카탈로그·질문 생성/관리는 실제 API를 직접 호출합니다. 아직 미연동인 다른 도메인만 `src/api/withMock.js`를 통해 제한적으로 로컬 데이터로 폴백합니다.
+데이터는 각 Pinia store가 관리하며, API 호출은 `src/api/withMock.js`로 감쌉니다. 백엔드 미준비 시 로컬 목/브라우저 저장소로 폴백하고, 실제 endpoint가 응답하면 그 값이 자동 우선됩니다.
 
 브라우저 저장 키는 `src/constants/storageKeys.js`에 모여 있습니다. 저장 데이터 스키마나 키 버전을 변경할 때는 해당 파일과 관련 store의 마이그레이션 로직을 함께 수정합니다.
 정적 fallback 데이터는 `src/mocks`에 도메인별로 분리되어 있습니다. 백엔드 연동 시에는 `src/api`의 계약과 Store 정규화만 확인하면 되고 화면 컴포넌트나 fixture를 수정할 필요가 없습니다.
@@ -68,9 +68,9 @@ location / { try_files $uri $uri/ /index.html; }
 | 도메인 | 현재 목 방식 | 백엔드 전환 대상 API |
 |---|---|---|
 | 인증/사용자 | `authStore` + `localStorage('aivo.user')` | `POST /auth/login·logout`, `GET /users/me` |
-| 연습 폴더 | 실제 API 전용, 선택 상태만 `sessionStorage` 보관 | `GET/POST/PATCH/DELETE /practice-folders` |
-| 발표 세션 | `presentationStore` + `sessionStorage('aivo.presentation-flow')` | `/presentations/*` (업로드·상태·슬라이드·연습 이벤트·종료 포함) |
-| 면접 세션 | 실제 카탈로그·질문 생성/관리 API + `sessionStorage('aivo.interview-flow-v2')` | `/interviews/*` |
+| 연습 폴더 | `practiceStore` (선택 상태) | `GET/POST/PATCH/DELETE /practice-folders` |
+| 발표 세션 | `presentationStore` + `sessionStorage('aivo.presentation-flow')` | `/presentation-sessions/*` (슬라이드 업로드·리포트 포함) |
+| 면접 세션 | `interviewStore` + `sessionStorage('aivo.interview-flow-v2')` | `/interview-sessions/*` |
 | 연습 기록 | `archiveStore` + `localStorage('aivo.session-history.v2')` (시드) | 기록/리포트 조회 API |
 | 녹화/슬라이드 | 브라우저 media API + 파일명·미리보기 목 | 녹화 업로드, PPT/PDF slide extraction, 분석 요청/결과 |
 
@@ -78,7 +78,7 @@ location / { try_files $uri $uri/ /index.html; }
 
 ```text
 /api/v1/auth/*           /api/v1/users/me
-/api/v1/practice-folders /api/v1/presentations          /api/v1/interviews
+/api/v1/practice-folders /api/v1/presentation-sessions  /api/v1/interview-sessions
 /api/v1/uploads/slides   /api/v1/recordings             /api/v1/reports
 ```
 

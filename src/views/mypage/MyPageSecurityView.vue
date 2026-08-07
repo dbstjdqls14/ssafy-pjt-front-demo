@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useAuthStore } from '../../stores/authStore.js'
-import { isStrongPassword, authMessages, MAX_PASSWORD_LENGTH } from '../../utils/validators.js'
+import { isStrongPassword, authMessages } from '../../utils/validators.js'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -12,11 +12,8 @@ const current = ref('')
 const newPw = ref('')
 const confirmPw = ref('')
 const errors = ref({ current: '', newPw: '', confirmPw: '' })
+const notice = ref('')
 const submitting = ref(false)
-
-// 입력한 비밀번호를 눈으로 확인할 수 있게 칸마다 '보기' 토글을 둔다(칸별로 독립).
-const revealed = ref({ current: false, newPw: false, confirmPw: false })
-const toggleReveal = (field) => { revealed.value[field] = !revealed.value[field] }
 
 const onSubmit = async () => {
   errors.value = { current: '', newPw: '', confirmPw: '' }
@@ -37,17 +34,17 @@ const onSubmit = async () => {
 
   submitting.value = true
   try {
-    await auth.changePassword({
-      currentPassword: current.value,
-      newPassword: newPw.value,
-      newPasswordConfirm: confirmPw.value,
-    })
+    await auth.changePassword({ currentPassword: current.value, newPassword: newPw.value })
     router.push('/mypage?edit=1')
   } catch (caught) {
     errors.value.current = caught?.payload?.message || '비밀번호 변경에 실패했어요. 현재 비밀번호를 확인해주세요.'
   } finally {
     submitting.value = false
   }
+}
+
+const logoutOthers = () => {
+  notice.value = '다른 모든 기기에서 로그아웃되었어요. (데모)'
 }
 </script>
 
@@ -63,68 +60,17 @@ const onSubmit = async () => {
         <form class="mypage-security-form" novalidate @submit.prevent="onSubmit">
           <div class="form-field" :class="{ 'field-invalid': errors.current }">
             <label for="current">현재 비밀번호</label>
-            <div class="password-field">
-              <input
-                id="current"
-                v-model="current"
-                :type="revealed.current ? 'text' : 'password'"
-                :maxlength="MAX_PASSWORD_LENGTH"
-                placeholder="현재 비밀번호 입력"
-                @input="errors.current = ''"
-              />
-              <button
-                type="button"
-                class="password-reveal-btn"
-                data-testid="toggle-current-password"
-                :aria-pressed="revealed.current"
-                :aria-label="`현재 비밀번호 ${revealed.current ? '숨기기' : '보기'}`"
-                @click="toggleReveal('current')"
-              >{{ revealed.current ? '숨기기' : '보기' }}</button>
-            </div>
+            <input id="current" v-model="current" type="password" placeholder="현재 비밀번호 입력" @input="errors.current = ''" />
             <small v-if="errors.current" class="field-error">{{ errors.current }}</small>
           </div>
           <div class="form-field" :class="{ 'field-invalid': errors.newPw }">
             <label for="newPw">새 비밀번호</label>
-            <div class="password-field">
-              <input
-                id="newPw"
-                v-model="newPw"
-                :type="revealed.newPw ? 'text' : 'password'"
-                :maxlength="MAX_PASSWORD_LENGTH"
-                placeholder="영문·숫자 포함 8~20자"
-                @input="errors.newPw = ''"
-              />
-              <button
-                type="button"
-                class="password-reveal-btn"
-                data-testid="toggle-new-password"
-                :aria-pressed="revealed.newPw"
-                :aria-label="`새 비밀번호 ${revealed.newPw ? '숨기기' : '보기'}`"
-                @click="toggleReveal('newPw')"
-              >{{ revealed.newPw ? '숨기기' : '보기' }}</button>
-            </div>
+            <input id="newPw" v-model="newPw" type="password" placeholder="새 비밀번호 입력" @input="errors.newPw = ''" />
             <small v-if="errors.newPw" class="field-error">{{ errors.newPw }}</small>
           </div>
           <div class="form-field" :class="{ 'field-invalid': errors.confirmPw }">
             <label for="confirmPw">새 비밀번호 확인</label>
-            <div class="password-field">
-              <input
-                id="confirmPw"
-                v-model="confirmPw"
-                :type="revealed.confirmPw ? 'text' : 'password'"
-                :maxlength="MAX_PASSWORD_LENGTH"
-                placeholder="새 비밀번호 다시 입력"
-                @input="errors.confirmPw = ''"
-              />
-              <button
-                type="button"
-                class="password-reveal-btn"
-                data-testid="toggle-confirm-password"
-                :aria-pressed="revealed.confirmPw"
-                :aria-label="`새 비밀번호 확인 ${revealed.confirmPw ? '숨기기' : '보기'}`"
-                @click="toggleReveal('confirmPw')"
-              >{{ revealed.confirmPw ? '숨기기' : '보기' }}</button>
-            </div>
+            <input id="confirmPw" v-model="confirmPw" type="password" placeholder="새 비밀번호 다시 입력" @input="errors.confirmPw = ''" />
             <small v-if="errors.confirmPw" class="field-error">{{ errors.confirmPw }}</small>
           </div>
 
@@ -133,5 +79,15 @@ const onSubmit = async () => {
             <button type="submit" class="btn-primary" :disabled="submitting">{{ submitting ? '변경 중…' : '비밀번호 변경' }}</button>
           </div>
         </form>
+
+        <div class="mypage-session-row">
+          <div>
+            <strong>최근 로그인</strong>
+            <small>Windows · Chrome · 대전광역시 · 2026.07.16 14:22</small>
+          </div>
+          <button type="button" class="btn-ghost-sm" @click="logoutOthers">다른 기기 로그아웃</button>
+        </div>
+
+        <p v-if="notice" class="mypage-session-notice">{{ notice }}</p>
   </section>
 </template>

@@ -2,11 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { extractAuthUser, isEmailAvailable } from '../../src/api/normalizers/auth.js'
 import { normalizeArchiveRecord } from '../../src/api/normalizers/archive.js'
-import {
-  mergeSupportDocuments,
-  normalizePortfolioDocument,
-  normalizeResumeDocument,
-} from '../../src/api/normalizers/documents.js'
+import { formatDocumentSize, inferDocumentType, normalizeDocument } from '../../src/api/normalizers/documents.js'
 import { normalizeInterviewQuestions } from '../../src/api/normalizers/interview.js'
 import {
   extractPresentationSlides,
@@ -31,7 +27,6 @@ describe('API model normalizers', () => {
   it('normalizes archive records without losing server fields', () => {
     expect(normalizeArchiveRecord({
       reportId: 17,
-      interviewId: 27,
       practiceFolderId: 3,
       practiceType: 'INTERVIEW',
       sessionTitle: '백엔드 면접',
@@ -43,8 +38,6 @@ describe('API model normalizers', () => {
       custom: true,
     })).toMatchObject({
       id: '17',
-      interviewId: 27,
-      presentationId: null,
       folderId: 3,
       type: 'interview',
       title: '백엔드 면접',
@@ -54,11 +47,6 @@ describe('API model normalizers', () => {
       recordingUrl: '/recording.webm',
       custom: true,
     })
-  })
-
-  it('does not invent or expose impossible archive scores', () => {
-    expect(normalizeArchiveRecord({ reportId: 18 })).toMatchObject({ score: null })
-    expect(normalizeArchiveRecord({ reportId: 19, overallScore: 108 })).toMatchObject({ score: null })
   })
 
   it('normalizes practice folders and attempt aliases', () => {
@@ -78,55 +66,25 @@ describe('API model normalizers', () => {
     })
   })
 
-  it('normalizes real resume and portfolio DTOs without colliding ids', () => {
-    const resume = normalizeResumeDocument({
-      id: 9,
-      title: '백엔드 개발자 자소서',
-      resumePath: 's3://bucket/resume.pdf',
-      content: '지원 동기 본문',
-      createdAt: '2026-07-20T14:32:00',
-      updatedAt: '2026-07-21T10:00:00',
-    })
-    const portfolio = normalizePortfolioDocument({
-      id: 9,
-      title: 'AIVO 포트폴리오',
-      portfolioPath: 's3://bucket/portfolio.pdf',
-      summary: '프로젝트 요약',
-      createdAt: '2026-07-22T09:00:00',
-    })
-
-    expect(resume).toMatchObject({
-      id: 'resume:9',
-      serverId: 9,
-      name: '백엔드 개발자 자소서',
+  it('normalizes document aliases and file metadata', () => {
+    expect(formatDocumentSize(1536)).toBe('2KB')
+    expect(formatDocumentSize(1572864)).toBe('1.5MB')
+    expect(inferDocumentType('AIVO_포트폴리오.pdf')).toBe('portfolio')
+    expect(inferDocumentType('이력서.pdf')).toBe('resume')
+    expect(normalizeDocument({
+      documentId: 9,
+      originalName: 'resume.pdf',
+      documentType: 'RESUME',
+      fileSize: 1536,
+      fileUrl: '/documents/9',
+    })).toMatchObject({
+      id: '9',
+      name: 'resume.pdf',
       type: 'resume',
-      content: '지원 동기 본문',
-      storagePath: 's3://bucket/resume.pdf',
-      date: '2026.07.21',
+      size: '2KB',
+      previewUrl: '/documents/9',
+      downloadUrl: '/documents/9',
     })
-    expect(portfolio).toMatchObject({
-      id: 'portfolio:9',
-      serverId: 9,
-      name: 'AIVO 포트폴리오',
-      type: 'portfolio',
-      summary: '프로젝트 요약',
-      storagePath: 's3://bucket/portfolio.pdf',
-      date: '2026.07.22',
-    })
-    expect(resume).not.toHaveProperty('size')
-    expect(portfolio).not.toHaveProperty('previewUrl')
-  })
-
-  it('merges both resources in descending server date order', () => {
-    const merged = mergeSupportDocuments(
-      [{ id: 1, title: '오래된 자소서', createdAt: '2026-07-01T00:00:00' }],
-      [
-        { id: 1, title: '최신 포트폴리오', createdAt: '2026-07-03T00:00:00' },
-        { id: 2, title: '중간 포트폴리오', updatedAt: '2026-07-02T00:00:00' },
-      ],
-    )
-
-    expect(merged.map((item) => item.id)).toEqual(['portfolio:1', 'portfolio:2', 'resume:1'])
   })
 
   it('normalizes interview question aliases and drops empty questions', () => {

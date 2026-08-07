@@ -5,12 +5,11 @@ import { computed, ref } from 'vue'
 // (transcript, live stats). Kept separate from the presentation draft so it can
 // be reused by the interview record flow too.
 export const useRecordingStore = defineStore('recording', () => {
-  const cameraZoom = ref(1)
   const isRecording = ref(false)
   const isPaused = ref(false)
   const elapsedSeconds = ref(0)
   const transcriptSegments = ref([])
-  const stats = ref({ wpm: null, syllablesPerSecond: null, fillerCount: 0, gazeHold: null, posture: null, voice: '대기', voiceDb: null })
+  const stats = ref({ wpm: null, fillerCount: 0, gazeHold: null, posture: null, voice: '대기', voiceDb: null })
   const mediaBlob = ref(null)
 
   const elapsedLabel = computed(() => {
@@ -24,7 +23,7 @@ export const useRecordingStore = defineStore('recording', () => {
     isPaused.value = false
     elapsedSeconds.value = 0
     transcriptSegments.value = []
-    stats.value = { wpm: null, syllablesPerSecond: null, fillerCount: 0, gazeHold: null, posture: null, voice: '대기', voiceDb: null }
+    stats.value = { wpm: null, fillerCount: 0, gazeHold: null, posture: null, voice: '대기', voiceDb: null }
     mediaBlob.value = null
   }
   const pause = () => {
@@ -49,19 +48,14 @@ export const useRecordingStore = defineStore('recording', () => {
   const addTranscript = (text) => {
     transcriptSegments.value = [...transcriptSegments.value, text]
   }
-  const setCameraZoom = (value) => {
-    const zoom = Number(value)
-    cameraZoom.value = Math.round(Math.min(2, Math.max(1, Number.isFinite(zoom) ? zoom : 1)) * 10) / 10
-  }
   const reset = () => {
     stop()
     elapsedSeconds.value = 0
     transcriptSegments.value = []
-    stats.value = { wpm: null, syllablesPerSecond: null, fillerCount: 0, gazeHold: null, posture: null, voice: '대기', voiceDb: null }
+    stats.value = { wpm: null, fillerCount: 0, gazeHold: null, posture: null, voice: '대기', voiceDb: null }
   }
 
   return {
-    cameraZoom,
     isRecording,
     isPaused,
     elapsedSeconds,
@@ -76,7 +70,6 @@ export const useRecordingStore = defineStore('recording', () => {
     tick,
     setStats,
     addTranscript,
-    setCameraZoom,
     reset,
   }
 })

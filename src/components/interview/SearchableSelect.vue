@@ -1,6 +1,5 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import { INPUT_LIMITS } from '../../constants/inputLimits.js'
 
 // Searchable single-select combobox for the interview setup (회사명·직군·지원 직무).
 // Looks like the native form select but opens a filterable option list.
@@ -9,9 +8,6 @@ const props = defineProps({
   options: { type: Array, default: () => [] },
   placeholder: { type: String, default: '선택' },
   searchPlaceholder: { type: String, default: '검색어를 입력하세요' },
-  disabled: { type: Boolean, default: false },
-  // 옵션이 몇 개뿐인 항목(경력 구분 등)은 검색칸 없이 같은 모양만 쓴다.
-  searchable: { type: Boolean, default: true },
 })
 const emit = defineEmits(['update:modelValue'])
 
@@ -26,18 +22,10 @@ const filtered = computed(() => {
   return props.options.filter((option) => option.toLowerCase().includes(q))
 })
 
-// v-model(vModelText)은 한글 조합이 끝날 때까지 값을 갱신하지 않아서, 'ㅇ→여→연'을
-// 치는 동안 후보 목록이 멈춘 것처럼 보인다. 조합 중 input 이벤트까지 그대로 반영한다.
-const onQueryInput = (event) => {
-  query.value = event.target.value
-}
-
 const toggle = async () => {
-  if (props.disabled) return
   open.value = !open.value
   if (open.value) {
     query.value = ''
-    if (!props.searchable) return
     await nextTick()
     searchEl.value?.focus()
   }
@@ -63,7 +51,6 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onDocPointer))
       type="button"
       class="iv-select-trigger"
       :class="{ 'is-placeholder': !modelValue }"
-      :disabled="disabled"
       :aria-expanded="open"
       aria-haspopup="listbox"
       @click="toggle"
@@ -74,16 +61,13 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onDocPointer))
       </svg>
     </button>
 
-    <div v-if="open" class="iv-select-pop" :class="{ 'is-plain': !searchable }">
+    <div v-if="open" class="iv-select-pop">
       <input
-        v-if="searchable"
         ref="searchEl"
-        :value="query"
+        v-model="query"
         type="text"
         class="iv-select-search"
-        :maxlength="INPUT_LIMITS.SEARCH"
         :placeholder="searchPlaceholder"
-        @input="onQueryInput"
         @keydown.esc.prevent="close"
       />
       <ul class="iv-select-list" role="listbox">
@@ -131,12 +115,6 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onDocPointer))
 
 .iv-select-trigger.is-placeholder {
   color: #8b94a7;
-}
-
-.iv-select-trigger:disabled {
-  background: #f4f6fa;
-  color: #a6adc0;
-  cursor: not-allowed;
 }
 
 .iv-select.is-open .iv-select-trigger,
@@ -213,10 +191,6 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onDocPointer))
   background: #eef2ff;
   color: #405fbd;
   font-weight: 750;
-}
-
-.iv-select-pop.is-plain .iv-select-list {
-  margin-top: 0;
 }
 
 .iv-select-empty {

@@ -1,91 +1,156 @@
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { useArchiveStore } from '../../stores/archiveStore.js'
-import { formatScore } from '../../utils/displayFormatters.js'
 
 const route = useRoute()
 const archive = useArchiveStore()
 
-const folderId = computed(() => route.params.id == null ? '' : String(route.params.id))
-const requestedType = computed(() => route.query.type === 'interview' ? 'interview' : 'presentation')
-const folder = computed(() => archive.selectedFolder)
-const type = computed(() => folder.value?.type ?? requestedType.value)
-const typeLabel = computed(() => type.value === 'interview' ? '면접' : '발표')
-const practices = computed(() => archive.practices.filter((practice) => practice.type === type.value))
-const sortedPractices = computed(() => [...practices.value].sort((a, b) => (
-  new Date(b.createdAt ?? 0) - new Date(a.createdAt ?? 0)
-)))
-const totalSeconds = computed(() => practices.value.reduce((sum, item) => (
-  sum + (Number(item.durationSeconds) || 0)
-), 0))
-const bestScore = computed(() => {
-  const scores = practices.value.map((item) => item.score).filter(Number.isFinite)
-  return scores.length ? Math.max(...scores) : null
-})
-const chronologicalScoredPractices = computed(() => practices.value
-  .filter((item) => Number.isFinite(item.score))
-  .sort((a, b) => new Date(a.createdAt ?? 0) - new Date(b.createdAt ?? 0)))
-const chartPoints = computed(() => {
-  const rows = chronologicalScoredPractices.value
-  if (!rows.length) return []
-  const scores = rows.map((row) => Number(row.score))
-  const low = Math.min(...scores)
-  const high = Math.max(...scores)
-  const range = Math.max(10, high - low)
-  return rows.map((row, index) => ({
-    key: row.id ?? `${row.type}-${index}`,
-    score: Number(row.score),
-    scoreDisplay: formatScore(row.score),
-    x: rows.length === 1 ? 320 : 42 + ((556 * index) / (rows.length - 1)),
-    y: 160 - (((Number(row.score) - low) / range) * 100),
-    label: `${index + 1}회`,
-    isLatest: index === rows.length - 1,
-  }))
-})
-const chartPath = computed(() => chartPoints.value
-  .map((point, index) => `${index ? 'L' : 'M'} ${point.x} ${point.y}`)
-  .join(' '))
+const requestedTitle = computed(
+  () => route.query.title || archive.folders[0]?.title || '서비스 소개 발표',
+)
 
+const parseDuration = (value) => {
+  const text = String(value || '')
+  const clock = text.match(/^(\d+):(\d{2})$/)
+  if (clock) return Number(clock[1]) * 60 + Number(clock[2])
+  const min = text.match(/(\d+)\s*분/)
+  const sec = text.match(/(\d+)\s*초/)
+  return Number(min?.[1] || 0) * 60 + Number(sec?.[1] || 0)
+}
+const parseAttemptDate = (item) =>
+  new Date(`${String(item.date || '').replaceAll('.', '-')}T${item.time || '00:00'}:00`)
 const formatClock = (seconds) => {
-  if (seconds == null || seconds === '') return '시간 없음'
-  const safe = Math.round(Math.max(0, Number(seconds) || 0))
+  const safe = Math.max(0, Number(seconds) || 0)
   return `${Math.floor(safe / 60)}:${String(safe % 60).padStart(2, '0')}`
 }
 const formatTotal = (seconds) => {
-  const safe = Math.round(Math.max(0, Number(seconds) || 0))
-  if (!safe) return '데이터 없음'
-  const minutes = Math.floor(safe / 60)
-  const remain = safe % 60
-  return minutes ? `${minutes}분 ${String(remain).padStart(2, '0')}초` : `${remain}초`
+  const minutes = Math.round(Math.max(0, seconds) / 60)
+  if (minutes < 60) return `${minutes}분`
+  return `${Math.floor(minutes / 60)}시간 ${String(minutes % 60).padStart(2, '0')}분`
 }
-const reportDomainId = (row) => row.type === 'interview' ? row.interviewId : row.presentationId
-const reportDetailLocation = (row) => row.type === 'interview'
-  ? {
-      path: '/interview/report/detail',
-      query: { id: row.interviewId, folderId: folderId.value },
-    }
-  : {
-      path: '/archive/detail',
-      query: { id: row.id, presentationId: row.presentationId, folderId: folderId.value },
-    }
 
-onMounted(async () => {
-  archive.practices = []
-  archive.selectedFolder = null
-  if (!folderId.value) {
-    archive.error = '조회할 연습 폴더 ID가 없습니다.'
-    return
-  }
+// Real attempts for this folder, oldest → newest.
+const realAttempts = computed(() =>
+  archive.sessions
+    .filter((item) => item.title === requestedTitle.value)
+    .sort((a, b) => parseAttemptDate(a) - parseAttemptDate(b)),
+)
+const type = computed(() => realAttempts.value[0]?.type ?? 'presentation')
+const typeLabel = computed(() => (type.value === 'interview' ? '면접' : '발표'))
 
-  try {
-    await archive.loadFolder(folderId.value, { type: requestedType.value })
-    await archive.loadPractices(folderId.value, { page: 0, sort: 'latest' })
-  } catch {
-    // 스토어의 오류 메시지를 화면에 표시한다.
-  }
+// A single real attempt is expanded into a plausible 7-point history so the
+// growth chart has something to show (demo data; replaced by real history).
+const createDisplayAttempts = () => {
+  const latest = realAttempts.value[0]
+  const latestScore = latest ? Number(latest.score) : type.value === 'interview' ? 84 : 88
+  const latestDuration = latest ? parseDuration(latest.duration) : 588
+  const scoreSteps = [-16, -12, -9, -6, -4, -2, 0].map((delta, i) =>
+    Math.max([60, 64, 66, 68, 70, 72, 0][i] || 0, latestScore + delta),
+  )
+  const durationSteps = [462, 486, 505, 532, 518, 560, latestDuration || 588]
+  const dates = ['2026.06.18', '2026.06.22', '2026.06.28', '2026.07.01', '2026.07.04', '2026.07.08', latest?.date || '2026.07.20']
+  return scoreSteps.map((score, index) => ({
+    id: index === scoreSteps.length - 1 && latest ? latest.id : `${type.value}-display-${index + 1}`,
+    type: type.value,
+    title: requestedTitle.value,
+    date: dates[index],
+    time: index === scoreSteps.length - 1 && latest ? latest.time : '19:30',
+    score,
+    durationSeconds: durationSteps[index],
+  }))
+}
+
+const displayAttempts = computed(() =>
+  realAttempts.value.length > 1
+    ? realAttempts.value.map((a) => ({ ...a, durationSeconds: Number(a.durationSeconds) || parseDuration(a.duration) }))
+    : createDisplayAttempts(),
+)
+
+const totalSeconds = computed(() => displayAttempts.value.reduce((sum, a) => sum + a.durationSeconds, 0))
+const bestScore = computed(() => Math.max(...displayAttempts.value.map((a) => Number(a.score))))
+const latest = computed(() => displayAttempts.value[displayAttempts.value.length - 1])
+const detailBase = computed(() => (type.value === 'interview' ? '/interview/report/detail' : '/archive/detail'))
+
+// Attempt rows: numbered chronologically, then sorted/paginated for display.
+const numberedRows = computed(() =>
+  displayAttempts.value.map((a, index) => ({ ...a, attemptNumber: index + 1 })),
+)
+const latestId = computed(() => displayAttempts.value[displayAttempts.value.length - 1]?.id)
+
+const sortValue = ref('latest')
+const sortOptions = [
+  { value: 'latest', label: '최신순' },
+  { value: 'score-desc', label: '점수 높은 순' },
+  { value: 'score-asc', label: '점수 낮은 순' },
+]
+const sortOpen = ref(false)
+const sortLabel = computed(() => sortOptions.find((o) => o.value === sortValue.value)?.label)
+
+const sortedRows = computed(() => {
+  const rows = [...numberedRows.value]
+  if (sortValue.value === 'score-desc') return rows.sort((a, b) => b.score - a.score)
+  if (sortValue.value === 'score-asc') return rows.sort((a, b) => a.score - b.score)
+  return rows.sort((a, b) => parseAttemptDate(b) - parseAttemptDate(a))
 })
+
+const PAGE_SIZE = 15
+const currentPage = ref(0)
+const totalPages = computed(() => Math.max(1, Math.ceil(sortedRows.value.length / PAGE_SIZE)))
+const pagedRows = computed(() =>
+  sortedRows.value.slice(currentPage.value * PAGE_SIZE, (currentPage.value + 1) * PAGE_SIZE),
+)
+const changePage = (delta) => {
+  currentPage.value = Math.min(Math.max(0, currentPage.value + delta), totalPages.value - 1)
+}
+const applySort = (value) => {
+  sortValue.value = value
+  sortOpen.value = false
+  currentPage.value = 0
+}
+
+// Trend chart (last 7 attempts) → SVG points.
+const chartPoints = computed(() => {
+  const recent = displayAttempts.value.slice(-7)
+  const scores = recent.map((a) => Number(a.score))
+  const min = Math.min(...scores)
+  const max = Math.max(...scores)
+  return recent.map((attempt, index) => ({
+    x: recent.length === 1 ? 320 : 42 + (index * 556) / (recent.length - 1),
+    y: 170 - ((Number(attempt.score) - min) / Math.max(1, max - min)) * 116,
+    score: Number(attempt.score),
+    label: `${index + 1}회`,
+    isLatest: index === recent.length - 1,
+  }))
+})
+const chartPolyline = computed(() => chartPoints.value.map((p) => `${p.x},${p.y}`).join(' '))
+
+// 성장 추이 카드 전환: 0 = 종합 점수 선그래프, 1 = 음성/영상/내용 일치 최근 7회 비교 표.
+const trendView = ref(0)
+const flipTrend = (delta) => { trendView.value = (trendView.value + delta + 2) % 2 }
+
+// 회차별 음성·영상·내용 일치 점수(데모: 종합 점수에서 파생, 실제로는 회차 리포트값).
+const clampMetric = (v) => Math.max(55, Math.min(99, Math.round(v)))
+const VOICE_OFF = [2, 1, 3, 0, 2, 1, 2]
+const VIDEO_OFF = [-3, -2, -4, -1, -2, -3, -2]
+const CONTENT_OFF = [0, 1, -1, 2, 0, 1, 0]
+const metricCols = computed(() =>
+  displayAttempts.value.slice(-7).map((a, i) => {
+    const s = Number(a.score)
+    return {
+      label: `${i + 1}회`,
+      voice: clampMetric(s + VOICE_OFF[i % 7]),
+      video: clampMetric(s + VIDEO_OFF[i % 7]),
+      content: clampMetric(s + CONTENT_OFF[i % 7]),
+    }
+  }),
+)
+const metricRowDefs = [
+  { key: 'voice', label: '음성' },
+  { key: 'video', label: '영상' },
+  { key: 'content', label: '내용 일치' },
+]
 </script>
 
 <template>
@@ -94,89 +159,113 @@ onMounted(async () => {
       <RouterLink to="/archive" class="folder-detail-back">뒤로가기</RouterLink>
     </header>
 
-    <p v-if="archive.loading && !folder" class="archive-list-state">폴더 정보를 불러오는 중입니다.</p>
-    <p v-else-if="archive.error && !folder" class="archive-list-state is-error" role="alert">{{ archive.error }}</p>
+    <div class="folder-overview-grid">
+      <section class="folder-info-panel" aria-labelledby="folderTitle">
+        <div class="folder-detail-copy">
+          <span>{{ typeLabel }} 연습</span>
+          <h2 id="folderTitle">{{ requestedTitle }}</h2>
+          <p>{{ typeLabel }} · {{ displayAttempts.length }}회 연습 · 최근 {{ latest.date }}</p>
+        </div>
 
-    <template v-else-if="folder">
-      <div class="folder-overview-grid">
-        <section class="folder-info-panel" aria-labelledby="folderTitle">
-          <div class="folder-detail-copy">
-            <span>{{ typeLabel }} 연습</span>
-            <h2 id="folderTitle" :title="folder.name">{{ folder.name }}</h2>
-            <p>{{ typeLabel }} · {{ practices.length }}회 조회됨</p>
-          </div>
+        <dl class="folder-detail-metrics">
+          <div><dt>시도 횟수</dt><dd>{{ displayAttempts.length }}회</dd></div>
+          <div><dt>최고 점수</dt><dd>{{ bestScore }}점</dd></div>
+          <div><dt>총 연습 시간</dt><dd>{{ formatTotal(totalSeconds) }}</dd></div>
+        </dl>
+      </section>
 
-          <dl class="folder-detail-metrics">
-            <div><dt>조회된 연습</dt><dd>{{ practices.length }}회</dd></div>
-            <div><dt>최고 점수</dt><dd>{{ bestScore == null ? '점수 데이터 없음' : `${formatScore(bestScore)}점` }}</dd></div>
-            <div><dt>총 연습 시간</dt><dd>{{ formatTotal(totalSeconds) }}</dd></div>
-          </dl>
-        </section>
-
-        <section class="folder-trend-panel" aria-labelledby="trendTitle">
-          <header class="folder-panel-head">
-            <div>
-              <h2 id="trendTitle">내 성장 추이</h2>
-              <p>{{ chartPoints.length ? '생성된 리포트의 실제 점수만 표시합니다.' : '조회 가능한 리포트 점수가 없습니다.' }}</p>
-            </div>
-          </header>
-          <div v-if="chartPoints.length" class="folder-line-chart">
-            <svg viewBox="0 0 640 220" role="img" aria-label="연습 리포트 점수 추이">
-              <g class="chart-grid">
-                <line x1="42" y1="60" x2="598" y2="60" />
-                <line x1="42" y1="110" x2="598" y2="110" />
-                <line x1="42" y1="160" x2="598" y2="160" />
-              </g>
-              <path v-if="chartPoints.length > 1" :d="chartPath" class="chart-line" />
-              <g
-                v-for="point in chartPoints"
-                :key="point.key"
-                class="chart-point"
-                :class="{ 'is-latest': point.isLatest }"
-                :transform="`translate(${point.x} ${point.y})`"
-              >
-                <circle r="7" />
-                <text class="chart-score" y="-16" text-anchor="middle">{{ point.scoreDisplay }}점</text>
-                <text class="chart-label" y="32" text-anchor="middle">{{ point.label }}</text>
-              </g>
-            </svg>
-          </div>
-          <div v-else class="folder-line-chart folder-score-unavailable" role="status">
-            <strong>점수 데이터 없음</strong>
-            <p>가짜 점수를 만들지 않고 생성된 리포트가 확인될 때까지 비워둡니다.</p>
-          </div>
-        </section>
-      </div>
-
-      <section class="folder-attempt-panel" aria-labelledby="attemptTitle">
-        <header class="folder-panel-head folder-attempt-heading-line">
+      <section class="folder-trend-panel" aria-labelledby="trendTitle">
+        <header class="folder-panel-head">
           <div>
-            <h2 id="attemptTitle">연습 기록</h2>
-            <p>서버에서 조회한 실제 연습만 표시합니다.</p>
+            <h2 id="trendTitle">{{ trendView === 0 ? '내 성장 추이' : '지표별 최근 비교' }}</h2>
+            <p>{{ trendView === 0 ? '최근 7회 종합 점수' : '음성 · 영상 · 내용 일치 · 최근 7회' }}</p>
           </div>
-          <span class="folder-attempt-count">총 {{ practices.length }}회</span>
+          <div class="folder-trend-nav" role="group" aria-label="성장 추이 보기 전환">
+            <button type="button" aria-label="이전 보기" @click="flipTrend(-1)">‹</button>
+            <button type="button" aria-label="다음 보기" @click="flipTrend(1)">›</button>
+          </div>
         </header>
 
-        <p v-if="archive.error" class="archive-list-state is-error" role="alert">{{ archive.error }}</p>
-        <p v-else-if="!sortedPractices.length && !archive.loading" class="archive-list-state">완료된 발표 연습이 없습니다.</p>
+        <div v-show="trendView === 0" class="folder-line-chart" aria-label="최근 7회 종합 점수 선 그래프">
+          <svg viewBox="0 0 640 220" role="img" aria-label="최근 종합 점수">
+            <g class="chart-grid" aria-hidden="true">
+              <line x1="42" y1="54" x2="598" y2="54"></line>
+              <line x1="42" y1="112" x2="598" y2="112"></line>
+              <line x1="42" y1="170" x2="598" y2="170"></line>
+            </g>
+            <polyline class="chart-line" :points="chartPolyline"></polyline>
+            <g v-for="(point, i) in chartPoints" :key="i" class="chart-point" :class="{ 'is-latest': point.isLatest }">
+              <circle :cx="point.x" :cy="point.y" r="6"></circle>
+              <text class="chart-score" :x="point.x" :y="point.y - 15" text-anchor="middle">{{ point.score }}</text>
+              <text class="chart-label" :x="point.x" y="202" text-anchor="middle">{{ point.label }}</text>
+            </g>
+          </svg>
+        </div>
 
-        <div v-else class="folder-attempt-list">
-          <article
-            v-for="(row, index) in sortedPractices"
-            :key="row.id"
-            class="attempt-row"
-            :class="{ 'is-latest': index === 0 }"
-          >
-            <span class="attempt-kind-date">{{ row.type === 'interview' ? '면접' : '발표' }} · {{ row.date }} {{ row.time }} · 녹화 {{ formatClock(row.durationSeconds) }}</span>
-            <strong class="attempt-title" :title="row.title">{{ row.title }}</strong>
-            <strong class="attempt-score">{{ row.score == null ? '점수 데이터 없음' : `${formatScore(row.score)}점` }}</strong>
-            <RouterLink v-if="reportDomainId(row) != null" class="attempt-link" :to="reportDetailLocation(row)">
-              리포트 상세보기 <span aria-hidden="true">&gt;</span>
-            </RouterLink>
-            <span v-else class="attempt-link is-disabled">리포트 ID 없음</span>
-          </article>
+        <div v-show="trendView === 1" class="folder-metric-table-wrap">
+          <table class="folder-metric-table">
+            <thead>
+              <tr>
+                <th scope="col">지표</th>
+                <th v-for="col in metricCols" :key="col.label" scope="col">{{ col.label }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in metricRowDefs" :key="row.key">
+                <th scope="row">{{ row.label }}</th>
+                <td v-for="(col, ci) in metricCols" :key="col.label" :class="{ 'is-latest': ci === metricCols.length - 1 }">{{ col[row.key] }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
-    </template>
+    </div>
+
+    <section class="folder-attempt-panel" aria-labelledby="attemptTitle">
+      <header class="folder-panel-head folder-attempt-heading-line">
+        <div>
+          <h2 id="attemptTitle">연습 기록</h2>
+          <p>회차별 점수와 녹화 시간을 확인할 수 있어요.</p>
+        </div>
+        <span class="folder-attempt-count">총 {{ displayAttempts.length }}회</span>
+        <div class="folder-attempt-sort" :class="{ 'is-open': sortOpen }">
+          <button type="button" class="folder-attempt-sort-trigger" aria-haspopup="listbox" :aria-expanded="sortOpen" @click="sortOpen = !sortOpen">
+            <span>{{ sortLabel }}</span><b aria-hidden="true">⌄</b>
+          </button>
+          <div class="folder-attempt-sort-menu" role="listbox" aria-label="연습 기록 정렬">
+            <button
+              v-for="option in sortOptions"
+              :key="option.value"
+              type="button"
+              role="option"
+              :aria-selected="sortValue === option.value"
+              @click="applySort(option.value)"
+            >{{ option.label }}</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="folder-attempt-list">
+        <article
+          v-for="row in pagedRows"
+          :key="row.id"
+          class="attempt-row"
+          :class="{ 'is-latest': row.id === latestId }"
+        >
+          <span class="attempt-kind-date">{{ typeLabel }} · {{ row.date }} · 녹화 {{ formatClock(row.durationSeconds) }}</span>
+          <strong class="attempt-title">{{ row.attemptNumber }}차 {{ requestedTitle }}</strong>
+          <strong class="attempt-score">{{ row.score }}점</strong>
+          <RouterLink class="attempt-link" :to="`${detailBase}?id=${encodeURIComponent(row.id)}`">
+            리포트 상세보기 <span aria-hidden="true">&gt;</span>
+          </RouterLink>
+        </article>
+      </div>
+
+      <div v-if="totalPages > 1" class="folder-attempt-pager">
+        <button type="button" class="folder-attempt-page-btn" aria-label="이전 페이지" :disabled="currentPage === 0" @click="changePage(-1)">‹</button>
+        <span class="folder-attempt-page-label">{{ currentPage + 1 }} / {{ totalPages }}</span>
+        <button type="button" class="folder-attempt-page-btn" aria-label="다음 페이지" :disabled="currentPage >= totalPages - 1" @click="changePage(1)">›</button>
+      </div>
+    </section>
   </main>
 </template>

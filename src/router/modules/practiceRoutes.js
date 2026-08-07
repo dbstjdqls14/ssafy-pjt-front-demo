@@ -19,7 +19,6 @@ export const practiceRoutes = [
       area: 'practice',
       title: '연습 폴더 선택',
       bodyClass: 'practice-flow-page practice-type-page folder-picker-page',
-      requiresAuth: true,
     },
   },
 ]

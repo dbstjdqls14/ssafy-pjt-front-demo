@@ -50,7 +50,7 @@ describe('router routes', () => {
     expect(flattenedRoutes.some((route) => route.meta?.layout === 'legacy')).toBe(false)
   })
 
-  test('presentation flow has all 8 API-backed steps with a bodyClass', () => {
+  test('presentation flow has all 8 steps with a bodyClass', () => {
     const presentation = leafRoutes.filter((route) => route.path.startsWith('/presentation/'))
     expect(presentation).toHaveLength(8)
     for (const route of presentation) {
@@ -67,27 +67,6 @@ describe('router routes', () => {
     const mypage = leafRoutes.filter((route) => route.path.startsWith('/mypage'))
     expect(mypage.length).toBeGreaterThan(0)
     for (const route of mypage) {
-      expect(route.meta.requiresAuth).toBe(true)
-    }
-  })
-
-  test('archive routes require auth', () => {
-    const archive = leafRoutes.filter((route) => route.path.startsWith('/archive'))
-    expect(archive.length).toBeGreaterThan(0)
-    for (const route of archive) {
-      expect(route.meta.requiresAuth).toBe(true)
-    }
-  })
-
-  test('practice folders and every presentation/interview flow route require auth', () => {
-    const protectedPracticeRoutes = leafRoutes.filter((route) => (
-      route.path === '/practice/folders'
-      || route.path.startsWith('/presentation/')
-      || route.path.startsWith('/interview/')
-    ))
-
-    expect(protectedPracticeRoutes.length).toBeGreaterThan(0)
-    for (const route of protectedPracticeRoutes) {
       expect(route.meta.requiresAuth).toBe(true)
     }
   })

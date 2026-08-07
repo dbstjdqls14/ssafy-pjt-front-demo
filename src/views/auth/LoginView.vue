@@ -3,7 +3,9 @@ import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { useAuthStore } from '../../stores/authStore.js'
-import { authMessages, isEmail, MAX_EMAIL_LENGTH, MAX_PASSWORD_LENGTH } from '../../utils/validators.js'
+import { authMessages, isEmail } from '../../utils/validators.js'
+import kakaoIcon from '../../assets/images/kakao-login-symbol.svg'
+import googleIcon from '../../assets/images/google-g-logo.svg'
 
 const route = useRoute()
 const router = useRouter()
@@ -12,24 +14,23 @@ const auth = useAuthStore()
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
-const errors = ref({ email: '', password: '', form: '' })
+const errors = ref({ email: '', password: '' })
 
 const redirect = computed(() => {
   const target = route.query.redirect
   return typeof target === 'string' ? target : ''
 })
-const redirectNote = computed(() => {
-  if (route.query.notice === 'login-required') return '로그인이 필요한 서비스입니다.'
-  return redirect.value && redirect.value !== '/' ? '계속하려면 먼저 로그인해주세요.' : ''
-})
+const redirectNote = computed(() =>
+  redirect.value && redirect.value !== '/' ? '계속하려면 먼저 로그인해주세요.' : '',
+)
 
-const completeLogin = async (mail, pass) => {
-  await auth.login({ email: mail, password: pass })
+const completeLogin = async (nickname, mail) => {
+  await auth.login({ nickname, email: mail })
   router.push(redirect.value && redirect.value !== '/login' ? redirect.value : '/')
 }
 
-const onSubmit = async () => {
-  errors.value = { email: '', password: '', form: '' }
+const onSubmit = () => {
+  errors.value = { email: '', password: '' }
   let valid = true
   if (!isEmail(email.value)) {
     errors.value.email = authMessages.email
@@ -40,14 +41,7 @@ const onSubmit = async () => {
     valid = false
   }
   if (!valid) return
-  try {
-    await completeLogin(email.value.trim(), password.value)
-  } catch (caught) {
-    // 40004(형식), 40401(사용자 없음) 등 → 자격 증명 문제로 안내.
-    errors.value.form = [400, 401, 404].includes(caught?.status)
-      ? '이메일 또는 비밀번호를 확인해주세요.'
-      : (caught?.message || '로그인에 실패했습니다. 잠시 후 다시 시도해주세요.')
-  }
+  completeLogin(email.value.split('@')[0], email.value.trim())
 }
 </script>
 
@@ -61,7 +55,7 @@ const onSubmit = async () => {
       <form novalidate @submit.prevent="onSubmit">
         <div class="form-field" :class="{ 'field-invalid': errors.email }">
           <label for="email">이메일</label>
-          <input id="email" v-model="email" type="email" placeholder="aivo@example.com" autocomplete="email" :maxlength="MAX_EMAIL_LENGTH" @input="errors.email = ''" />
+          <input id="email" v-model="email" type="email" placeholder="aivo@example.com" autocomplete="email" @input="errors.email = ''" />
           <small v-if="errors.email" class="field-error">{{ errors.email }}</small>
         </div>
         <div class="form-field" :class="{ 'field-invalid': errors.password }">
@@ -73,7 +67,6 @@ const onSubmit = async () => {
               :type="showPassword ? 'text' : 'password'"
               placeholder="비밀번호를 입력하세요"
               autocomplete="current-password"
-              :maxlength="MAX_PASSWORD_LENGTH"
               @input="errors.password = ''"
             />
             <button
@@ -86,13 +79,24 @@ const onSubmit = async () => {
             ><span>{{ showPassword ? '숨기기' : '보기' }}</span></button>
           </div>
           <small v-if="errors.password" class="field-error">{{ errors.password }}</small>
+          <div class="auth-help-link">
+            <RouterLink to="/find-account?tab=password">비밀번호 찾기</RouterLink>
+          </div>
         </div>
 
-        <small v-if="errors.form" class="field-error" role="alert">{{ errors.form }}</small>
-        <button type="submit" class="auth-submit solid" :disabled="auth.isLoading">
-          {{ auth.isLoading ? '로그인 중…' : '로그인' }}
-        </button>
+        <button type="submit" class="auth-submit solid">로그인</button>
       </form>
+
+      <div class="auth-divider">또는</div>
+
+      <button type="button" class="social-btn kakao" @click="completeLogin('서가은', 'seogaeun@kakao.com')">
+        <img class="social-icon" :src="kakaoIcon" alt="" aria-hidden="true" />
+        <span>카카오로 계속하기</span>
+      </button>
+      <button type="button" class="social-btn google" @click="completeLogin('서가은', 'seogaeun@gmail.com')">
+        <img class="social-icon" :src="googleIcon" alt="" aria-hidden="true" />
+        <span>구글로 계속하기</span>
+      </button>
 
       <p class="auth-switch">계정이 없나요? <RouterLink to="/register">회원가입</RouterLink></p>
     </section>

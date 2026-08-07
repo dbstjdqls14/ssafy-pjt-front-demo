@@ -1932,8 +1932,7 @@
   height: 100%;
   object-fit: contain;
   object-position: center center;
-  transform: scaleX(-1) scale(var(--camera-zoom, 1));
-  transition: transform .18s ease;
+  transform: scaleX(-1);
 }
 
 .immersive-record-page .record-media-toggle {
@@ -1955,22 +1954,6 @@
   padding-bottom: 16px;
   background: #fff;
   font-weight: 700;
-}
-
-/* Chrome STT may finalize a sentence in very small fragments. The view joins
-   those fragments, and these guards keep both normal Korean text and an
-   unexpectedly long token inside the transcript rail. */
-.immersive-record-page .rail-transcript,
-.immersive-record-page .rail-transcript .transcript-line {
-  min-width: 0;
-  width: 100%;
-  max-width: 100%;
-}
-
-.immersive-record-page .rail-transcript .transcript-line {
-  box-sizing: border-box;
-  overflow-wrap: anywhere;
-  word-break: keep-all;
 }
 
 .immersive-record-page .rail-stat-grid {
@@ -2177,29 +2160,6 @@
   transform: scale(1.06);
   box-shadow: 0 8px 20px rgba(0, 0, 0, .18);
   outline: none;
-}
-
-/* Authoritative camera framing shared with the presentation device check. */
-.immersive-record-page .rail-camera-box {
-  width: 100%;
-  height: auto;
-  min-height: 0;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-}
-
-.immersive-record-page .rail-camera-box video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center center;
-}
-
-.immersive-record-page .record-media-toggle:disabled {
-  cursor: not-allowed;
-  opacity: .62;
-  transform: none;
-  box-shadow: none;
 }
 
 /* 발표 마치기 버튼을 슬라이드에서 조금 더 떨어뜨림 */
@@ -2486,42 +2446,15 @@
 
 /* Uploaded presentation slides remain the visual source through recording. */
 .immersive-record-page .record-slide-image {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
   border-radius: inherit;
   background: #fff;
-}
-
-.immersive-record-page .record-slide-viewport {
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  display: grid;
-  overflow: auto;
-  place-items: start center;
-  border-radius: inherit;
-  scrollbar-color: #9aa7ca transparent;
-  scrollbar-width: thin;
-}
-
-.immersive-record-page .record-slide-viewport.is-zoomable .record-slide-image {
-  width: calc(100% * var(--slide-zoom, 1));
-  height: calc(100% * var(--slide-zoom, 1));
-  max-width: none;
-  max-height: none;
-}
-
-/* 확대 컨트롤이 슬라이드 위에 겹치지 않게, 컨트롤이 있을 때만 슬라이드 영역의
-   오른쪽을 그만큼 비우고 그 띠 안에 컨트롤을 둔다. (녹화 화면 카드는 16/9 고정 +
-   overflow:hidden이라 카드 밖으로는 빼낼 수 없다.) */
-.immersive-record-page .record-stage-card:has(> .presentation-slide-zoom) .record-slide-viewport {
-  right: 62px;
-}
-
-.immersive-record-page .record-stage-card > .presentation-slide-zoom {
-  right: 10px;
 }
 
 .immersive-record-page .record-slide-unavailable {
@@ -2941,123 +2874,4 @@
   .immersive-record-page .record-end-btn {
     transition: none;
   }
-}
-
-/* Keep live 10-second analysis reachable at 100% browser zoom. The rail owns
-   its overflow instead of letting the final analysis card fall below the
-   viewport, while short screens shrink nonessential preview space first. */
-.immersive-record-page .record-rail {
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable;
-}
-
-.immersive-record-page .record-session-head,
-.immersive-record-page .record-session-head > div {
-  min-width: 0;
-}
-
-.immersive-record-page .record-session-head strong,
-.immersive-record-page .record-stage-card h3,
-.immersive-record-page .record-next-preview strong {
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-@media (max-height: 850px) {
-  .immersive-record-page .record-rail {
-    gap: 10px;
-    padding-block: 12px;
-  }
-
-  .immersive-record-page .rail-camera-box {
-    max-height: 140px;
-  }
-
-  .immersive-record-page .rail-transcript-section {
-    min-height: 100px;
-  }
-
-  .immersive-record-page .rail-transcript {
-    max-height: 110px;
-  }
-
-  .immersive-record-page .rail-stat-grid div {
-    min-height: 58px;
-    padding-block: 7px;
-  }
-}
-
-/* ── 실시간 자막: 아래(구분선 위)부터 쌓이고 위로 밀려 올라간다 ──────────────
-   예전에는 자막 영역 가운데에서 시작해 한 덩어리로 갈아치워지는 것처럼 보였다.
-   섹션 안에서 자막 상자가 남은 높이를 모두 차지하고, 문장은 아래쪽에 붙는다.
-   문장이 상자보다 많아지면 상자 안에서 스크롤되며(뷰는 항상 최신 문장으로
-   따라 내려간다) 지나간 문장이 사라지지 않는다. */
-.immersive-record-page .record-rail .rail-section.rail-transcript-section {
-  display: flex;
-  min-height: 0;
-  flex: 1 1 auto;
-  flex-direction: column;
-}
-
-.immersive-record-page .rail-transcript {
-  display: flex;
-  min-height: 0;
-  max-height: none;
-  height: auto;
-  flex: 1 1 auto;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 8px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: #c4cde0 transparent;
-}
-
-/* 첫 문장을 아래로 밀어 붙인다(justify-content: flex-end는 넘칠 때 위쪽이
-   스크롤로 닿지 않으므로 auto margin을 쓴다). */
-.immersive-record-page .rail-transcript > :first-child {
-  margin-top: auto;
-}
-
-/* 지나간 문장도 잘리지 않게 2줄 클램프를 푼다(문장 칩 모양·색은 그대로). */
-.immersive-record-page .rail-transcript .transcript-line,
-.immersive-record-page .rail-transcript > p {
-  display: block;
-  flex: 0 0 auto;
-  max-height: none;
-  -webkit-line-clamp: none;
-}
-
-.immersive-record-page .rail-transcript .transcript-line-current {
-  padding-bottom: 10px;
-}
-
-@media (max-height: 850px) {
-  .immersive-record-page .rail-transcript-section {
-    min-height: 120px;
-  }
-
-  .immersive-record-page .rail-transcript {
-    max-height: none;
-  }
-}
-
-/* 말하기 속도 칸은 숫자가 아니라 느림/보통/빠름이라 글자 크기를 줄이고,
-   구간에 따라 색으로 한 번 더 구분한다. */
-.immersive-record-page .rail-pace-cell strong {
-  font-size: 17px;
-}
-
-.immersive-record-page .rail-pace-cell.is-normal strong {
-  color: #1f9d5b;
-}
-
-.immersive-record-page .rail-pace-cell.is-slow strong,
-.immersive-record-page .rail-pace-cell.is-fast strong {
-  color: #d1701c;
 }

@@ -1,14 +1,13 @@
-import { computed, ref, shallowRef } from 'vue'
+import { computed, ref } from 'vue'
 
 const getSpeechRecognition = () => window.SpeechRecognition ?? window.webkitSpeechRecognition
 
 export const useSpeechRecognition = () => {
-  const recognition = shallowRef(null)
+  const recognition = ref(null)
   const finalSegments = ref([])
   const interimText = ref('')
   const isListening = ref(false)
   const error = ref(null)
-  let shouldListen = false
 
   const transcript = computed(() => [...finalSegments.value, interimText.value].filter(Boolean).join(' '))
 
@@ -19,23 +18,12 @@ export const useSpeechRecognition = () => {
       throw new Error('SpeechRecognition is not supported in this browser.')
     }
 
-    if (recognition.value) {
-      shouldListen = true
-      if (!isListening.value) {
-        recognition.value.start()
-        isListening.value = true
-      }
-      return
-    }
+    recognition.value = new SpeechRecognition()
+    recognition.value.lang = lang
+    recognition.value.continuous = continuous
+    recognition.value.interimResults = interimResults
 
-    shouldListen = true
-    const instance = new SpeechRecognition()
-    recognition.value = instance
-    instance.lang = lang
-    instance.continuous = continuous
-    instance.interimResults = interimResults
-
-    instance.onresult = (event) => {
+    recognition.value.onresult = (event) => {
       let nextInterim = ''
 
       for (let index = event.resultIndex; index < event.results.length; index += 1) {
@@ -49,66 +37,28 @@ export const useSpeechRecognition = () => {
         if (result.isFinal) {
           finalSegments.value = [...finalSegments.value, text]
         } else {
-          nextInterim += text
+          nextInterim = text
         }
       }
 
       interimText.value = nextInterim
     }
 
-    instance.onerror = (event) => {
+    recognition.value.onerror = (event) => {
       error.value = event
     }
 
-    instance.onend = () => {
-      if (recognition.value !== instance) return
-      if (shouldListen) {
-        try {
-          instance.start()
-          isListening.value = true
-        } catch (restartError) {
-          error.value = restartError
-          isListening.value = false
-        }
-        return
-      }
+    recognition.value.onend = () => {
       isListening.value = false
     }
 
-    instance.start()
+    recognition.value.start()
     isListening.value = true
   }
 
-  const pause = () => {
-    shouldListen = false
-    recognition.value?.abort?.()
-    isListening.value = false
-  }
-
-  const resume = (options = {}) => {
-    if (!recognition.value) {
-      start(options)
-      return
-    }
-    shouldListen = true
-    try {
-      recognition.value.start()
-      isListening.value = true
-    } catch (restartError) {
-      error.value = restartError
-      isListening.value = false
-    }
-  }
-
   const stop = () => {
-    const snapshot = transcript.value.trim()
-    shouldListen = false
-    const instance = recognition.value
-    recognition.value = null
-    instance?.stop()
+    recognition.value?.stop()
     isListening.value = false
-    interimText.value = ''
-    return snapshot
   }
 
   const reset = () => {
@@ -125,8 +75,6 @@ export const useSpeechRecognition = () => {
     isListening,
     error,
     start,
-    pause,
-    resume,
     stop,
     reset,
   }

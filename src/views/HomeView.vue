@@ -4,17 +4,13 @@ import { useRouter } from 'vue-router'
 
 import { useAuthStore } from '../stores/authStore.js'
 import { useHomeMotion } from '../composables/useHomeMotion.js'
-import { useDotField } from '../composables/useDotField.js'
-import { buildVoicePaceMock, toClock, useVoicePaceGraph } from '../composables/useVoicePaceGraph.js'
 import { canRunHomeTransition, runHomeExit } from '../composables/useHomeTransition.js'
-import { consumeRecordingResetNotice } from '../utils/recordingRefreshRecovery.js'
 import logoDark from '../assets/images/aivo-logo.png'
 import logoLight from '../assets/images/aivo-logo-white.png'
 
 const router = useRouter()
 const auth = useAuthStore()
 const displayName = computed(() => auth.user?.nickname || auth.user?.name || null)
-const recordingResetNotice = ref(consumeRecordingResetNotice())
 
 // 다른 페이지로 나갈 때: 데스크톱·라이트·모션 허용이면 우측 글자가 일제히 위로 떠오르는
 // 시그니처 전환을 재생하고, 아니면 즉시 이동. 모든 내비 링크가 이걸 공유한다.
@@ -31,121 +27,138 @@ const logout = () => {
 }
 
 // --- Script review (발표 복기) ---
-// 홈페이지 Script 영역은 실제 재생 데이터와 무관한 고정 발표 미리보기다.
-// 썸네일을 누르면 선택한 슬라이드의 제목과 발표 대본만 함께 바뀐다.
+const scriptSlides = {
+  1: {
+    title: '문제 정의',
+    summary: '혼자 연습할 때 놓치기 쉬운 전달 순간을 발견합니다.',
+    transcript: [
+      { time: '00:04', kind: 'match', label: '핵심 내용 일치', text: '안녕하세요, 발표 연습을 돕는 AIVO를 소개합니다.' },
+      { time: '00:08', kind: 'match', label: '핵심 내용 일치', text: '발표는 반복할수록 좋아집니다.' },
+      { time: '00:16', kind: 'evidence', label: '근거 보완', text: '하지만 혼자 연습하면 놓친 순간을 발견하기 어렵습니다.', reason: '문제 상황을 보여줄 구체적인 사례를 한 문장 덧붙이면 설득력이 높아져요.' },
+      { time: '00:24', kind: 'match', label: '핵심 내용 일치', text: '오늘은 이 문제를 어떻게 해결하는지 보여드리겠습니다.' },
+      { time: '00:31', kind: 'filler', label: '습관어 1회', text: '어, 먼저 저희가 겪은 문제부터 말씀드릴게요.', reason: '문장 첫머리의 "어"가 도입의 자신감을 낮춰요.' },
+    ],
+  },
+  2: {
+    title: '핵심 기능',
+    summary: '슬라이드 핵심 문장이 실제 발화에 담겼는지 짚어줘요.',
+    transcript: [
+      { time: '01:00', kind: 'match', label: '핵심 내용 일치', text: 'AIVO는 발표 자료와 실제 발화를 함께 분석합니다.' },
+      { time: '01:06', kind: 'match', label: '핵심 내용 일치', text: '슬라이드마다 핵심 문장이 전달됐는지 확인합니다.' },
+      { time: '01:18', kind: 'filler', label: '습관어 1회', text: '그래서, 음, 말하기 습관까지 확인할 수 있습니다.', reason: '문장 중간의 "음"이 흐름을 끊어 전달 집중도를 낮춰요.' },
+      { time: '01:32', kind: 'match', label: '핵심 내용 일치', text: '말하기 속도와 시선도 구간별로 기록됩니다.' },
+      { time: '01:44', kind: 'evidence', label: '근거 보완', text: '분석 결과는 리포트로 정리됩니다.', reason: '어떤 지표가 리포트에 담기는지 한 예시를 들면 더 구체적이에요.' },
+    ],
+  },
+  3: {
+    title: '기대 효과',
+    summary: '개선 구간을 짚어 다음 연습의 방향을 선명하게 만듭니다.',
+    transcript: [
+      { time: '02:08', kind: 'match', label: '핵심 내용 일치', text: '이제 막연한 반복 대신 개선할 구간을 알 수 있습니다.' },
+      { time: '02:14', kind: 'match', label: '핵심 내용 일치', text: '실시간 분석으로 발표 준비 시간을 줄일 수 있습니다.' },
+      { time: '02:26', kind: 'evidence', label: '근거 보완', text: '전달력도 함께 높일 수 있습니다.', reason: '시간 절감 수치나 실제 사례를 함께 제시하면 더 설득력 있어요.' },
+      { time: '02:38', kind: 'match', label: '핵심 내용 일치', text: '결국 더 자신 있는 발표로 이어집니다.' },
+      { time: '02:47', kind: 'match', label: '핵심 내용 일치', text: '지금 바로 첫 연습을 시작해보세요.' },
+    ],
+  },
+}
+// 실제 테스트 발표 자료(PPT)의 슬라이드 이미지. 메인 미리보기는 표지(1번),
+// 아래 썸네일은 이어지는 2·3·4번 슬라이드를 그대로 보여준다.
 const scriptSlideList = [
-  {
-    key: 1,
-    no: 1,
-    img: '/slide-2.png',
-    title: '서비스 소개',
-    transcript: {
-      prior: [
-        '안녕하세요. 발표 연습을 더 정확하게 만들어 주는 AIVO를 소개하겠습니다.',
-        '혼자 발표를 연습하면 말하기 속도나 시선처럼 놓치기 쉬운 부분이 생깁니다.',
-      ],
-      current: 'AIVO는 발표 자료와 실제 발화를 함께 분석해 개선이 필요한 순간을 찾아주는 연습 서비스입니다.',
-      next: [
-        '슬라이드별 대본과 실제 발화를 비교하고 음성과 몸짓 결과도 한 번에 확인할 수 있습니다.',
-        '이제 연습부터 리포트까지 이어지는 과정을 순서대로 보여드리겠습니다.',
-      ],
-    },
-  },
-  {
-    key: 2,
-    no: 2,
-    img: '/slide-3.png',
-    title: '실시간 분석',
-    transcript: {
-      prior: [
-        '사용자는 발표 자료를 등록하고 슬라이드별 대본을 준비할 수 있습니다.',
-        '연습을 시작하면 카메라와 마이크를 통해 발표 과정이 기록됩니다.',
-      ],
-      current: '발표 중에는 말하기 속도와 시선, 자세를 실시간으로 확인하며 연습할 수 있습니다.',
-      next: [
-        '슬라이드가 바뀌는 시점과 실제 발화도 함께 기록됩니다.',
-        '기록된 데이터는 발표가 끝난 뒤 상세 리포트로 정리됩니다.',
-      ],
-    },
-  },
-  {
-    key: 3,
-    no: 3,
-    img: '/slide-4.png',
-    title: '맞춤 리포트',
-    transcript: {
-      prior: [
-        '연습이 끝나면 발표 내용을 구간별로 다시 확인할 수 있습니다.',
-        '슬라이드 대본과 실제 발화를 비교해 빠뜨린 내용을 찾을 수 있습니다.',
-      ],
-      current: '음성 전달과 몸짓 분석 결과를 그래프로 확인하고 문제가 있었던 시점으로 바로 이동할 수 있습니다.',
-      next: [
-        '반복 연습 결과도 저장되어 이전 시도와 달라진 점을 비교할 수 있습니다.',
-        '이를 통해 사용자는 다음 연습에서 개선할 부분을 구체적으로 확인할 수 있습니다.',
-      ],
-    },
-  },
+  { key: 1, no: 2, img: '/slide-2.png', title: '문제 정의' },
+  { key: 2, no: 3, img: '/slide-3.png', title: '핵심 기능' },
+  { key: 3, no: 4, img: '/slide-4.png', title: '기대 효과' },
 ]
 const scriptSlide = ref(1)
-const activeScriptSlide = computed(() => scriptSlideList.find((item) => item.key === scriptSlide.value) ?? scriptSlideList[0])
-const stepScriptSlide = (direction) => {
-  const currentIndex = scriptSlideList.findIndex((item) => item.key === activeScriptSlide.value.key)
-  const nextIndex = (currentIndex + direction + scriptSlideList.length) % scriptSlideList.length
-  scriptSlide.value = scriptSlideList[nextIndex].key
-}
+const transcriptFilter = ref('all')
 // 발표 영상 미리보기 포스터. public/home-presenter.jpg 에서 로드하고,
 // 파일이 없으면(로드 실패) 기존 어두운 실루엣 장면으로 폴백한다.
 const homePosterSrc = '/home-presenter.png'
 const homePosterError = ref(false)
+const currentSlide = computed(() => scriptSlides[scriptSlide.value])
+const currentTranscript = computed(() =>
+  transcriptFilter.value === 'improve'
+    ? currentSlide.value.transcript.filter((row) => row.kind !== 'match')
+    : currentSlide.value.transcript,
+)
 
-const homeScriptPreview = computed(() => activeScriptSlide.value.transcript)
-
-// --- Report preview: 실제 리포트와 동일한 음성 pace 그래프 + 몸짓 타임라인 ---
-// (그래프 엔진은 실제 상세 리포트와 완전히 같은 useVoicePaceGraph를 그대로 쓴다.)
-const homeReportDurationSec = 96
-const homeVoicePace = computed(() => buildVoicePaceMock(homeReportDurationSec, 2))
-const homeReportDuration = computed(() => homeReportDurationSec)
-// 몸짓 곡선 path의 구간 끝점과 동일한 좌표를 사용해 시선 이탈 마커가
-// 반응형 크기에서도 항상 그래프 선 위에 놓이게 한다.
-const homeGazeMarkers = [
-  { id: 1, xPct: 22, yPct: 75.45 },
-  { id: 2, xPct: 45.5, yPct: 34.55 },
-  { id: 3, xPct: 68.2, yPct: 57.27 },
-  { id: 4, xPct: 89.1, yPct: 76.36 },
+// --- Report preview (연습 결과 지표) ---
+// 실제 상세 리포트처럼 음성·영상·내용 일치 점수에 호버하면 세부 지표를 보여준다.
+const scoreAxes = [
+  { key: 'voice', label: '음성', value: '86점', title: '음성 평가 지표', breakdown: [['필러', '7회'], ['말 더듬음', '2회'], ['말 속도', '128 WPM'], ['목소리 떨림', '3회'], ['긴 공백', '4회']] },
+  { key: 'video', label: '영상', value: '82점', title: '영상 평가 지표', breakdown: [['시선 이탈', '6회'], ['표정 이상 감지', '3회'], ['자세와 움직임', '4회']] },
+  { key: 'content', label: '내용 일치', value: '84점', title: '내용 평가 지표', breakdown: [['발표 내용 적절성', '88%'], ['슬라이드 일치', '92%'], ['질의응답 적절성', '76%']] },
 ]
-const {
-  paceChartPath: homePaceChartPath,
-  avgLineStyle: homeAvgLineStyle,
-  paceYBounds: homePaceYBounds,
-  fillerDotPositions: homeFillerDotPositions,
-  rangeOverlays: homeRangeOverlays,
-  silenceSegments: homeSilenceSegments,
-} = useVoicePaceGraph(homeVoicePace, homeReportDuration)
+
+// --- Report preview (AI 피드백) ---
+// 실제 상세 리포트(발표 복기)의 AI 피드백과 동일하게 범주별 마크다운 보고서로 보여준다.
+const reportReports = {
+  content: `## 내용 일치 종합 분석
+
+슬라이드 핵심 메시지와 실제 발화의 일치 정도를 분석했습니다.
+
+### 핵심 요약
+- **슬라이드 일치도 92%** — 대부분의 핵심 메시지가 발화에 담겼어요.
+- 슬라이드 3의 **성과 근거**(시간 절감 수치)가 빠졌습니다.
+
+### 개선 제안
+- 정량 근거를 한 문장 덧붙이세요. 예) "발표 준비 시간을 30% 줄일 수 있습니다."`,
+  delivery: `## 비언어 전달 분석
+
+말하기 속도·습관어·시선을 종합했습니다.
+
+### 핵심 지표
+- **말하기 속도 128 WPM** — 권장 범위(110~140) 안으로 안정적입니다.
+- **습관어 7회** — "음/어"가 문장 흐름을 끊었어요.
+- **시선 유지 74%** — 핵심 문장에서 시선 이탈이 있었습니다.
+
+### 개선 제안
+- 문장 사이 0.5초의 의도적인 멈춤으로 습관어를 대체해보세요.`,
+  qna: `## 질의응답 피드백
+
+받은 질문에 대한 답변의 명확성과 근거를 분석했습니다.
+
+### Q1. 서비스 차별점
+- 서두의 **"음"** 습관어가 자신감을 낮췄어요. 차별점을 먼저 제시하세요.
+
+### Q2. 기대 효과
+- **수치·사례**를 함께 제시하세요. 예) "발표 준비 시간 30% 단축".`,
+}
+
+// 경량 마크다운 → HTML (제목/굵게/코드/목록/문단). 상세 리포트와 동일한 렌더러.
+const renderMarkdown = (md) => {
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  const inline = (t) => esc(t)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+  const out = []
+  let inList = false
+  const closeList = () => { if (inList) { out.push('</ul>'); inList = false } }
+  for (const raw of String(md).split('\n')) {
+    const line = raw.trim()
+    if (!line) { closeList(); continue }
+    let m
+    if ((m = line.match(/^###\s+(.*)/))) { closeList(); out.push(`<h4>${inline(m[1])}</h4>`) }
+    else if ((m = line.match(/^##\s+(.*)/))) { closeList(); out.push(`<h3>${inline(m[1])}</h3>`) }
+    else if ((m = line.match(/^#\s+(.*)/))) { closeList(); out.push(`<h2>${inline(m[1])}</h2>`) }
+    else if ((m = line.match(/^[-*]\s+(.*)/))) { if (!inList) { out.push('<ul>'); inList = true } out.push(`<li>${inline(m[1])}</li>`) }
+    else { closeList(); out.push(`<p>${inline(line)}</p>`) }
+  }
+  closeList()
+  return out.join('')
+}
+const reportTab = ref('content')
+const reportHtml = computed(() => renderMarkdown(reportReports[reportTab.value] || ''))
 
 useHomeMotion()
-
-// 실험: 마우스 근처 점이 밝아지는 인터랙티브 도트 배경(테스트 적용).
-const dotFieldEl = ref(null)
-useDotField(dotFieldEl)
 </script>
 
 <template>
   <a class="home-skip-link" href="#home">본문으로 바로가기</a>
 
-  <div
-    v-if="recordingResetNotice"
-    class="home-recording-reset-notice"
-    data-testid="recording-reset-notice"
-    role="status"
-  >
-    <span>새로고침으로 진행 중인 연습이 종료되었습니다. 새로운 연습을 시작해주세요.</span>
-    <button type="button" aria-label="안내 닫기" @click="recordingResetNotice = null">×</button>
-  </div>
-
   <div class="home-ambient" data-home-ambient aria-hidden="true">
     <i class="home-ambient-orb home-ambient-orb-a"></i>
     <i class="home-ambient-orb home-ambient-orb-b"></i>
-    <canvas ref="dotFieldEl" class="home-dot-field"></canvas>
   </div>
 
   <a class="home-brand-crop" href="#home" aria-label="AIVO 홈" data-transition-role="logo">
@@ -178,14 +191,7 @@ useDotField(dotFieldEl)
       <a href="/register" @click.prevent="navExit('/register')">회원가입</a>
     </div>
     <div v-else class="home-auth-links">
-      <span
-        class="home-profile-label"
-        data-transition-role="profile"
-        :title="`${displayName}님`"
-      >
-        <span class="home-profile-nickname">{{ displayName }}</span>
-        <span class="home-profile-suffix">님</span>
-      </span>
+      <span class="home-profile-label" data-transition-role="profile">{{ displayName }}님</span>
       <a href="/mypage" data-transition-role="mypage" @click.prevent="navExit('/mypage')">마이페이지</a>
       <button class="home-auth-action" type="button" @click="logout">로그아웃</button>
     </div>
@@ -285,11 +291,11 @@ useDotField(dotFieldEl)
           </div>
         </header>
 
-        <div class="home-review metric-report-shell" data-motion-practice-row>
+        <div class="home-review" data-motion-practice-row>
           <div class="home-review-slide">
             <header class="home-review-col-head">
               <h3>발표 슬라이드</h3>
-              <span>슬라이드 {{ activeScriptSlide.no }} · {{ activeScriptSlide.title }}</span>
+              <span>슬라이드 1 · 서비스 소개 발표</span>
             </header>
             <div class="home-review-stage home-review-video" aria-label="발표 영상 미리보기">
               <img
@@ -322,24 +328,22 @@ useDotField(dotFieldEl)
 
           <div class="home-review-script">
             <header class="home-review-col-head">
-              <h3>슬라이드별 대본 복기</h3>
+              <h3>슬라이드별 실제 발화</h3>
+              <button type="button" class="home-review-filter-btn" aria-label="발화 필터">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M6 12h12M10 19h4" /></svg>
+              </button>
             </header>
-            <div class="home-script-report-card" aria-label="슬라이드별 대본 복기 미리보기">
-              <div class="home-script-question-row">
-                <button type="button" class="home-script-nav" aria-label="이전 슬라이드 미리보기" @click="stepScriptSlide(-1)">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 6-6 6 6 6" /></svg>
-                </button>
-                <h4>슬라이드 {{ activeScriptSlide.no }}. {{ activeScriptSlide.title }}</h4>
-                <button type="button" class="home-script-nav is-next" aria-label="다음 슬라이드 미리보기" @click="stepScriptSlide(1)">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 6 6 6-6 6" /></svg>
-                </button>
-              </div>
-
-              <div class="home-script-transcript">
-                <p v-for="(line, i) in homeScriptPreview.prior" :key="`script-prior-${i}`" class="home-script-line is-muted">{{ line }}</p>
-                <p class="home-script-line is-current">{{ homeScriptPreview.current }}</p>
-                <p v-for="(line, i) in homeScriptPreview.next" :key="`script-next-${i}`" class="home-script-line is-muted">{{ line }}</p>
-              </div>
+            <div class="home-review-filter" role="tablist" aria-label="발화 필터">
+              <button type="button" :class="{ 'is-active': transcriptFilter === 'all' }" role="tab" :aria-selected="transcriptFilter === 'all'" @click="transcriptFilter = 'all'">전체 발화</button>
+              <button type="button" :class="{ 'is-active': transcriptFilter === 'improve' }" role="tab" :aria-selected="transcriptFilter === 'improve'" @click="transcriptFilter = 'improve'">문제 구간</button>
+            </div>
+            <div class="home-review-transcript" aria-live="polite">
+              <article v-for="(row, i) in currentTranscript" :key="i" class="home-transcript-card" :class="`is-${row.kind}`">
+                <span class="home-transcript-meta"><b>{{ row.time }}</b><em>{{ row.label }}</em></span>
+                <p>{{ row.text }}</p>
+                <small v-if="transcriptFilter === 'improve' && row.reason">{{ row.reason }}</small>
+              </article>
+              <p v-if="!currentTranscript.length" class="home-transcript-empty">개선이 필요한 발화 구간이 없습니다.</p>
             </div>
           </div>
         </div>
@@ -355,103 +359,34 @@ useDotField(dotFieldEl)
           </div>
         </header>
 
-        <div class="home-result metric-report-shell" data-motion-record-row>
-          <section class="home-report-preview-card" data-motion-record-row aria-label="음성 전달 그래프 미리보기">
-            <header class="home-report-preview-head">
-              <h3>음성 전달을 구간별로 확인</h3>
-              <div class="iv-pace-legend">
-                <span class="iv-pace-legend-item is-slow"><i>▼</i>가장 느린 구간</span>
-                <span class="iv-pace-legend-item is-fast"><i>▲</i>가장 빠른 구간</span>
-                <span class="iv-pace-legend-item is-filler"><i></i>추임새</span>
-                <span class="iv-pace-legend-item is-silence"><i></i>침묵 구간</span>
+        <div class="home-result" data-motion-record-row>
+          <section class="home-result-summary" aria-label="연습 결과">
+            <dl class="home-result-axes">
+              <div v-for="axis in scoreAxes" :key="axis.key" class="home-score-metric" tabindex="0">
+                <dt>{{ axis.label }}<span class="home-score-hint" aria-hidden="true">?</span></dt>
+                <dd>{{ axis.value }}</dd>
+                <aside class="home-score-detail">
+                  <strong>{{ axis.title }}</strong>
+                  <dl class="home-score-breakdown">
+                    <div v-for="(row, i) in axis.breakdown" :key="i"><dt>{{ row[0] }}</dt><dd>{{ row[1] }}</dd></div>
+                  </dl>
+                </aside>
               </div>
-            </header>
-            <div class="iv-pace-chart home-pace-chart">
-              <div class="home-pace-plot">
-                <div class="iv-pace-avg-line" :style="homeAvgLineStyle">
-                  <span class="iv-pace-avg-label">평균 속도 · 초당 {{ homeVoicePace.avgPace.toFixed(1) }}음절</span>
-                </div>
-                <span class="iv-pace-yaxis-label iv-pace-yaxis-max">초당 {{ homePaceYBounds.hi.toFixed(1) }}음절</span>
-                <span class="iv-pace-yaxis-label iv-pace-yaxis-min">초당 {{ homePaceYBounds.lo.toFixed(1) }}음절</span>
-                <span
-                  v-for="(sil, i) in homeSilenceSegments"
-                  :key="`home-sil-${i}`"
-                  class="iv-pace-silence-bg"
-                  :style="{ left: `${sil.leftPct}%`, width: `${sil.widthPct}%` }"
-                  aria-hidden="true"
-                ></span>
-                <svg class="iv-pace-svg" viewBox="0 0 600 100" preserveAspectRatio="none" aria-hidden="true">
-                  <path :d="homePaceChartPath" class="iv-pace-step-line" />
-                </svg>
-                <span
-                  v-for="(f, i) in homeFillerDotPositions"
-                  :key="`home-filler-${i}`"
-                  class="iv-pace-filler-dot"
-                  :style="{ left: `${f.xPct}%`, top: `${f.yPct}%` }"
-                  aria-hidden="true"
-                ></span>
-              </div>
-
-              <div class="home-pace-range-lane" aria-label="발화 속도 구간 요약">
-                <div
-                  class="iv-pace-range-mark"
-                  :style="{ left: `${homeRangeOverlays.slow.leftPct}%`, width: `${homeRangeOverlays.slow.widthPct}%` }"
-                  aria-hidden="true"
-                >
-                  <span class="iv-pace-range-icon">▼</span>
-                  <span class="iv-pace-range-bracket"></span>
-                  <span class="iv-pace-range-value">{{ homeVoicePace.slowest.pace.toFixed(1) }}</span>
-                </div>
-                <div
-                  class="iv-pace-range-mark"
-                  :style="{ left: `${homeRangeOverlays.fast.leftPct}%`, width: `${homeRangeOverlays.fast.widthPct}%` }"
-                  aria-hidden="true"
-                >
-                  <span class="iv-pace-range-icon">▲</span>
-                  <span class="iv-pace-range-bracket"></span>
-                  <span class="iv-pace-range-value">{{ homeVoicePace.fastest.pace.toFixed(1) }}</span>
-                </div>
-              </div>
-            </div>
-            <div class="iv-pace-axis-edges">
-              <span>0:00</span>
-              <span>{{ toClock(homeReportDurationSec) }}</span>
-            </div>
+            </dl>
           </section>
 
-          <section class="home-report-preview-card home-gesture-graph-card" data-motion-record-row aria-label="몸짓 그래프 미리보기">
-            <header class="home-gesture-graph-head">
-              <h3>몸짓도 확인 가능해요</h3>
-              <div class="home-gesture-legend" aria-hidden="true">
-                <span><i class="is-eye"></i>시선 이탈</span>
-                <span><i class="is-line"></i>기울기</span>
-              </div>
+          <section class="home-result-feedback" aria-label="AI 피드백">
+            <header>
+              <h3>AI 피드백</h3>
+              <p>구간별 개선 포인트를 확인해요.</p>
             </header>
-
-            <div class="home-gesture-chart" aria-hidden="true">
-              <span class="home-gesture-range">1–24% 범위</span>
-              <div class="home-gesture-plot">
-                <span class="home-gesture-grid is-top"></span>
-                <span class="home-gesture-grid is-bottom"></span>
-                <span class="home-gesture-average"><b>기울기 평균 · 12%</b></span>
-                <svg viewBox="0 0 1000 220" preserveAspectRatio="none">
-                  <path d="M0 126 C86 150 145 170 220 166 C312 162 355 102 455 76 C540 53 599 88 682 126 C764 164 829 190 891 168 C945 150 975 112 1000 82" />
-                </svg>
-                <span class="home-gesture-marker-layer">
-                  <span
-                    v-for="marker in homeGazeMarkers"
-                    :key="marker.id"
-                    class="home-gesture-eye-marker"
-                    :style="{ left: `${marker.xPct}%`, top: `${marker.yPct}%` }"
-                  >
-                    <svg viewBox="0 0 24 16"><path d="M1 8C5 1.5 19 1.5 23 8c-4 6.5-18 6.5-22 0Z" /><circle cx="12" cy="8" r="3.2" /></svg>
-                  </span>
-                </span>
-                <span class="home-gesture-playhead"><b>6:45</b><i></i></span>
-              </div>
-              <div class="home-gesture-axis"><span>6:45</span><span>9:48</span></div>
+            <div class="home-result-tabs" role="tablist" aria-label="리포트 분석 영역">
+              <button type="button" :class="{ 'is-active': reportTab === 'content' }" role="tab" :aria-selected="reportTab === 'content'" @click="reportTab = 'content'">내용 일치</button>
+              <button type="button" :class="{ 'is-active': reportTab === 'delivery' }" role="tab" :aria-selected="reportTab === 'delivery'" @click="reportTab = 'delivery'">비언어 전달</button>
+              <button type="button" :class="{ 'is-active': reportTab === 'qna' }" role="tab" :aria-selected="reportTab === 'qna'" @click="reportTab = 'qna'">질의응답</button>
             </div>
-
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <div class="home-result-report markdown-body" aria-live="polite" v-html="reportHtml"></div>
           </section>
         </div>
 

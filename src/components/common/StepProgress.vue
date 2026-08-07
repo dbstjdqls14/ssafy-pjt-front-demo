@@ -15,7 +15,7 @@ const FLOWS = {
   interview: [
     { path: '/interview/setup', label: '1 면접 정보' },
     { path: '/interview/style', label: '2 면접관 선택' },
-    { path: '/interview/questions', label: '3 질문 생성' },
+    { path: '/interview/questions', label: '3 질문 확인' },
     { path: '/interview/check', label: '4 장치 확인' },
     { path: '/interview/ready', label: '5 설정 확인' },
   ],

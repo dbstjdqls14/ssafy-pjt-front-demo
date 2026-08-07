@@ -10,7 +10,7 @@ export const buildPresentationReportMock = (seconds = 258, analysis = {}, flow =
   },
   highlights: [
     { label: '말하기 속도', value: `${analysis.wpm ?? 126} WPM`, tone: 'good', note: '권장 범위(110~140) 확인' },
-    { label: '추임새', value: `${analysis.fillerCount ?? 7}회`, tone: 'warn', note: '반복된 습관어 구간 확인 필요' },
+    { label: '필러워드', value: `${analysis.fillerCount ?? 7}회`, tone: 'warn', note: '반복된 습관어 구간 확인 필요' },
     { label: '시선 유지', value: `${analysis.gazeHold ?? 78}%`, tone: 'good', note: '카메라 정면 응시 비율' },
   ],
   improvements: [

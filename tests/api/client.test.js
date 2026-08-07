@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { ApiError, apiRequest, get, post } from '../../src/api/client.js'
-import { getAccessToken, setAccessToken } from '../../src/api/authToken.js'
 
 const jsonResponse = (payload, init = {}) => new Response(JSON.stringify(payload), {
   status: init.status ?? 200,
@@ -10,7 +9,6 @@ const jsonResponse = (payload, init = {}) => new Response(JSON.stringify(payload
 })
 
 afterEach(() => {
-  setAccessToken(null)
   vi.unstubAllGlobals()
 })
 
@@ -85,27 +83,5 @@ describe('API client', () => {
     } catch (error) {
       expect(error).toBeInstanceOf(ApiError)
     }
-  })
-
-  it('clears the access token and announces authentication expiry on 401', async () => {
-    const dispatchEvent = vi.fn()
-    vi.stubGlobal('window', { dispatchEvent })
-    vi.stubGlobal('CustomEvent', class CustomEvent {
-      constructor(type) {
-        this.type = type
-      }
-    })
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(
-      { message: 'Unauthorized' },
-      { status: 401, statusText: 'Unauthorized' },
-    )))
-    setAccessToken('expired-token')
-
-    await expect(get('/protected')).rejects.toMatchObject({ status: 401 })
-
-    expect(getAccessToken()).toBeNull()
-    expect(dispatchEvent).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'aivo:auth-expired',
-    }))
   })
 })

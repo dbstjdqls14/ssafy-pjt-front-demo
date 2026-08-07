@@ -2,15 +2,15 @@ import { get } from './client.js'
 import { withQuery } from './query.js'
 
 export const archiveApi = {
-  listFolders(params = {}) {
-    return get(withQuery('/practice-folders/archive', params))
+  listRecords(params = {}) {
+    return get(withQuery('/reports', params))
   },
 
-  getFolder(folderId, params = {}) {
-    return get(withQuery(`/practice-folders/${folderId}`, params))
+  getRecord(recordId) {
+    return get(`/reports/${recordId}`)
   },
 
-  listPractices(folderId, params = {}) {
-    return get(withQuery(`/practice-folders/${folderId}/practices`, params))
+  getFolder(folderId) {
+    return get(`/practice-folders/${folderId}`)
   },
 }

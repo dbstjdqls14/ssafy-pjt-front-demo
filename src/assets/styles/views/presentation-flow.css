@@ -331,12 +331,10 @@ body.presentation-flow-page .top-nav {
   padding: 0 12px;
 }
 
-/* 연습 설명은 100자 제한이라 실제로는 두 줄이면 충분하다. 예전 4줄 높이는
-   빈 공간만 커 보였다 → 2줄 + 카운터 자리(아래 26px)만 남긴다. */
 .presentation-flow-page .setup-form-panel textarea {
-  height: 78px;
-  min-height: 78px;
-  padding: 10px 12px 26px;
+  height: 54px;
+  min-height: 54px;
+  padding: 10px 12px;
   line-height: 1.45;
   resize: none;
 }
@@ -1275,106 +1273,11 @@ body.presentation-flow-page .top-nav {
   background: #f4f6fb;
 }
 
-.presentation-flow-page .slide-preview-viewport {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  overflow: auto;
-  place-items: start center;
-  scrollbar-color: #9aa7ca transparent;
-  scrollbar-width: thin;
-}
-
-.presentation-flow-page .slide-preview-viewport > img {
-  display: block;
+.presentation-flow-page .slide-preview-frame > img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   background: #fff;
-}
-
-.presentation-flow-page .slide-preview-viewport.is-zoomable > img {
-  width: calc(100% * var(--slide-zoom, 1));
-  height: calc(100% * var(--slide-zoom, 1));
-  max-width: none;
-  max-height: none;
-}
-
-/* 확대 컨트롤은 슬라이드 바깥 오른쪽에 붙인다(슬라이드 내용을 가리지 않도록).
-   .slide-preview-shell(슬라이드 확인) / .record-stage-card(녹화)가 기준 요소다. */
-.presentation-flow-page .slide-preview-shell {
-  position: relative;
-  width: min(760px, 100%);
-  margin: 0 auto;
-  min-height: 0;
-}
-
-.presentation-flow-page .slide-preview-shell .slide-preview-frame {
-  width: 100%;
-  margin: 0;
-}
-
-.presentation-slide-zoom {
-  position: absolute;
-  z-index: 8;
-  top: 50%;
-  right: -54px;
-  display: grid;
-  width: 42px;
-  justify-items: center;
-  gap: 6px;
-  padding: 8px 5px;
-  transform: translateY(-50%);
-  border: 1px solid rgba(77, 95, 157, .22);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .94);
-  box-shadow: 0 8px 24px rgba(23, 35, 70, .16);
-}
-
-/* 좁은 화면에서는 슬라이드 바깥에 둘 여백이 없어 다시 안쪽 오른쪽에 붙인다. */
-@media (max-width: 900px) {
-  .presentation-flow-page .slide-preview-shell .presentation-slide-zoom {
-    right: 8px;
-  }
-}
-
-.presentation-slide-zoom > button {
-  display: grid;
-  width: 28px;
-  height: 28px;
-  place-items: center;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: #eef1ff;
-  color: #3949a0;
-  font-size: 18px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.presentation-slide-zoom > button:disabled {
-  cursor: default;
-  opacity: .35;
-}
-
-.presentation-slide-zoom > input[type='range'] {
-  width: 20px;
-  height: 84px;
-  margin: 0;
-  direction: rtl;
-  writing-mode: vertical-lr;
-  accent-color: #6674df;
-}
-
-.presentation-slide-zoom > .presentation-slide-zoom-value {
-  width: auto;
-  height: auto;
-  padding: 2px 3px;
-  border-radius: 6px;
-  background: transparent;
-  font-size: 9px;
-  font-variant-numeric: tabular-nums;
 }
 
 .presentation-flow-page .slide-preview-fallback {
@@ -1519,17 +1422,6 @@ body.presentation-flow-page .top-nav {
 .presentation-flow-page .camera-stage video {
   object-fit: cover;
   border-radius: 0;
-}
-
-/* 면접 장치 확인도 발표와 같이 남은 높이를 채운다.
-   예전에는 aspect-ratio: 16/9 + flex: 0 0 auto로 폭에서 높이를 역산해서, 왼쪽 컬럼이
-   넓어지면 카드 높이(.device-check의 clamp)를 넘어 아래가 잘렸다.
-   (--device-camera-ratio를 넣어주는 코드는 없어 사실상 항상 16/9로 고정이었다.) */
-.interview-check-page .camera-stage {
-  min-height: 0;
-  max-height: none;
-  flex: 1 1 auto;
-  aspect-ratio: auto;
 }
 
 .presentation-flow-page .device-preview-controls {
@@ -1831,10 +1723,8 @@ body.presentation-flow-page .top-nav {
   gap: 12px;
 }
 
-/* 항목 사이 간격은 패널의 gap(12px) 하나로만 만든다. 자료 업로드에만 margin이
-   더 붙어 있어 위 항목들과 간격이 달라 보였다. */
 .presentation-flow-page.presentation-setup-page .upload-field {
-  margin-bottom: 0;
+  margin-bottom: 8px;
 }
 
 body.presentation-flow-page.presentation-slides-page {
@@ -3462,62 +3352,15 @@ body.presentation-flow-page .analysis-ready-row {
   min-height: 48px;
 }
 
-body.presentation-flow-page .device-permission-retry {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 8px 0 12px;
-  padding: 10px 12px;
-  border: 1px solid #f4c9c9;
-  border-radius: 10px;
-  background: #fff7f7;
-}
-
-body.presentation-flow-page .device-permission-retry p {
-  margin: 0;
-  color: #b42318;
-  font-size: 12px;
-  line-height: 1.45;
-}
-
-/* 권한 다시 요청 버튼 — 좁은 패널에서 '권한 다시 요 / 청'으로 끊겨 보였고, 호버
-   반응이 없어 버튼으로 읽히지 않았다. 줄바꿈을 막고(flex-shrink도 0) 경고 카드와
-   같은 톤의 솔리드 버튼 + 호버/누름 상태를 준다. */
 body.presentation-flow-page .analysis-retry-button {
-  flex: 0 0 auto;
-  min-width: 88px;
-  min-height: 32px;
-  padding: 0 14px;
-  border: 1px solid #b42318;
+  min-width: 72px;
+  min-height: 30px;
+  border: 1px solid #d9d7fb;
   border-radius: 8px;
-  background: #b42318;
-  color: #fff;
-  font: inherit;
+  background: #f3f1ff;
+  color: var(--aivo-blue-strong);
   font-size: 11px;
   font-weight: 850;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease, transform .12s ease;
-}
-
-body.presentation-flow-page .analysis-retry-button:hover:not(:disabled),
-body.presentation-flow-page .analysis-retry-button:focus-visible:not(:disabled) {
-  border-color: #8f1c13;
-  background: #8f1c13;
-  box-shadow: 0 4px 12px rgba(180, 35, 24, .26);
-  outline: none;
-}
-
-body.presentation-flow-page .analysis-retry-button:active:not(:disabled) {
-  box-shadow: none;
-  transform: translateY(1px);
-}
-
-body.presentation-flow-page .analysis-retry-button:disabled {
-  border-color: #e0b4b0;
-  background: #e0b4b0;
-  cursor: not-allowed;
 }
 
 body.presentation-flow-page .slide-preview-image {

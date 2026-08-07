@@ -1,118 +1,109 @@
 <script setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useInterviewStore } from '../../stores/interviewStore.js'
-import { INPUT_LIMITS } from '../../constants/inputLimits.js'
 
 const router = useRouter()
 const interview = useInterviewStore()
 
-// 이 화면 진입 시 POST /interviews로 면접을 생성한다 — AI 질문이 함께 생성되어
-// questionItems로 반환된다. 같은 설정으로 이미 생성했다면(뒤로 갔다 온 경우) 재사용.
+let uid = 0
+const withId = (q) => ({ ...q, id: (uid += 1) })
+
+// 면접관별 질문 세트(데모). 실제로는 이전 단계에서 고른 면접관 스타일 + 이력서를
+// 바탕으로 LLM이 생성한다. 백엔드가 붙으면 이 맵 대신 API 응답을 스트리밍한다.
+const QUESTION_SETS = {
+  practical: [
+    { text: '1분 자기소개를 해주세요.', cat: '공통', min: 2 },
+    { text: '지원한 직무에서 가장 자신 있는 프로젝트를 설명해 주세요.', cat: '직무 적합성', min: 3 },
+    { text: '대용량 트래픽 문제를 어떻게 진단하고 해결했나요?', cat: '문제 해결', min: 3 },
+    { text: '기술 스택을 선택할 때 기준과 트레이드오프는 무엇이었나요?', cat: '기술', min: 3 },
+    { text: '협업 과정에서 의견 차이를 어떻게 조율했나요?', cat: '협업', min: 3 },
+  ],
+  growth: [
+    { text: '1분 자기소개를 해주세요.', cat: '공통', min: 2 },
+    { text: '가장 크게 성장했다고 느낀 경험은 무엇인가요?', cat: '성장', min: 3 },
+    { text: '그 경험에서 본인의 강점은 무엇이었다고 생각하세요?', cat: '강점', min: 3 },
+    { text: '최근 새롭게 학습한 기술과 학습 방법을 알려주세요.', cat: '학습', min: 2 },
+    { text: '앞으로 어떤 개발자로 성장하고 싶나요?', cat: '목표', min: 3 },
+  ],
+  pressure: [
+    { text: '1분 자기소개를 해주세요.', cat: '공통', min: 2 },
+    { text: '그 판단이 틀렸다면 어떻게 대응하시겠어요?', cat: '압박', min: 3 },
+    { text: '프로젝트에서 실패했던 결정과 그 이유를 말해 주세요.', cat: '문제 해결', min: 3 },
+    { text: '본인 설계의 가장 큰 약점은 무엇이라고 보나요?', cat: '기술', min: 3 },
+    { text: '마감이 촉박한 상황에서 무엇을 포기하시겠어요?', cat: '상황 대처', min: 3 },
+  ],
+}
+
+const questions = ref([])
 const generating = ref(true)
 const loadError = ref('')
 
-// 질문이 하나씩 생성되어 추가되는 느낌(스트리밍 연출) — 응답은 한 번에 오지만
-// displayCount를 시차로 늘려 화면이 멈추지 않았음을 알린다.
-const GEN_INTERVAL = 380
-const displayCount = ref(0)
+// 질문이 하나씩 생성되어 추가되는 느낌(스트리밍) — 화면이 멈추지 않았음을 알린다.
+const FIRST_DELAY = 700 // 첫 질문 전 대기(ms)
+const GEN_INTERVAL = 550 // 이후 질문 간 간격(ms)
 let genTimers = []
 const clearGenTimers = () => { genTimers.forEach((t) => clearTimeout(t)); genTimers = [] }
 
-const questions = computed(() => (
-  generating.value
-    ? interview.questions.slice(0, Math.min(displayCount.value, INPUT_LIMITS.INTERVIEW_QUESTIONS_MAX))
-    : interview.questions.slice(0, INPUT_LIMITS.INTERVIEW_QUESTIONS_MAX)
-))
-const reachedQuestionLimit = computed(() => questions.value.length >= INPUT_LIMITS.INTERVIEW_QUESTIONS_MAX)
-
-const generateQuestions = async () => {
+const generateQuestions = () => {
   clearGenTimers()
   generating.value = true
-  loadError.value = ''
-  displayCount.value = 0
-  try {
-    const { reused } = await interview.createInterview()
-    if (reused) {
-      displayCount.value = interview.questions.length
+  questions.value = []
+  page.value = 0
+  const source = QUESTION_SETS[interview.interviewerStyle] ?? QUESTION_SETS.practical
+  let i = 0
+  const step = () => {
+    if (i >= source.length) {
       generating.value = false
+      interview.setQuestions(questions.value.map((q) => ({ text: q.text, cat: q.cat, min: q.min })))
       return
     }
-    const step = () => {
-      if (displayCount.value >= interview.questions.length) {
-        generating.value = false
-        return
-      }
-      displayCount.value += 1
-      genTimers.push(setTimeout(step, GEN_INTERVAL))
-    }
-    genTimers.push(setTimeout(step, 200))
-  } catch (error) {
-    generating.value = false
-    if (error?.code === 'INVALID_SERVER_ID') {
-      await router.replace({ path: '/practice/folders', query: { type: 'interview' } })
-      return
-    }
-    loadError.value = error?.message || '면접 질문을 생성하지 못했습니다. 로그인 상태를 확인해주세요.'
+    questions.value.push(withId(source[i]))
+    i += 1
+    genTimers.push(setTimeout(step, GEN_INTERVAL))
   }
+  genTimers.push(setTimeout(step, FIRST_DELAY))
 }
 
 onMounted(generateQuestions)
 onBeforeUnmount(clearGenTimers)
 
-// 질문은 개수·길이에 상관없이 목록 안에서 스크롤한다(페이지 분할 없음).
-const questionList = ref(null)
-const scrollQuestionListToBottom = async () => {
-  await nextTick()
-  const list = questionList.value
-  if (list) list.scrollTop = list.scrollHeight
-}
+// 한 화면에 최대 5문항, 그 이상은 페이지로 넘긴다.
+const PAGE_SIZE = 5
+const page = ref(0)
+const totalPages = computed(() => Math.max(1, Math.ceil(questions.value.length / PAGE_SIZE)))
+const pagedQuestions = computed(() => {
+  const start = page.value * PAGE_SIZE
+  return questions.value.slice(start, start + PAGE_SIZE).map((q, i) => ({ q, index: start + i }))
+})
+const clampPage = () => { page.value = Math.min(page.value, totalPages.value - 1) }
+const prevPage = () => { if (page.value > 0) page.value -= 1 }
+const nextPage = () => { if (page.value < totalPages.value - 1) page.value += 1 }
 
 const newQuestion = ref('')
-const questionError = ref('')
-const mutating = ref(false)
-const addQuestion = async () => {
+const addQuestion = () => {
   const text = newQuestion.value.trim()
-  if (!text || mutating.value) return
-  if (reachedQuestionLimit.value) {
-    questionError.value = `면접 질문은 최대 ${INPUT_LIMITS.INTERVIEW_QUESTIONS_MAX}개까지 등록할 수 있습니다.`
-    return
-  }
-  if (text.length > INPUT_LIMITS.QUESTION) {
-    questionError.value = `질문은 ${INPUT_LIMITS.QUESTION}자 이하로 입력해 주세요.`
-    return
-  }
-  questionError.value = ''
-  mutating.value = true
-  loadError.value = ''
-  try {
-    await interview.addQuestion(text) // POST /interviews/{id}/questions
-    newQuestion.value = ''
-    await scrollQuestionListToBottom() // 방금 추가한 질문이 보이도록
-  } catch (error) {
-    loadError.value = error?.message || '질문을 추가하지 못했습니다.'
-  } finally {
-    mutating.value = false
-  }
+  if (!text) return
+  questions.value.push({ text, cat: '직접 추가', min: 2, id: (uid += 1) })
+  newQuestion.value = ''
+  page.value = totalPages.value - 1 // 방금 추가한 질문이 있는 페이지로 이동
 }
-const removeQuestion = async (question) => {
-  if (mutating.value) return
-  mutating.value = true
-  loadError.value = ''
-  try {
-    await interview.removeQuestion(question.questionId) // DELETE /interviews/{id}/questions/{qId}
-  } catch (error) {
-    loadError.value = error?.message || '질문을 삭제하지 못했습니다.'
-  } finally {
-    mutating.value = false
-  }
+const removeQuestion = (index) => {
+  questions.value.splice(index, 1)
+  clampPage()
 }
 
-const goNext = () => {
+const goNext = async () => {
   if (generating.value || !questions.value.length) return
-  // 장치 확인을 이미 통과한 면접이면 같은 확인을 반복하지 않고 설정 확인으로 간다.
-  router.push(interview.preflightDone ? '/interview/ready' : '/interview/check')
+  loadError.value = ''
+  const nextQuestions = questions.value.map((q) => ({ questionId: q.questionId, text: q.text, cat: q.cat, min: q.min }))
+  try {
+    await interview.saveQuestions(nextQuestions)
+    router.push('/interview/check')
+  } catch (error) {
+    loadError.value = error?.message || '질문을 저장하지 못했습니다.'
+  }
 }
 </script>
 
@@ -124,7 +115,7 @@ const goNext = () => {
           <div class="setup-grid setup-single-column iv-single-column">
             <div class="iv-setup-column">
               <div class="iv-page-title-row">
-                <h2 class="iv-page-title">면접 질문 생성</h2>
+                <h2 class="iv-page-title">면접 질문 확인</h2>
                 <small class="iv-page-subcount">총 {{ questions.length }}문항</small>
               </div>
 
@@ -139,32 +130,25 @@ const goNext = () => {
                   <input
                     v-model="newQuestion"
                     type="text"
-                    :maxlength="INPUT_LIMITS.QUESTION"
                     :placeholder="generating ? '질문을 생성하는 중이에요…' : '질문을 추가해 보세요.'"
                     aria-label="질문 추가"
-                    :disabled="generating || mutating || reachedQuestionLimit"
-                    @input="questionError = ''"
+                    :disabled="generating"
                     @keydown.enter.prevent="addQuestion"
                   />
-                  <small class="field-counter">{{ newQuestion.length }}/{{ INPUT_LIMITS.QUESTION }}</small>
                   <button
                     type="button"
                     class="iv-question-add-ok"
-                    :disabled="generating || mutating || reachedQuestionLimit || !newQuestion.trim()"
+                    :disabled="generating || !newQuestion.trim()"
                     @click="addQuestion"
                   >추가</button>
                 </div>
-                <small v-if="reachedQuestionLimit" class="field-help">
-                  면접 질문은 최대 {{ INPUT_LIMITS.INTERVIEW_QUESTIONS_MAX }}개까지 등록할 수 있습니다.
-                </small>
-                <small v-if="questionError" class="field-error" role="alert">{{ questionError }}</small>
 
-                <ul ref="questionList" class="iv-question-list">
-                  <li v-for="(q, index) in questions" :key="q.questionId" class="iv-question-item iv-question-item-gen">
+                <ul class="iv-question-list">
+                  <li v-for="{ q, index } in pagedQuestions" :key="q.id" class="iv-question-item iv-question-item-gen">
                     <span class="iv-question-text"><b>Q{{ index + 1 }}.</b> {{ q.text }}</span>
                     <span class="iv-question-meta">
                       <small class="iv-question-cat">{{ q.cat }}</small>
-                      <button type="button" class="iv-question-remove" aria-label="질문 삭제" :disabled="generating || mutating" @click="removeQuestion(q)">×</button>
+                      <button type="button" class="iv-question-remove" aria-label="질문 삭제" :disabled="generating" @click="removeQuestion(index)">×</button>
                     </span>
                   </li>
                   <li v-if="generating && !questions.length" class="iv-question-skeleton" aria-hidden="true">
@@ -174,6 +158,12 @@ const goNext = () => {
                     선택한 질문이 없어요. 위 입력칸에서 질문을 추가해 보세요.
                   </li>
                 </ul>
+
+                <div v-if="totalPages > 1" class="iv-question-pager">
+                  <button type="button" aria-label="이전 페이지" :disabled="page === 0" @click="prevPage">‹</button>
+                  <span>{{ page + 1 }} / {{ totalPages }}</span>
+                  <button type="button" aria-label="다음 페이지" :disabled="page === totalPages - 1" @click="nextPage">›</button>
+                </div>
               </section>
             </div>
           </div>

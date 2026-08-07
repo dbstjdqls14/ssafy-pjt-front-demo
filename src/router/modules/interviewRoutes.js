@@ -1,4 +1,4 @@
-const interviewRouteDefinitions = [
+export const interviewRoutes = [
   {
     path: '/interview/setup',
     name: 'interview-setup',
@@ -106,9 +106,3 @@ const interviewRouteDefinitions = [
     },
   },
 ]
-
-// 연습 진행·결과 경로는 직접 URL 접근까지 포함해 모두 인증이 필요하다.
-export const interviewRoutes = interviewRouteDefinitions.map((route) => ({
-  ...route,
-  meta: { ...route.meta, requiresAuth: true },
-}))

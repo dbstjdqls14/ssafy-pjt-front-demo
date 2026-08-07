@@ -25,7 +25,3 @@
 @import './views/presentation-outcome.css';
 @import './views/interview-flow.css'; /* interview overrides presentation-flow base */
 @import './views/interview-record.css';
-@import './views/interview-analyzing.css';
-/* 마지막에 로드한다 — 글자 수 카운터 자리(입력칸 안쪽 오른쪽)는 화면별 flow CSS의
-   padding 재지정에 밀리면 글자와 겹치므로, 같은 특이도에서 이 규칙이 이겨야 한다. */
-@import './global/limited-field.css';

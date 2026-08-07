@@ -135,16 +135,6 @@ body.home-page {
   background-size: 160px 160px;
 }
 
-/* 실험: 마우스 근처 점이 밝아지는 인터랙티브 도트 배경(테스트). */
-.home-dot-field {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
 .home-ambient-orb {
   display: none;
 }
@@ -363,29 +353,6 @@ body[data-home-theme='dark'] .home-side-nav nav a[aria-current='location'] {
 
 .home-auth-links[hidden] {
   display: none;
-}
-
-.home-auth-links .home-profile-label {
-  display: flex;
-  width: fit-content;
-  min-width: 0;
-  max-width: min(180px, 42vw);
-  overflow: hidden;
-  overflow-wrap: normal;
-  white-space: nowrap;
-  word-break: keep-all;
-}
-
-.home-profile-nickname {
-  flex: 0 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.home-profile-suffix {
-  flex: 0 0 auto;
 }
 
 .home-auth-action {
@@ -2076,7 +2043,7 @@ body[data-home-theme='dark'] .home-brand-light {
 .home-review {
   grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr);
   gap: clamp(28px, 3.2vw, 44px);
-  align-items: stretch;
+  align-items: start;
 }
 
 .home-review-slide {
@@ -2251,10 +2218,34 @@ body[data-home-theme='dark'] .home-brand-light {
   font-weight: 700;
 }
 
+/* 발화 필터 아이콘 버튼(리포트의 우상단 필터 버튼과 동일한 스타일) */
+.home-review-filter-btn {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border: 1px solid #dce1ee;
+  border-radius: 10px;
+  background: #fff;
+  color: #4b5a86;
+  cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+}
+
+.home-review-filter-btn svg { width: 18px; height: 18px; }
+
+.home-review-filter-btn:hover,
+.home-review-filter-btn:focus-visible {
+  border-color: #6573dd;
+  color: #4655c8;
+  background: #f3f5ff;
+  outline: none;
+}
+
+
 .home-review-script {
   display: flex;
-  height: 100%;
-  min-height: 0;
   min-width: 0;
   flex-direction: column;
 }
@@ -2274,107 +2265,98 @@ body[data-home-theme='dark'] .home-brand-light {
   letter-spacing: -.03em;
 }
 
-/* 첫 번째 참고 화면처럼 질문 제목과 자막 흐름을 한 카드 안에 고정한다. */
-.home-script-report-card {
+.home-review-filter {
   display: flex;
-  min-height: 0;
-  flex: 1;
-  flex-direction: column;
-  overflow: hidden;
-  border: 1px solid #d8dfec;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, .94);
+  gap: 18px;
+  margin-bottom: 14px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #e8ebf3;
 }
 
-.home-script-question-row {
-  display: grid;
-  grid-template-columns: 38px minmax(0, 1fr) 38px;
-  gap: 10px;
-  align-items: center;
-  padding: 20px 18px 10px;
-}
-
-.home-script-question-row h4 {
-  margin: 0;
-  color: #111c43;
-  font-size: clamp(16px, 1.15vw, 20px);
-  font-weight: 850;
-  line-height: 1.4;
-  text-align: center;
-  letter-spacing: -.035em;
-}
-
-.home-script-nav {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  padding: 0;
-  border: 1px solid #d9deeb;
-  border-radius: 50%;
-  background: #fff;
-  color: #6573dd;
+.home-review-filter button {
+  padding: 0 0 6px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--home-faint);
+  font-size: 12px;
+  font-weight: 750;
   cursor: pointer;
-  transition: border-color .18s ease, background-color .18s ease, color .18s ease, transform .18s ease;
+  transition: color .2s ease, border-color .2s ease;
 }
 
-.home-script-nav.is-next {
-  opacity: 1;
+.home-review-filter button.is-active {
+  color: var(--home-ink);
+  border-bottom-color: #4e6fc2;
 }
 
-.home-script-nav:hover {
-  border-color: #6573dd;
-  background: #f3f5ff;
-  transform: translateY(-1px);
+.home-review-transcript {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.home-script-nav:focus-visible {
-  outline: 3px solid rgb(101 115 221 / 24%);
-  outline-offset: 2px;
+/* 실제 리포트의 발화 카드처럼 덜 둥글고 촘촘하게 (각진 정도 통일). */
+.home-transcript-card {
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #f5f6fa;
 }
 
-.home-script-nav svg {
-  width: 18px;
-  height: 18px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2;
+.home-transcript-card.is-filler { background: #fff8e8; }
+.home-transcript-card.is-evidence { background: #fff0f1; }
+
+.home-transcript-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.home-script-transcript {
-  flex: 1;
-  min-height: 0;
-  padding: 0 22px 20px;
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 10%, #000 88%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 10%, #000 88%, transparent 100%);
+.home-transcript-meta b {
+  color: #5968dc;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 800;
 }
 
-.home-script-line {
-  margin: 0;
-  padding: 6px 2px;
-  font-size: clamp(12px, .86vw, 14px);
-  font-weight: 700;
-  line-height: 1.5;
-}
-
-.home-script-line.is-muted {
-  color: #b8bfdc;
-}
-
-.home-script-line.is-current {
-  margin: 2px -4px;
-  padding: 11px 14px;
-  background: #f3f4f8;
-  color: #172346;
+.home-transcript-meta em {
+  color: #4f8d72;
+  font-size: 10px;
+  font-style: normal;
   font-weight: 850;
 }
 
-/* --- Report preview: 1 column, 2 rows (음성 pace 그래프 → 몸짓 타임라인) ---
-   실제 상세 리포트 그래프(useVoicePaceGraph)를 그대로 재사용한다 — 홈은 카드
-   테두리·헤더만 자체 스타일(.home-report-preview-*)을 입힌다. */
+.home-transcript-card.is-filler .home-transcript-meta em,
+.home-transcript-card.is-evidence .home-transcript-meta em { color: #b47119; }
+
+.home-transcript-card p {
+  margin: 8px 0 0;
+  color: #4f5c75;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.home-transcript-card small {
+  display: block;
+  margin-top: 8px;
+  color: #8a6a2f;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.home-transcript-card.is-evidence small { color: #a15059; }
+
+.home-transcript-empty {
+  margin: 0;
+  padding: 24px;
+  border: 1px dashed var(--home-line);
+  border-radius: 10px;
+  color: var(--home-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* --- Report preview: 1 column, 2 rows (종합 결과 → AI 피드백) --- */
 /* margin-top 은 .home-review 와 공유하는 규칙(clamp 64~108)을 그대로 써서
    다른 섹션과 제목-콘텐츠 간격을 통일한다. */
 .home-result {
@@ -2383,14 +2365,135 @@ body[data-home-theme='dark'] .home-brand-light {
   margin-bottom: clamp(44px, 6vh, 76px);
 }
 
-.home-report-preview-card {
+/* Row 1 — 연습 결과 요약 카드 (실제 리포트의 결과 요약과 동일한 구성:
+   상단 헤더에 점수, 아래 구분선 + 3개 지표 열, 상태 칩 없이 'N점' 표기) */
+.home-result-summary {
+  display: block;
   padding: clamp(20px, 2.2vw, 30px);
   border: 1px solid #d8dfec;
   border-radius: 16px;
   background: #fff;
 }
 
-.home-report-preview-head {
+/* 연습 결과 점수 헤더는 제거하고, 음성·영상·내용 일치 3개 지표만 노출한다. */
+.home-result-axes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.home-result-axes dt { color: #74809b; font-size: 13px; font-weight: 700; }
+.home-result-axes dd { margin: 0; color: var(--home-ink); font-size: clamp(27px, 2.4vw, 34px); font-weight: 850; letter-spacing: -.03em; }
+
+/* 점수 지표 호버 시 세부 지표 카드 노출 (상세 리포트의 archive-score-* 이식). */
+.home-score-metric {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  outline: none;
+  cursor: help;
+}
+
+.home-score-metric > dt,
+.home-score-metric > dd { transition: color .16s ease; }
+
+.home-score-metric:hover > dt,
+.home-score-metric:focus-visible > dt,
+.home-score-metric:hover > dd,
+.home-score-metric:focus-visible > dd { color: #4e6fc2; }
+
+.home-score-metric > dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.home-score-hint {
+  display: inline-grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #d7ddec;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+  transition: background-color .16s ease;
+}
+
+.home-score-metric:hover .home-score-hint,
+.home-score-metric:focus-visible .home-score-hint { background: #4e6fc2; }
+
+.home-score-detail {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 30;
+  width: min(300px, 76vw);
+  padding: 14px 16px;
+  border: 1px solid #d8dfec;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(23, 35, 70, .12);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-5px);
+  transition: opacity .16s ease, transform .16s ease;
+}
+
+/* 점수 ↔ 카드 사이 10px 간격을 덮는 투명 브리지(호버 유지). */
+.home-score-detail::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+}
+
+.home-score-metric:nth-child(3) .home-score-detail { right: 0; left: auto; }
+
+.home-score-metric:hover .home-score-detail,
+.home-score-metric:focus-visible .home-score-detail {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.home-score-detail strong { display: block; color: #172346; font-size: 15px; }
+
+.home-score-breakdown {
+  display: grid;
+  gap: 3px;
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid #eef1f7;
+}
+
+.home-score-breakdown > div {
+  display: grid;
+  min-height: 19px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+}
+
+.home-score-breakdown dt,
+.home-score-breakdown dd { margin: 0; font-size: 13px; font-weight: 750; }
+.home-score-breakdown dt { color: #4c3b31; white-space: nowrap; }
+.home-score-breakdown dt::before { content: '•'; margin-right: 8px; color: #4c3b31; }
+.home-score-breakdown dd { color: #4c3b31; text-align: right; white-space: nowrap; }
+
+.home-result-feedback {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.home-result-feedback > header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -2398,231 +2501,56 @@ body[data-home-theme='dark'] .home-brand-light {
   margin-bottom: 14px;
 }
 
-.home-report-preview-head h3 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -.03em; }
-.home-report-preview-head p { margin: 0; color: var(--home-muted); font-size: 12px; }
+.home-result-feedback h3 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -.03em; }
+.home-result-feedback > header p { margin: 0; color: var(--home-muted); font-size: 12px; }
 
-/* 홈 미리보기는 그래프와 최저·최고 구간 주석을 서로 다른 레인에 둔다. */
-.home-pace-chart {
-  height: auto;
-  cursor: default;
-  touch-action: auto;
-  background-image: none;
-}
-
-.home-pace-plot {
-  position: relative;
-  height: 118px;
-  background-image:
-    linear-gradient(to bottom, transparent calc(33.333% - .5px), rgba(154, 162, 179, .16) calc(33.333% - .5px), rgba(154, 162, 179, .16) calc(33.333% + .5px), transparent calc(33.333% + .5px)),
-    linear-gradient(to bottom, transparent calc(66.666% - .5px), rgba(154, 162, 179, .16) calc(66.666% - .5px), rgba(154, 162, 179, .16) calc(66.666% + .5px), transparent calc(66.666% + .5px));
-}
-
-.home-pace-range-lane {
-  position: relative;
-  height: 30px;
-  margin-top: 10px;
-}
-
-.home-pace-range-lane .iv-pace-range-mark {
-  bottom: 0;
-  cursor: default;
-}
-
-/* 세 번째 참고 화면의 정적 몸짓 곡선 그래프. */
-.home-gesture-graph-card {
-  padding: clamp(18px, 1.8vw, 26px);
-}
-
-.home-gesture-graph-head {
+.home-result-tabs {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 12px;
+  gap: 22px;
+  border-bottom: 1px solid #e1e6f0;
 }
 
-.home-gesture-legend {
-  display: flex;
-  align-items: center;
+.home-result-tabs button {
+  margin-bottom: -1px;
+  padding: 0 0 9px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--home-faint);
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: color .2s ease, border-color .2s ease;
 }
 
-.home-gesture-graph-head h3 {
-  margin: 0;
-  color: #172346;
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -.03em;
+.home-result-tabs button.is-active { color: #5968dc; border-bottom-color: #5968dc; }
+
+/* AI 피드백: 실제 상세 리포트의 마크다운 보고서(archive-feedback-report)와 동일한 형태 */
+.home-result-report {
+  margin-top: 16px;
+  padding: 18px 22px;
+  border: 1px solid #e3e7f1;
+  border-radius: 14px;
+  background: #fff;
+  color: #2f3a56;
+  line-height: 1.65;
 }
 
-.home-gesture-legend {
-  gap: 9px;
-}
-
-.home-gesture-legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: #f5f6fa;
-  color: #4f5c75;
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.home-gesture-legend i {
-  display: inline-block;
-  flex: 0 0 auto;
-}
-
-.home-gesture-legend i.is-eye {
-  width: 8px;
-  height: 8px;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  background: #8791aa;
-  box-shadow: 0 0 0 1px #d5dae6;
-}
-
-.home-gesture-legend i.is-line {
-  width: 15px;
-  height: 2px;
-  border-radius: 2px;
-  background: #6573dd;
-}
-
-.home-gesture-chart {
-  position: relative;
-  padding-top: 12px;
-}
-
-.home-gesture-range {
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #9ba3b8;
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.home-gesture-plot {
-  position: relative;
-  height: clamp(118px, 10vw, 150px);
-  margin-top: 4px;
-}
-
-.home-gesture-grid,
-.home-gesture-average {
-  position: absolute;
-  right: 0;
-  left: 0;
-}
-
-.home-gesture-grid {
-  height: 1px;
-  background: #eceef4;
-}
-
-.home-gesture-grid.is-top { top: 41%; }
-.home-gesture-grid.is-bottom { top: 68%; }
-
-.home-gesture-average {
-  top: 55%;
-  z-index: 1;
-  border-top: 1px dashed #99a1b3;
-}
-
-.home-gesture-average b {
-  position: absolute;
-  top: -20px;
-  left: 8px;
-  color: #75809a;
-  font-size: 11px;
-  font-weight: 850;
-}
-
-.home-gesture-plot > svg {
-  position: absolute;
-  inset: 12px 0 4px;
-  width: 100%;
-  height: calc(100% - 16px);
-  overflow: visible;
-}
-
-.home-gesture-plot > svg path {
-  fill: none;
-  stroke: #6573dd;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2.4;
-  vector-effect: non-scaling-stroke;
-}
-
-.home-gesture-marker-layer {
-  position: absolute;
-  inset: 12px 0 4px;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.home-gesture-eye-marker {
-  position: absolute;
-  width: 22px;
-  transform: translate(-50%, -50%);
-}
-
-.home-gesture-eye-marker svg {
-  display: block;
-  width: 100%;
-  fill: #fff;
-  stroke: #7c859e;
-  stroke-width: 1.4;
-  filter: drop-shadow(0 2px 4px rgba(23, 35, 70, .16));
-}
-
-.home-gesture-eye-marker circle {
-  fill: #7c859e;
-  stroke: none;
-}
-
-.home-gesture-playhead {
-  position: absolute;
-  top: 55%;
-  left: 0;
-  z-index: 3;
-}
-
-.home-gesture-playhead b {
-  position: absolute;
-  bottom: 9px;
-  left: 0;
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: #172346;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 850;
-  transform: translateX(-40%);
-}
-
-.home-gesture-playhead i {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border: 3px solid #fff;
-  border-radius: 50%;
-  background: #172346;
-  box-shadow: 0 0 0 1px #b7bdcb, 0 3px 8px rgba(23, 35, 70, .2);
-  transform: translate(-50%, -50%);
-}
-
-.home-gesture-axis {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 3px;
-  color: #6f7a94;
-  font-size: 11px;
-  font-weight: 800;
+.home-result-report > :first-child { margin-top: 0; }
+.home-result-report > :last-child { margin-bottom: 0; }
+.home-result-report h2 { margin: 0 0 6px; color: #172346; font-size: 20px; font-weight: 900; letter-spacing: -.02em; }
+.home-result-report h3 { margin: 22px 0 8px; color: #3a45a8; font-size: 15px; font-weight: 850; }
+.home-result-report h4 { margin: 16px 0 6px; color: #45506e; font-size: 14px; font-weight: 800; }
+.home-result-report p { margin: 8px 0; font-size: 14px; }
+.home-result-report ul { margin: 8px 0; padding-left: 20px; }
+.home-result-report li { margin: 5px 0; font-size: 14px; }
+.home-result-report strong { color: #172346; font-weight: 800; }
+.home-result-report code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: #eef1fb;
+  color: #4655c8;
+  font-size: 13px;
 }
 
 @media (max-width: 980px) {
@@ -2636,9 +2564,11 @@ body[data-home-theme='dark'] .home-brand-light {
     margin-top: 46px;
   }
 
-  .home-script-report-card {
-    height: 450px;
+  .home-result-summary {
+    grid-template-columns: 1fr;
+    gap: 22px;
   }
+
 }
 
 @media (max-width: 560px) {
@@ -2646,34 +2576,8 @@ body[data-home-theme='dark'] .home-brand-light {
     grid-template-columns: 1fr;
   }
 
-  .home-script-report-card {
-    height: 420px;
-    min-height: 420px;
-  }
-
-  .home-script-question-row {
-    grid-template-columns: 36px minmax(0, 1fr) 36px;
-    gap: 10px;
-    padding: 22px 16px 12px;
-  }
-
-  .home-script-nav {
-    width: 36px;
-    height: 36px;
-  }
-
-  .home-report-preview-head {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .home-gesture-graph-head {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .home-gesture-range {
-    right: 0;
+  .home-result-axes {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -2735,43 +2639,4 @@ body[data-home-theme='dark'] .home-brand-light {
   .home-chart-point { opacity: 1; transform: scale(1); }
   .home-dashboard.is-motion-active .home-chart-reveal-rect,
   .home-dashboard.is-motion-active .home-chart-point { animation: none; }
-}
-.home-recording-reset-notice {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  z-index: 220;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  width: max-content;
-  max-width: min(720px, calc(100vw - 32px));
-  padding: 14px 16px 14px 20px;
-  border: 1px solid #eab2a8;
-  border-radius: 12px;
-  background: #fff7f5;
-  color: #913f34;
-  box-shadow: 0 12px 32px rgb(22 29 59 / 14%);
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.5;
-  transform: translateX(-50%);
-}
-
-.home-recording-reset-notice button {
-  flex: 0 0 auto;
-  width: 28px;
-  height: 28px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-
-.home-recording-reset-notice button:hover,
-.home-recording-reset-notice button:focus-visible {
-  background: rgb(145 63 52 / 10%);
-  outline: none;
 }

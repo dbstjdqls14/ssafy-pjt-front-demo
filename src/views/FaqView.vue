@@ -1,6 +1,5 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { INPUT_LIMITS } from '../constants/inputLimits.js'
 
 const CATEGORY_LABEL = {
   notice: '공지사항',
@@ -76,11 +75,7 @@ const selectCat = (value) => {
   activeCat.value = value
   currentPage.value = 1
 }
-// v-model(vModelText)은 한글 조합이 끝날 때까지 값을 갱신하지 않아서, 'ㅇ→여→연'을
-// 치는 동안 검색이 멈춘 것처럼 보인다. 조합 중 input 이벤트까지 그대로 반영해
-// 키를 누르는 즉시 목록이 걸러지게 한다.
-const onSearch = (event) => {
-  if (event) search.value = event.target.value
+const onSearch = () => {
   currentPage.value = 1
 }
 const isSearching = computed(() => search.value.trim().length > 0)
@@ -147,7 +142,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
       </div>
 
       <div class="faq-search-box">
-        <input :value="search" type="text" :maxlength="INPUT_LIMITS.SEARCH" placeholder="질문이나 키워드를 검색해보세요" @input="onSearch" />
+        <input v-model="search" type="text" placeholder="질문이나 키워드를 검색해보세요" @input="onSearch" />
         <svg v-show="!isSearching" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.6" />
           <line x1="13.6" y1="13.6" x2="18" y2="18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />

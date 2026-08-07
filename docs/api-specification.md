@@ -52,7 +52,7 @@
 | ⬜ | 계정 찾기 | `POST /auth/find-id` | 식별 정보 | 아이디 찾기 결과 |
 | ⬜ | 비밀번호 재설정 | `POST /auth/password-reset/requests` | `email` | 재설정 메일 발송 결과 |
 | ⬜ | 프로필 수정 | `PATCH /users/me` | `nickname` 등 | 수정된 사용자 정보 |
-| ⬜ | 비밀번호 변경 | `PATCH /users/me/password` | `currentPassword`, `newPassword`, `newPasswordConfirm` | `204` 또는 성공 응답 |
+| ⬜ | 비밀번호 변경 | `PATCH /users/me/password` | `currentPassword`, `newPassword` | `204` 또는 성공 응답 |
 | ⬜ | 이메일 중복확인 | `GET /auth/check-email?email=` | `email` | 사용 가능 여부 |
 | ⬜ | 학습 추이 | `GET /users/me/stats?type=&period=` | `type`, `period` | 기간별 종합점수·연습량 추이 |
 
@@ -65,46 +65,55 @@
 | 🟡 | 폴더명 변경 | `PATCH /practice-folders/{folderId}` | `name` | 수정된 폴더 정보 |
 | 🟡 | 폴더 삭제 | `DELETE /practice-folders/{folderId}` | 없음 | `204` |
 
-폴더 화면은 실제 API 응답만 사용합니다. 선택·생성한 `folderId`는 발표·면접 세션 생성 요청에 숫자 ID로 전달하며, 과거 목 ID가 세션에 남아 있으면 요청 전에 폐기합니다.
+폴더 화면은 API 응답을 우선 사용하고 개발 서버가 연결되지 않으면 Mock으로 대체합니다. 선택·생성한 `folderId`는 발표·면접 세션 생성 요청에 함께 전달합니다.
 
 ## 4. 발표 연습
 
 | 상태 | 호출 시점 | API(Method·Endpoint) | 요청 데이터(Request) | 응답 데이터(Response) |
 |---|---|---|---|---|
-| ✅ | 자료 업로드·발표 생성 | `POST /presentations` | multipart `request`, `file` | `presentationId`, `practiceId`, `status` |
-| ✅ | 변환 상태 폴링 | `GET /presentations/{presentationId}/status` | 없음 | 변환 상태·실패 메시지 |
-| ✅ | 슬라이드 조회 | `GET /presentations/{presentationId}/slides` | 없음 | `slides` 배열 |
-| ✅ | 슬라이드 이미지 조회 | `GET /presentations/{presentationId}/slides/{slideNumber}/image` | 없음 | S3 이미지로 리다이렉트 |
-| ✅ | 발표 자료 재업로드 | `PUT /presentations/{presentationId}/presentation-document` | multipart `file` | `202` |
-| ✅ | 슬라이드 설명 일괄 저장 | `PATCH /presentations/{presentationId}/slides/descriptions` | `slides: [{ slideId, description }]` | `204` |
-| ✅ | 발표 연습 시작 | `POST /presentations/{presentationId}/start` | 없음 | `practiceId`, 첫 슬라이드 정보 |
-| ✅ | 슬라이드 전환 | `POST /presentations/{presentationId}/slide-events` | `toSlideId`, `occurredTimeMs` | `204` |
-| ✅ | 발표 종료 | `POST /presentations/{presentationId}/complete` | `durationMs` | `204` |
-| ✅ | 청중 질문 생성·조회 | `POST/GET /presentations/{presentationId}/presentation-questions...` | 슬라이드 방문 발화 | 질문 목록 |
-| ⬜ | 발표 영상·전체 분석 저장 | Spring 계약 없음 | WebM·WAV·`text[]`·`detects[]` | 프런트 확인 화면에서만 보관 |
-| ⬜ | 발표 리포트 조회 | Spring 계약 없음 | 없음 | 프런트가 수집한 현재 세션 데이터로 표시 |
+| ✅ | 발표 설정 시작 | `POST /presentation-sessions` | `title`, `description`, `targetDurationSeconds`, `qnaEnabled` | `sessionId`, `status` |
+| 🟡 | 새로고침 복구 | `GET /presentation-sessions/{sessionId}` | 없음 | 설정·슬라이드·진행 상태 |
+| ✅ | 설정·상태 변경 | `PATCH /presentation-sessions/{sessionId}` | 발표 설정 또는 `status` | 갱신된 세션 상태 |
+| ✅ | 발표 자료 업로드 | `POST /presentation-sessions/{sessionId}/slides` | multipart `file` | 이미지 변환이 완료된 `slides` 배열 |
+| ✅ | 슬라이드 설정 저장 | `PATCH /presentation-sessions/{sessionId}/slides/{slideId}` | `keyPoints`, `excluded` | 수정된 슬라이드 |
+| ✅ | 슬라이드 전환 | `POST /presentation-sessions/{sessionId}/slide-events` | 슬라이드 ID·인덱스·시작 시간 | 저장된 이벤트 또는 `204` |
+| ✅ | 발표 녹화 종료 | `POST /presentation-sessions/{sessionId}/recordings` | multipart `recording`, `metadata` | `recordingId` |
+| ✅ | 발표·Q&A 완료 | `POST /presentation-sessions/{sessionId}/complete` | 녹화·분석·Q&A 결과 | `status`, `reportId` |
+| ✅ | 결과 화면 진입 | `GET /presentation-sessions/{sessionId}/report` | 없음 | 발표 리포트 |
+| ⬜ | 청중 질문 생성 | `POST /presentation-sessions/{sessionId}/qna/questions` | 세션·슬라이드 컨텍스트 | 생성된 질문 목록 |
+| ⬜ | 청중 답변 평가 | `POST /presentation-sessions/{sessionId}/qna/answers` | 질문별 답변·소요 시간 | 저장·의미 평가 결과 |
+| ⬜ | 분석 상태 확인 | `GET /presentation-sessions/{sessionId}/analysis` | 없음 | `status`, `progress`, 실패 메시지 |
 
-발표 API는 현재 Spring 컨트롤러의 `/presentations` 계약에 연결되어 있습니다. PDF/PPTX 모두 서버 변환이 완료되어 슬라이드 이미지가 조회된 뒤 다음 단계로 진행하며, 변환 실패를 더미 슬라이드로 대체하지 않습니다.
+발표 API는 화면과 연결되어 있습니다. PDF는 개발 환경에서 브라우저 렌더로 대체할 수 있지만, PPTX는 서버가 슬라이드별 이미지 URL을 반환해야 다음 단계로 진행됩니다. 변환되지 않은 PPTX를 더미 슬라이드로 대체하지 않습니다.
 
 ### 슬라이드 응답 필드
 
 | 필드 | 용도 |
 |---|---|
-| `slideId` | 설명·발화·체류 시간 연결 |
-| `slideNumber` | 화면 표시 순서 |
-| `imageUrl` | 슬라이드 원본 비율 이미지 URL |
-| `description` | 사용자가 입력한 핵심 내용 |
+| `id` 또는 `slideId` | 대본·발화·체류 시간 연결 |
+| `number` | 화면 표시 순서 |
+| `title` | 슬라이드 제목 |
+| `previewUrl` | 슬라이드 원본 비율 이미지 URL(핵심 내용 입력·확인·녹화·리포트에서 공통 사용) |
+| `thumbnailUrl` | 리포트 하단 썸네일 URL, 없으면 `previewUrl` 사용 |
+| `extractedText` | 자료에서 추출한 텍스트 |
+| `keyPoints` | 사용자가 입력한 핵심 대본 |
+| `excluded` | 분석 제외 여부 |
 
 권장 업로드 응답:
 
 ```json
 {
+  "sessionId": "presentation-1",
   "slides": [
     {
-      "slideId": 11,
-      "slideNumber": 1,
-      "imageUrl": "https://cdn.example.com/presentations/7/1.png",
-      "description": "서비스 소개"
+      "slideId": "slide-1",
+      "number": 1,
+      "title": "서비스 소개",
+      "previewUrl": "/uploads/presentation-1/slide-1.png",
+      "thumbnailUrl": "/uploads/presentation-1/slide-1-thumb.png",
+      "extractedText": "슬라이드에서 추출한 텍스트",
+      "keyPoints": "",
+      "excluded": false
     }
   ]
 }
@@ -135,25 +144,20 @@
 | `slides` | 슬라이드별 발화·피드백과 `previewUrl`·`thumbnailUrl` |
 | `qnaResults` | 질문별 답변과 평가 (백엔드 계약 제안·프론트 미구현) |
 
-### 발표 녹화 실시간·종료 규격
-
-| 호출 시점 | API(Method·Endpoint) | 요청 | 비고 |
-|---|---|---|---|
-| 발표 중 매 10초 및 종료 시 나머지 | `POST /practices/{practiceId}/audio-analysis` | multipart `audio`, `sequence` | `audio`는 16kHz mono signed PCM16LE WAV다. FIFO 전송하고 실패 시 한 번 재시도한다. |
-| 발표 종료 | `POST /presentations/{presentationId}/complete` | JSON `{ "durationMs": number }` | 현재 Spring 계약은 발표 시간과 종료 상태만 저장한다. |
-
-프런트는 최종 WebM, 전체 WAV, 슬라이드 방문별 `text[]`, 10초 구간별 `detects[]`를 생성해 종료 데이터 확인 화면에서 재생·다운로드할 수 있게 한다. 같은 슬라이드 재방문은 별도 `text` 항목으로 누적한다. 현재 Spring complete API에는 이 네 산출물을 업로드할 multipart 계약이 없으므로 전송하지 않는다.
-
 ## 5. 면접 연습
 
 | 상태 | 호출 시점 | API(Method·Endpoint) | 요청 데이터(Request) | 응답 데이터(Response) |
 |---|---|---|---|---|
-| ✅ | 면접·질문 생성 | `POST /interviews` | `companyId`, `occupationId`, `jobId`, `workExperience`, `title`, `folderId`, 자료 ID, `interviewerId` | `interviewId`, `practiceId`, `questionItems` |
-| ✅ | 질문 추가 | `POST /interviews/{interviewId}/questions` | `question` | 생성된 질문 |
-| ✅ | 질문 삭제 | `DELETE /interviews/{interviewId}/questions/{questionId}` | 없음 | `204` |
-| ✅ | 면접 중 10초 오디오 분석 | `POST /practices/{practiceId}/audio-analysis` | multipart `audio`, `sequence` | 발표와 동일한 WAV 청크 분석 계약 |
-| ✅ | 녹화·분석 완료 | `POST /interviews/{interviewId}/complete` | multipart `request`, `audio`, `video` | 면접 리포트 |
-| ✅ | 리포트 진입 | `GET /interviews/{interviewId}/interview-report` | 없음 | 면접 요약·질문별 결과 |
+| ✅ | 면접 설정 시작 | `POST /interview-sessions` | 회사·직무·경력·키워드·스타일 | `sessionId`, `status` |
+| 🟡 | 새로고침 복구 | `GET /interview-sessions/{sessionId}` | 없음 | 면접 설정·질문·진행 상태 |
+| ✅ | 설정 변경 | `PATCH /interview-sessions/{sessionId}` | 변경된 설정·질문 | 갱신된 세션 |
+| ✅ | 지원 자료 업로드 | `POST /interview-sessions/{sessionId}/resume` | multipart `file` | 문서 ID·파일명 |
+| ✅ | 질문 화면 진입 | `GET /interview-sessions/{sessionId}/questions` | 없음 | `questionId`, 질문, 카테고리, 예상 시간 |
+| ⬜ | 질문 생성 | `POST /interview-sessions/{sessionId}/questions/generate` | 자소서·스타일·키워드 | 생성된 질문 목록 |
+| ✅ | 녹화 종료 | `POST /interview-sessions/{sessionId}/recordings` | multipart `recording`, `metadata`(질문별 답변 구간 포함) | `recordingId` |
+| ✅ | 분석 시작 | `POST /interview-sessions/{sessionId}/complete` | 녹화 시간·질문 개수 | 분석 상태 |
+| ✅ | 분석 상태 확인 | `GET /interview-sessions/{sessionId}/analysis` | 없음 | `status`, `progress`, 실패 메시지 |
+| ✅ | 리포트 진입 | `GET /interview-sessions/{sessionId}/report` | 없음 | 면접 요약·질문별 결과 |
 
 면접 종료 시 `MediaRecorder`의 Blob 생성이 끝날 때까지 기다린 뒤 녹화 파일과 질문별 답변 구간을 함께 업로드합니다. 저장이 완료된 후에만 분석 화면으로 이동합니다.
 
@@ -184,14 +188,13 @@
 
 ## 7. 기준 데이터 (Meta)
 
-면접 설정의 회사·직군·직무·면접관은 실제 사전 등록 API에서 조회합니다. 경력 선택지는 프론트 표시 상수이며 문자열로 면접 생성 요청에 전달합니다.
+면접 설정의 회사·직군·직무·경력·키워드가 현재 상수(`InterviewSetupView`)입니다. 사전 등록 데이터로 전환이 필요합니다.
 
 | 상태 | 사용 화면 | API(Method·Endpoint) | 요청 데이터(Request) | 응답 데이터(Response) |
 |---|---|---|---|---|
-| ✅ | 면접 설정 | `GET /interviews/companies` | 없음 | 회사 목록 |
-| ✅ | 면접 설정 | `GET /interviews/occupations` | 없음 | 직군 목록 |
-| ✅ | 면접 설정 | `GET /interviews/occupations/{occupationId}/jobs` | 없음 | 직무 목록 |
-| ✅ | 면접관 선택 | `GET /interviews/interviewers` | 없음 | 면접관 목록 |
+| ⬜ | 면접 설정 | `GET /meta/companies` | 없음 | 회사 목록 |
+| ⬜ | 면접 설정 | `GET /meta/job-fields` | 없음 | 직군 목록 |
+| ⬜ | 면접 설정 | `GET /meta/job-positions` | 없음 | 직무 목록 |
 | ⬜ | 면접 설정 | `GET /meta/career-levels` | 없음 | 경력 옵션 |
 | ⬜ | 면접 설정 | `GET /meta/skill-keywords?q=` | `q` | 기술 키워드 자동완성 |
 

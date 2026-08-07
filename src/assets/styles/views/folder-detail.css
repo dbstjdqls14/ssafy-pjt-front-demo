@@ -165,29 +165,6 @@
   overflow: visible;
 }
 
-.folder-score-unavailable {
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 8px;
-  min-height: 220px;
-  border: 1px dashed #d6ddeb;
-  border-radius: 14px;
-  background: #f8f9fc;
-  text-align: center;
-}
-
-.folder-score-unavailable strong {
-  color: #4f5972;
-  font-size: 16px;
-}
-
-.folder-score-unavailable p {
-  margin: 0;
-  color: #8b95aa;
-  font-size: 13px;
-}
-
 .chart-grid line {
   stroke: #e6eaf2;
   stroke-width: 1;
@@ -261,7 +238,7 @@
   outline: none;
 }
 
-/* 음성·몸짓·내용 일치 최근 7회 비교 표 — 선그래프 뷰와 카드 크기가 같도록
+/* 음성·영상·내용 일치 최근 7회 비교 표 — 선그래프 뷰와 카드 크기가 같도록
    차트 렌더 높이(약 206px)에 맞추고, 위아래 여백으로 표를 세로 중앙에 둔다. */
 .folder-metric-table-wrap {
   display: flex;
@@ -368,7 +345,6 @@
 }
 
 .attempt-title {
-  min-width: 0;
   overflow: hidden;
   color: #172346;
   font-size: 22px;
@@ -376,15 +352,6 @@
   letter-spacing: -.025em;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.folder-detail-copy h2 {
-  display: -webkit-box;
-  max-width: 100%;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
 }
 
 .folder-attempt-list .attempt-score {

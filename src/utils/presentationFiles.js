@@ -1,4 +1,4 @@
-export const MAX_PRESENTATION_FILE_SIZE = 50 * 1024 * 1024
+export const MAX_PRESENTATION_FILE_SIZE = 100 * 1024 * 1024
 
 const SUPPORTED_EXTENSIONS = new Set(['pdf', 'pptx'])
 const SUPPORTED_MIME_TYPES = new Set([
@@ -18,7 +18,7 @@ export const validatePresentationFile = (file) => {
     return 'PDF 또는 PPTX 파일만 업로드할 수 있어요.'
   }
   if (file.size <= 0) return '내용이 없는 파일은 업로드할 수 없어요.'
-  if (file.size > MAX_PRESENTATION_FILE_SIZE) return '파일 크기는 50MB 이하여야 해요.'
+  if (file.size > MAX_PRESENTATION_FILE_SIZE) return '파일 크기는 100MB 이하여야 해요.'
 
   return ''
 }

@@ -167,14 +167,6 @@ export const useHomeMotion = () => {
         // 임계치를 넘겼는데 반올림상 제자리면 스크롤 방향으로 최소 한 칸 이동.
         if (index === anchorIndex) index = clamp(anchorIndex + Math.sign(moved), 0, points.length - 1)
       }
-      // 첫 화면(Home)과 두 번째 화면(Dashboard) 사이는 자유 스크롤로 두고, 세 번째
-      // 화면부터(anchorIndex/index 1 이상 걸친 구간) 기존처럼 섹션에 딱 붙인다.
-      // 이 구간에서 강제로 다시 글라이드시키면 배경 테마가 바뀌는 도중이라 눈에
-      // 띄는 끊김으로 보였다.
-      if (anchorIndex <= 1 && index <= 1) {
-        anchorIndex = index
-        return
-      }
       anchorIndex = index
       glideToSnapY(points[index])
     }
