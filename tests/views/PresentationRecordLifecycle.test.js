@@ -28,6 +28,13 @@ const mediaTracks = vi.hoisted(() => ({
   video: { kind: 'video', readyState: 'live', stop: vi.fn() },
 }))
 
+const recorder = vi.hoisted(() => ({
+  start: vi.fn(),
+  stop: vi.fn(),
+  pause: vi.fn(),
+  resume: vi.fn(),
+}))
+
 vi.mock('../../src/composables/useFaceAnalysis.js', async () => {
   const { ref: vueRef } = await import('vue')
   return {
@@ -103,12 +110,7 @@ vi.mock('../../src/composables/useCaptureBridge.js', () => ({
 }))
 
 vi.mock('../../src/composables/useRecorder.js', () => ({
-  useRecorder: () => ({
-    start: vi.fn(),
-    stop: vi.fn().mockResolvedValue(new Blob(['video'], { type: 'video/webm' })),
-    pause: vi.fn(),
-    resume: vi.fn(),
-  }),
+  useRecorder: () => recorder,
 }))
 
 vi.mock('../../src/composables/useSpeechRecognition.js', async () => {
@@ -144,6 +146,7 @@ describe('PresentationRecordView recording lifecycle', () => {
     speech.interimText.value = ''
     mediaTracks.audio.readyState = 'live'
     mediaTracks.video.readyState = 'live'
+    recorder.stop.mockResolvedValue(new Blob(['video'], { type: 'video/webm' }))
     speech.stop.mockImplementation(() => {
       const snapshot = speech.transcript.value
       speech.interimText.value = ''
@@ -186,6 +189,52 @@ describe('PresentationRecordView recording lifecycle', () => {
     expect(presentation.startRecordingSession).toHaveBeenCalledOnce()
     expect(face.start).toHaveBeenCalledOnce()
     expect(sessionStorage.getItem('aivo.active-recording')).toBe('presentation')
+    wrapper.unmount()
+  })
+
+  test('shows a busy spinner while the presentation recording is finishing', async () => {
+    vi.useFakeTimers()
+
+    let resolveStop
+    recorder.stop.mockReturnValue(new Promise((resolve) => {
+      resolveStop = resolve
+    }))
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const presentation = usePresentationStore()
+    presentation.sessionId = 7
+    presentation.practiceId = 11
+    presentation.uploadStatus = 'ready'
+    presentation.setSlides([{ slideId: 1, slideNumber: 1, imageUrl: '/slide.png' }])
+    vi.spyOn(presentation, 'startRecordingSession').mockResolvedValue({ practiceId: 11, firstSlideId: 1 })
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/presentation/record', component: PresentationRecordView },
+        { path: '/presentation/analyzing', component: { template: '<div />' } },
+        { path: '/presentation/setup', component: { template: '<div />' } },
+      ],
+    })
+    await router.push('/presentation/record')
+    await router.isReady()
+    const wrapper = mount(PresentationRecordView, { global: { plugins: [pinia, router] } })
+    await flushPromises()
+
+    await wrapper.get('.record-start-btn').trigger('click')
+    await flushPromises()
+    vi.advanceTimersByTime(1000)
+    await flushPromises()
+    await wrapper.get('.record-end-btn').trigger('click')
+
+    const finishButton = wrapper.get('.record-end-btn')
+    expect(finishButton.attributes('aria-busy')).toBe('true')
+    expect(finishButton.attributes('disabled')).toBeDefined()
+    expect(finishButton.find('.record-end-spinner').exists()).toBe(true)
+    expect(finishButton.text()).toContain('마치는 중')
+
+    resolveStop(new Blob(['video'], { type: 'video/webm' }))
+    await flushPromises()
+    expect(router.currentRoute.value.path).toBe('/presentation/analyzing')
     wrapper.unmount()
   })
   afterEach(() => {
@@ -442,7 +491,7 @@ describe('PresentationRecordView recording lifecycle', () => {
     expect(shouldResetRecordingAfterReload(
       'presentation',
       { getEntriesByType: () => [{ type: 'reload' }] },
-    )).toBe(true)
+    )).toBe(false)
     wrapper.unmount()
   })
 

@@ -90,10 +90,11 @@ export const normalizePracticeTrends = (response) => {
   const lateTrend = payload?.lateTrend ?? null
   const practices = Array.isArray(payload?.practices) ? payload.practices.slice(-6) : []
   const speech = payload?.speech ?? {}
-  const recentCount = Math.min(3, practices.length)
-  const previousCount = Math.min(3, Math.max(0, practices.length - recentCount))
-  const previousLabel = previousCount ? `\uC774\uC804 ${previousCount}\uD68C` : '\uC774\uC804 3\uD68C'
-  const hasPreviousData = previousCount > 0 && earlyTrend != null && lateTrend != null
+  const previousCount = Math.floor(practices.length / 2)
+  const recentCount = practices.length - previousCount
+  const previousLabel = previousCount ? `\uC774\uC804 ${previousCount}\uD68C` : '\uC774\uC804 \uAE30\uB85D'
+  const recentLabel = recentCount ? `\uCD5C\uADFC ${recentCount}\uD68C` : '\uCD5C\uADFC \uAE30\uB85D'
+  const hasPreviousData = previousCount > 0 && recentCount > 0 && earlyTrend != null && lateTrend != null
 
   return {
     practices,
@@ -101,6 +102,7 @@ export const normalizePracticeTrends = (response) => {
     previousCount,
     recentCount,
     previousLabel,
+    recentLabel,
     metrics: METRIC_DEFINITIONS.map((definition) => makeMetric(definition, earlyTrend, lateTrend, previousLabel)),
     scoreSeries: SCORE_DEFINITIONS.map((definition) => ({
       key: definition.key,

@@ -7,7 +7,7 @@ import { formatScore } from '../../utils/displayFormatters.js'
 
 const COPY = {
   title: '\uB0B4 \uD559\uC2B5 \uCD94\uC774',
-  intro: '\uCD5C\uADFC 3\uD68C\uC640 \uC774\uC804 3\uD68C\uB97C \uBE44\uAD50\uD574 \uBC18\uBCF5\uB418\uB294 \uBCC0\uD654\uB97C \uC815\uB9AC\uD588\uC5B4\uC694.',
+  intro: '\uC644\uB8CC\uD55C \uC5F0\uC2B5 \uAE30\uB85D\uC744 \uBE44\uAD50\uD574 \uBC18\uBCF5\uB418\uB294 \uBCC0\uD654\uB97C \uC815\uB9AC\uD588\uC5B4\uC694.',
   loading: '\uD559\uC2B5 \uCD94\uC774\uB97C \uBD88\uB7EC\uC624\uB294 \uC911\uC774\uC5D0\uC694.',
   error: '\uD559\uC2B5 \uCD94\uC774\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC5B4\uC694.',
   errorDetail: '\uAC00\uC838\uC62C \uC218 \uC5C6\uB294 \uC815\uBCF4\uB294 \uBE44\uC6CC \uB450\uACE0 \uD45C\uC2DC\uD588\uC5B4\uC694.',
@@ -15,11 +15,9 @@ const COPY = {
   empty: '\uC544\uC9C1 \uBD84\uC11D\uD560 \uC5F0\uC2B5 \uAE30\uB85D\uC774 \uC5C6\uC5B4\uC694.',
   noScoreHistory: '\uC544\uC9C1 \uD45C\uC2DC\uD560 \uC5F0\uC2B5 \uAE30\uB85D\uC774 \uC5C6\uC5B4\uC694.',
   metricsTitle: '\uD575\uC2EC \uC9C0\uD45C',
-  metricsCopy: '\uCD5C\uADFC 3\uD68C\uC640 \uC774\uC804 3\uD68C\uB97C \uBE44\uAD50\uD588\uC5B4\uC694',
   insufficient: '\uC774\uC804 \uAE30\uB85D\uC774 \uBD80\uC871\uD574\uC694',
   analysis: '\uD559\uC2B5 \uBD84\uC11D',
   insightTitle: '\uAC15\uC810\uACFC \uC57D\uC810',
-  insightCopy: '\uC774\uC804 3\uD68C\uBCF4\uB2E4 \uC88B\uC544\uC9C4 \uC9C0\uD45C\uC640 \uC6B0\uC120 \uAC1C\uC120\uD560 \uC9C0\uD45C\uB97C \uC815\uB9AC\uD588\uC5B4\uC694.',
   strengths: '\uB098\uC758 \uAC15\uC810',
   weaknesses: '\uAC1C\uC120\uC774 \uD544\uC694\uD55C \uBD80\uBD84',
   noStrengths: '\uBE44\uAD50\uD560 \uC774\uC804 \uAE30\uB85D\uC774 \uC313\uC774\uBA74 \uAC15\uC810\uC744 \uC54C\uB824\uB4DC\uB824\uC694.',
@@ -36,8 +34,6 @@ const COPY = {
   trendLabel: '\uC9C0\uD45C \uCD94\uC774',
   change: '\uBCC0\uD654',
   selectorLabel: '\uCD94\uC774 \uC810\uC218 \uC120\uD0DD',
-  previousThree: '\uC774\uC804 3\uD68C',
-  recentThree: '\uCD5C\uADFC 3\uD68C',
   chartLabel: '\uC810\uC218 \uCD94\uC774',
   nextGoal: '\uB2E4\uC74C \uC5F0\uC2B5 \uCD94\uCC9C \uBAA9\uD45C',
 }
@@ -79,7 +75,7 @@ const ONBOARDING_COPY = {
   emptyCopy: `발표나 면접 연습을 마치면 여기에 기록이 쌓여요. ${TREND_MIN_PRACTICES}회가 모이면 이전 기록과 비교한 변화를 정리해드려요.`,
   aggregatingTitle: '이전 기록을 집계하는 중이에요',
   aggregatingCopy: '연습 횟수는 충분해요. 이전 구간 집계가 준비되면 비교 지표를 바로 보여드려요.',
-  progressCopy: `연습 ${TREND_MIN_PRACTICES}회가 모이면 최근 3회와 이전 기록을 비교해 강점과 약점을 정리해드려요.`,
+  progressCopy: `연습 ${TREND_MIN_PRACTICES}회가 모이면 이전 기록과 최근 기록을 비교해 강점과 약점을 정리해드려요.`,
   cta: '연습 시작하기',
   locked: `연습 ${TREND_MIN_PRACTICES}회부터 비교 지표가 열려요`,
 }
@@ -110,9 +106,15 @@ const selectedSeries = computed(
   () => scoreSeries.value.find(({ key }) => key === selectedSeriesKey.value) ?? scoreSeries.value[0] ?? null,
 )
 const comparisonCopy = computed(() => trend.value?.hasPreviousData
-  ? `\uCD5C\uADFC ${trend.value.recentCount}\uD68C\uC640 ${trend.value.previousLabel}\uB97C \uBE44\uAD50\uD588\uC5B4\uC694`
+  ? `${trend.value.recentLabel}\uC640 ${trend.value.previousLabel}\uB97C \uBE44\uAD50\uD588\uC5B4\uC694`
   // \uC544\uC9C1 \uBE44\uAD50\uAC00 \uBD88\uAC00\uB2A5\uD55C\uB370 "\uBE44\uAD50\uD588\uC5B4\uC694"\uB77C\uACE0 \uC4F0\uBA74 \uC65C \uAC12\uC774 \uC5C6\uB294\uC9C0 \uC54C \uC218 \uC5C6\uB2E4.
   : ONBOARDING_COPY.locked)
+const dashboardIntro = computed(() => trend.value?.hasPreviousData
+  ? `${trend.value.recentLabel}\uC640 ${trend.value.previousLabel}\uB97C \uBE44\uAD50\uD574 \uBC18\uBCF5\uB418\uB294 \uBCC0\uD654\uB97C \uC815\uB9AC\uD588\uC5B4\uC694.`
+  : COPY.intro)
+const insightCopy = computed(() => trend.value?.hasPreviousData
+  ? `${trend.value.previousLabel}\uBCF4\uB2E4 \uC88B\uC544\uC9C4 \uC9C0\uD45C\uC640 \uC6B0\uC120 \uAC1C\uC120\uD560 \uC9C0\uD45C\uB97C \uC815\uB9AC\uD588\uC5B4\uC694.`
+  : '\uC774\uC804 \uAE30\uB85D\uBCF4\uB2E4 \uC88B\uC544\uC9C4 \uC9C0\uD45C\uC640 \uC6B0\uC120 \uAC1C\uC120\uD560 \uC9C0\uD45C\uB97C \uC815\uB9AC\uD588\uC5B4\uC694.')
 
 // \uBE44\uAD50 \uC9C0\uD45C\uAC00 \uC5F4\uB9AC\uAE30 \uC804 \uC0C1\uD0DC \u2014 \uBA87 \uD68C\uAC00 \uB0A8\uC558\uB294\uC9C0\uC640 \uC9C0\uAE08\uAE4C\uC9C0\uC758 \uAE30\uB85D\uC744 \uBCF4\uC5EC\uC900\uB2E4.
 const practiceCount = computed(() => trend.value?.practices.length ?? 0)
@@ -127,22 +129,26 @@ const onboardingCopy = computed(() => {
   if (!remainingPractices.value) return ONBOARDING_COPY.aggregatingCopy
   return ONBOARDING_COPY.progressCopy
 })
+const metricInsightDescription = (metric, tone) => {
+  const description = INSIGHT_COPY[metric.key]?.[tone]
+  return description?.replace('\uC774\uC804 3\uD68C', trend.value?.previousLabel ?? '\uC774\uC804 \uAE30\uB85D') ?? metric.deltaLabel
+}
 // practices\uB294 \uC624\uB798\uB41C \uC21C\uC73C\uB85C \uC624\uACE0 \uBE44\uAD50 \uC804 \uAD6C\uAC04\uC5D0\uC11C\uB294 \uC804\uCCB4 \uAE30\uB85D\uC774\uBBC0\uB85C index+1 = \uD68C\uCC28.
 const strengths = computed(() => (trend.value?.hasPreviousData ? metrics.value : [])
   .filter(({ tone }) => tone === 'positive')
   .slice(0, 3)
-  .map((metric) => ({ label: metric.label, description: INSIGHT_COPY[metric.key]?.positive ?? metric.deltaLabel })))
+  .map((metric) => ({ label: metric.label, description: metricInsightDescription(metric, 'positive') })))
 const weaknesses = computed(() => (trend.value?.hasPreviousData ? metrics.value : [])
   .filter(({ tone }) => tone === 'negative')
   .slice(0, 3)
-  .map((metric) => ({ label: metric.label, description: INSIGHT_COPY[metric.key]?.negative ?? metric.deltaLabel })))
+  .map((metric) => ({ label: metric.label, description: metricInsightDescription(metric, 'negative') })))
 const nextGoal = computed(() => {
   if (!trend.value?.hasPreviousData) return null
   const metric = metrics.value.find(({ tone }) => tone === 'negative')
   if (!metric) return null
   return {
     title: `${metric.label} \uC9C0\uD45C\uB97C \uBA3C\uC800 \uAC1C\uC120\uD574 \uBCF4\uC138\uC694.`,
-    description: INSIGHT_COPY[metric.key]?.negative ?? metric.deltaLabel,
+    description: metricInsightDescription(metric, 'negative'),
   }
 })
 
@@ -202,7 +208,7 @@ const chartConnector = computed(() => {
     <header class="trend-dashboard-head">
       <div>
         <h2>{{ COPY.title }}</h2>
-        <p>{{ COPY.intro }}</p>
+        <p>{{ dashboardIntro }}</p>
       </div>
     </header>
 
@@ -275,7 +281,7 @@ const chartConnector = computed(() => {
           <div>
             <span class="trend-section-label">{{ COPY.analysis }}</span>
             <h3>{{ COPY.insightTitle }}</h3>
-            <p>{{ COPY.insightCopy }}</p>
+            <p>{{ insightCopy }}</p>
           </div>
         </div>
 
@@ -417,8 +423,8 @@ const chartConnector = computed(() => {
             >{{ formatScore(point.value) }}{{ '\uC810' }}</text>
           </svg>
           <div class="trend-chart-groups">
-            <span :class="{ 'is-disabled': !trend.hasPreviousData }">{{ trend.hasPreviousData ? trend.previousLabel : COPY.previousThree }}</span>
-            <span>{{ COPY.recentThree }}</span>
+            <span :class="{ 'is-disabled': !trend.hasPreviousData }">{{ trend.previousLabel }}</span>
+            <span>{{ trend.recentLabel }}</span>
           </div>
         </div>
       </section>

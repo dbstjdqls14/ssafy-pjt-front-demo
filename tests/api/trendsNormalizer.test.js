@@ -20,6 +20,9 @@ const response = {
     totalTime: 3.4,
   },
   practices: [
+    { contentScore: 74, videoScore: 66, voiceScore: 74 },
+    { contentScore: 76, videoScore: 68, voiceScore: 76 },
+    { contentScore: 78, videoScore: 69, voiceScore: 78 },
     { contentScore: 90, videoScore: 80, voiceScore: 80 },
     { contentScore: 80, videoScore: 70, voiceScore: 90 },
     { contentScore: 81, videoScore: 71, voiceScore: 91 },
@@ -109,7 +112,7 @@ describe('practice trends normalizer', () => {
 
     expect(result.scoreSeries.map(({ key }) => key)).toEqual(['content', 'video', 'voice'])
     expect(result.scoreSeries.map(({ label }) => label)).toEqual(['내용', '몸짓', '음성'])
-    expect(result.scoreSeries.find(({ key }) => key === 'voice').values).toEqual([80, 90, 91])
+    expect(result.scoreSeries.find(({ key }) => key === 'voice').values).toEqual([74, 76, 78, 80, 90, 91])
   })
 
   it('keeps valid score decimals for chart math and rejects impossible score points', () => {
@@ -161,7 +164,14 @@ describe('practice trends normalizer', () => {
     })
   })
 
-  it('compares one or two earlier records with the latest three when fewer than six exist', () => {
+  it('matches the backend half-window grouping for two, four, and six records', () => {
+    const twoRecords = normalizePracticeTrends({
+      ...response,
+      practices: [
+        { contentScore: 70 },
+        { contentScore: 90 },
+      ],
+    })
     const fourRecords = normalizePracticeTrends({
       ...response,
       practices: [
@@ -171,28 +181,38 @@ describe('practice trends normalizer', () => {
         { contentScore: 90 },
       ],
     })
-    const fiveRecords = normalizePracticeTrends({
+    const sixRecords = normalizePracticeTrends({
       ...response,
       practices: [
         { contentScore: 68 },
         { contentScore: 72 },
+        { contentScore: 76 },
         { contentScore: 80 },
         { contentScore: 85 },
         { contentScore: 90 },
       ],
     })
 
-    expect(fourRecords).toMatchObject({
+    expect(twoRecords).toMatchObject({
       hasPreviousData: true,
       previousCount: 1,
-      recentCount: 3,
+      recentCount: 1,
       previousLabel: '이전 1회',
+      recentLabel: '최근 1회',
     })
-    expect(fiveRecords).toMatchObject({
+    expect(fourRecords).toMatchObject({
       hasPreviousData: true,
       previousCount: 2,
-      recentCount: 3,
+      recentCount: 2,
       previousLabel: '이전 2회',
+      recentLabel: '최근 2회',
+    })
+    expect(sixRecords).toMatchObject({
+      hasPreviousData: true,
+      previousCount: 3,
+      recentCount: 3,
+      previousLabel: '이전 3회',
+      recentLabel: '최근 3회',
     })
   })
 })

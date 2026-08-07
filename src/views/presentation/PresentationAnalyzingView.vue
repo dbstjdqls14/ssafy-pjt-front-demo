@@ -106,8 +106,8 @@ const fail = (error) => {
 const pollReport = async () => {
   if (stopped) return
   try {
-    const job = await presentation.loadProcessingStatus(presentation.sessionId)
-    const jobStatus = String(job?.processingStatus ?? job?.status ?? '').toUpperCase()
+    const job = await presentation.loadReportJobStatus(presentation.sessionId)
+    const jobStatus = String(job?.status ?? '').toUpperCase()
     reportJobStatus.value = jobStatus
 
     if (jobStatus === 'FAILED') {
@@ -379,10 +379,10 @@ onBeforeUnmount(() => {
   background: #e05252;
   color: #fff;
 }
-/* 안내 문구는 한 줄로 읽혀야 한다 → 카드 폭을 문구에 맞추고(fit-content) 설명을
-   nowrap으로 고정한다. 한 줄이 화면을 넘는 좁은 폭에서만 다시 줄바꿈을 허용한다. */
+/* 분석 안내 카드는 부모 폭 안에 고정하고 긴 문구는 카드 내부에서 줄바꿈한다. */
 .presentation-background-analysis-notice {
-  width: fit-content;
+  box-sizing: border-box;
+  width: 100%;
   max-width: 100%;
   margin: 16px auto 0;
   padding: 10px 18px;
@@ -406,11 +406,7 @@ onBeforeUnmount(() => {
   font-size: 12px;
   font-weight: 600;
   line-height: 1.45;
-  white-space: nowrap;
-}
-@media (max-width: 560px) {
-  .presentation-background-analysis-notice-description {
-    white-space: normal;
-  }
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 </style>

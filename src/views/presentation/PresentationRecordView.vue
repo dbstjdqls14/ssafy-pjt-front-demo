@@ -898,8 +898,12 @@ onBeforeUnmount(() => {
             class="record-end-btn"
             :disabled="!canFinish"
             :aria-disabled="!canFinish"
+            :aria-busy="isFinishing"
             @click="endRecording"
-          >{{ isFinishing ? '저장 중…' : '발표 마치기' }}</button>
+          >
+            <span v-if="isFinishing" class="record-end-spinner" aria-hidden="true"></span>
+            <span>{{ isFinishing ? '마치는 중…' : '발표 마치기' }}</span>
+          </button>
         </div>
       </section>
     </div>

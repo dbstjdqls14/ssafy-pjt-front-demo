@@ -261,7 +261,27 @@ describe('MyPageTrendView', () => {
     })
   })
 
-  test('uses the available earlier record when four practices exist', async () => {
+  test('uses one previous and one recent record when two analyzed practices exist', async () => {
+    userApi.getPracticeTrends.mockResolvedValue({
+      ...trendsResponse,
+      practices: trendsResponse.practices.slice(0, 2),
+    })
+
+    const wrapper = mount(MyPageTrendView)
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="trend-onboarding"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('최근 1회와 이전 1회를 비교했어요')
+    expect(wrapper.findAll('.trend-chart-groups span').map((label) => label.text())).toEqual([
+      '이전 1회',
+      '최근 1회',
+    ])
+    expect(wrapper.get('.trend-dashboard-head p').text()).toContain('최근 1회와 이전 1회')
+    expect(wrapper.get('.trend-insight-section .trend-section-head p').text()).toContain('이전 1회보다')
+    expect(wrapper.text()).not.toContain('이전 3회')
+  })
+
+  test('uses two previous and two recent records when four analyzed practices exist', async () => {
     userApi.getPracticeTrends.mockResolvedValue({
       ...trendsResponse,
       practices: trendsResponse.practices.slice(0, 4),
@@ -270,7 +290,12 @@ describe('MyPageTrendView', () => {
     const wrapper = mount(MyPageTrendView)
     await flushPromises()
 
-    expect(wrapper.text()).toContain('이전 1회')
+    expect(wrapper.text()).toContain('최근 2회와 이전 2회를 비교했어요')
+    expect(wrapper.findAll('.trend-chart-groups span').map((label) => label.text())).toEqual([
+      '이전 2회',
+      '최근 2회',
+    ])
+    expect(wrapper.get('.trend-dashboard-head p').text()).toContain('최근 2회와 이전 2회')
     expect(wrapper.find('.trend-history-missing').exists()).toBe(false)
   })
 

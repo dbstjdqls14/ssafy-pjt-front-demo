@@ -70,7 +70,7 @@ describe('PresentationAnalyzingView', () => {
     const loadReport = vi.spyOn(store, 'loadReport').mockResolvedValue({
       score: { overallScore: 91 },
     })
-    vi.spyOn(store, 'loadProcessingStatus').mockResolvedValue({ processingStatus: 'COMPLETED' })
+    vi.spyOn(store, 'loadReportJobStatus').mockResolvedValue({ status: 'COMPLETED' })
 
     const { wrapper, router } = await mountView()
 
@@ -114,7 +114,7 @@ describe('PresentationAnalyzingView', () => {
     const loadReport = vi.spyOn(store, 'loadReport').mockResolvedValue({
       score: { overallScore: 91 },
     })
-    vi.spyOn(store, 'loadProcessingStatus').mockResolvedValue({ processingStatus: 'COMPLETED' })
+    vi.spyOn(store, 'loadReportJobStatus').mockResolvedValue({ status: 'COMPLETED' })
 
     const { wrapper, router } = await mountView({ phase: 'report' })
 
@@ -125,13 +125,13 @@ describe('PresentationAnalyzingView', () => {
     wrapper.unmount()
   })
 
-  test('polls the canonical presentation status and fetches the report only after COMPLETED', async () => {
+  test('polls the report job status and fetches the report only after the report job is COMPLETED', async () => {
     const store = usePresentationStore()
     store.sessionId = 9
     store.sessionStatus = 'completed'
-    const loadStatus = vi.spyOn(store, 'loadProcessingStatus')
-      .mockResolvedValueOnce({ processingStatus: 'STT_ANALYZING' })
-      .mockResolvedValueOnce({ processingStatus: 'COMPLETED' })
+    const loadStatus = vi.spyOn(store, 'loadReportJobStatus')
+      .mockResolvedValueOnce({ status: 'STT_ANALYZING' })
+      .mockResolvedValueOnce({ status: 'COMPLETED' })
     const loadReport = vi.spyOn(store, 'loadReport').mockResolvedValue({ score: { overallScore: 91 } })
 
     const { wrapper, router } = await mountView({ phase: 'report' })
@@ -148,6 +148,33 @@ describe('PresentationAnalyzingView', () => {
     wrapper.unmount()
   })
 
+  test('does not treat the already-completed presentation document status as report readiness', async () => {
+    const store = usePresentationStore()
+    store.sessionId = 9
+    store.sessionStatus = 'completed'
+    const loadDocumentStatus = vi.spyOn(store, 'loadProcessingStatus')
+      .mockResolvedValue({ processingStatus: 'COMPLETED' })
+    vi.spyOn(store, 'loadReportJobStatus').mockResolvedValue({
+      presentationId: 9,
+      practiceId: 21,
+      audioId: 31,
+      requestId: 'job-1',
+      status: 'PENDING',
+      errorMessage: null,
+      createdAt: '2026-08-07T00:00:00',
+      updatedAt: '2026-08-07T00:00:00',
+    })
+    const loadReport = vi.spyOn(store, 'loadReport').mockResolvedValue({ score: { overallScore: 91 } })
+
+    const { wrapper, router } = await mountView({ phase: 'report' })
+
+    expect(loadDocumentStatus).not.toHaveBeenCalled()
+    expect(loadReport).not.toHaveBeenCalled()
+    expect(router.currentRoute.value.path).toBe('/presentation/analyzing')
+    expect(wrapper.text()).toContain('발표 분석 순서를 기다리고 있어요')
+    wrapper.unmount()
+  })
+
   test('shows guidance without offering a misleading reanalysis action when complete fails', async () => {
     const store = usePresentationStore()
     store.sessionId = 9
@@ -159,7 +186,7 @@ describe('PresentationAnalyzingView', () => {
         store.sessionStatus = 'completed'
       })
     vi.spyOn(store, 'loadReport').mockResolvedValue({ score: { overallScore: 80 } })
-    vi.spyOn(store, 'loadProcessingStatus').mockResolvedValue({ processingStatus: 'COMPLETED' })
+    vi.spyOn(store, 'loadReportJobStatus').mockResolvedValue({ status: 'COMPLETED' })
 
     const { wrapper, router } = await mountView()
     expect(wrapper.get('[role="alert"]').text()).toContain('업로드 실패')
@@ -179,7 +206,7 @@ describe('PresentationAnalyzingView', () => {
     store.sessionId = 9
     store.sessionStatus = 'completed'
     let resolveStatus
-    vi.spyOn(store, 'loadProcessingStatus').mockReturnValue(new Promise((resolve) => {
+    vi.spyOn(store, 'loadReportJobStatus').mockReturnValue(new Promise((resolve) => {
       resolveStatus = resolve
     }))
     markActiveRecording('presentation')
@@ -190,7 +217,7 @@ describe('PresentationAnalyzingView', () => {
     expect(notice.text()).toContain('녹화 파일을 업로드하고 있어요')
     expect(notice.text()).toContain('아직 서버에 안전하게 저장되지 않았어요')
 
-    resolveStatus({ processingStatus: 'STT_ANALYZING' })
+    resolveStatus({ status: 'STT_ANALYZING' })
     await flushPromises()
 
     expect(wrapper.get('[data-testid="presentation-analysis-notice"]').element).toBe(notice.element)
@@ -216,7 +243,7 @@ describe('PresentationAnalyzingView', () => {
     recording.tick()
     recording.addTranscript('유실될 발표 내용')
     recording.stop(new Blob(['video'], { type: 'video/webm' }))
-    markActiveRecording('presentation')
+    markActiveRecording('presentation', 'previous-document')
     const generateQuestions = vi.spyOn(store, 'generateAudienceQuestions')
 
     const { wrapper, router } = await mountView()
@@ -237,7 +264,7 @@ describe('PresentationAnalyzingView', () => {
     const store = usePresentationStore()
     store.sessionId = 9
     store.sessionStatus = 'completed'
-    vi.spyOn(store, 'loadProcessingStatus').mockResolvedValue({ processingStatus: 'STT_ANALYZING' })
+    vi.spyOn(store, 'loadReportJobStatus').mockResolvedValue({ status: 'STT_ANALYZING' })
 
     const { wrapper, router } = await mountView({ phase: 'report' })
 
@@ -256,7 +283,7 @@ describe('PresentationAnalyzingView', () => {
     const store = usePresentationStore()
     store.sessionId = 9
     store.sessionStatus = 'completed'
-    vi.spyOn(store, 'loadProcessingStatus').mockReturnValue(new Promise(() => {}))
+    vi.spyOn(store, 'loadReportJobStatus').mockReturnValue(new Promise(() => {}))
 
     const router = createRouter({
       history: createMemoryHistory(),
@@ -297,7 +324,7 @@ describe('PresentationAnalyzingView', () => {
     recording.addTranscript('유실될 발표 내용')
     recording.stop(new Blob(['video'], { type: 'video/webm' }))
     markActiveRecording('presentation')
-    vi.spyOn(store, 'loadProcessingStatus').mockReturnValue(new Promise(() => {}))
+    vi.spyOn(store, 'loadReportJobStatus').mockReturnValue(new Promise(() => {}))
 
     const router = createRouter({
       history: createMemoryHistory(),
@@ -333,7 +360,7 @@ describe('PresentationAnalyzingView', () => {
     store.sessionId = 9
     store.sessionStatus = 'completed'
     let resolveStatus
-    vi.spyOn(store, 'loadProcessingStatus').mockReturnValue(new Promise((resolve) => {
+    vi.spyOn(store, 'loadReportJobStatus').mockReturnValue(new Promise((resolve) => {
       resolveStatus = resolve
     }))
 
@@ -356,7 +383,7 @@ describe('PresentationAnalyzingView', () => {
     await flushPromises()
     expect(wrapper.find('[data-testid="presentation-analysis-exit-dialog"]').exists()).toBe(true)
 
-    resolveStatus({ processingStatus: 'PENDING' })
+    resolveStatus({ status: 'PENDING' })
     await flushPromises()
 
     expect(router.currentRoute.value.path).toBe('/presentation/qna')

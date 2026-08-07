@@ -2912,6 +2912,11 @@
 
 /* 하단 액션 바의 '발표 마치기' (타이머 알약 옆, 흰 아웃라인 필) */
 .immersive-record-page .record-end-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 126px;
   height: 46px;
   padding: 0 24px;
   border: 1px solid #cdd7ea;
@@ -2922,6 +2927,21 @@
   font-weight: 800;
   cursor: pointer;
   transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+}
+
+.immersive-record-page .record-end-spinner {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: presentation-record-end-spin .7s linear infinite;
+}
+
+@keyframes presentation-record-end-spin {
+  to { transform: rotate(360deg); }
 }
 
 .immersive-record-page .record-end-btn:hover:not(:disabled),
@@ -2940,6 +2960,10 @@
 @media (prefers-reduced-motion: reduce) {
   .immersive-record-page .record-end-btn {
     transition: none;
+  }
+
+  .immersive-record-page .record-end-spinner {
+    animation-duration: 1.6s;
   }
 }
 

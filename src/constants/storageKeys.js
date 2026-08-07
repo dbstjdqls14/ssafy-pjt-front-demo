@@ -12,5 +12,6 @@ export const SESSION_STORAGE_KEYS = Object.freeze({
   presentationFlow: 'aivo.presentation-flow',
   interviewFlow: 'aivo.interview-flow-v2',
   activeRecording: 'aivo.active-recording',
+  activeRecordingDocument: 'aivo.active-recording-document',
   recordingResetNotice: 'aivo.recording-reset-notice',
 })

@@ -15,6 +15,11 @@ const MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/face_landmark
 
 const SAMPLE_INTERVAL_MS = 300
 const GAZE_WINDOW = 20 // 최근 6초(300ms×20) 기준 — 길게 잡으면 두리번거려도 %가 굼뜨게 움직인다
+const GAZE_HORIZONTAL_THRESHOLD = 0.4
+const GAZE_UP_THRESHOLD = 0.4
+const GAZE_DOWN_THRESHOLD = 0.65
+const GAZE_YAW_THRESHOLD = 0.28
+const GAZE_DEVIATION_CONFIRM_SAMPLES = 2
 
 // FaceMesh 랜드마크 인덱스: 33 = 오른눈 바깥, 263 = 왼눈 바깥, 1 = 코끝
 const RIGHT_EYE = 33
@@ -40,6 +45,7 @@ export const useFaceAnalysis = () => {
   const gazeSamples = []
   const tiltSamples = []
   let wasFrontal = null
+  let consecutiveDeviationSamples = 0
 
   // 리포트의 몸짓 그래프(구간별 그래프)가 실제로 움직이려면 "언제 무슨 일이
   // 있었는지" 시간 정보가 있어야 한다 — 세션 전체 요약(카운트/퍼센트) 하나만
@@ -81,6 +87,7 @@ export const useFaceAnalysis = () => {
     activeStartedAt = 0
     gazeEvents = []
     tiltBucketCounts = []
+    consecutiveDeviationSamples = 0
   }
 
   const loadLandmarker = async () => {
@@ -117,11 +124,23 @@ export const useFaceAnalysis = () => {
     gazeScore.value = Math.round((gazeSamples.filter(Boolean).length / gazeSamples.length) * 100)
     // 정면(frontal)이다가 벗어난 "순간"만 1회로 센다 — 계속 벗어나 있는 동안
     // 매 프레임(300ms)마다 세면 몇 초 만에 수십 회가 돼 의미가 없어진다.
-    if (wasFrontal === true && !isFrontal) {
-      gazeDeviationCount.value += 1
-      gazeEvents.push({ atSec: Math.round(elapsedSec()) })
+    if (isFrontal) {
+      consecutiveDeviationSamples = 0
+      wasFrontal = true
+      return
     }
-    wasFrontal = isFrontal
+    if (wasFrontal === true) {
+      consecutiveDeviationSamples += 1
+      if (consecutiveDeviationSamples >= GAZE_DEVIATION_CONFIRM_SAMPLES) {
+        gazeDeviationCount.value += 1
+        gazeEvents.push({ atSec: Math.round(elapsedSec()) })
+        consecutiveDeviationSamples = 0
+        wasFrontal = false
+      }
+      return
+    }
+    consecutiveDeviationSamples = 0
+    wasFrontal = false
   }
   // postureLabel과 같은 기준(±10도 또는 얼굴 미검출 = 기울어짐)으로 세션 누적치를 센다.
   const trackPostureSample = (isTilted) => {
@@ -193,13 +212,15 @@ export const useFaceAnalysis = () => {
       const lookRight = pair('eyeLookInLeft', 'eyeLookOutRight')
       const lookUp = pair('eyeLookUpLeft', 'eyeLookUpRight')
       const lookDown = pair('eyeLookDownLeft', 'eyeLookDownRight')
-      // 곁눈질 점수는 0.2~0.4 수준에서도 체감상 '딴 데 본다'라 임계값을 낮게 잡는다.
-      const eyesOnScreen = Math.max(lookLeft, lookRight) < 0.32 && lookUp < 0.32 && lookDown < 0.55
-      pushGazeSample(eyesOnScreen && Math.abs(yawRatio) < 0.22)
+      // 자연스러운 눈 움직임은 정면 범위로 허용하고, 지속되는 이탈만 별도로 확정한다.
+      const eyesOnScreen = Math.max(lookLeft, lookRight) < GAZE_HORIZONTAL_THRESHOLD
+        && lookUp < GAZE_UP_THRESHOLD
+        && lookDown < GAZE_DOWN_THRESHOLD
+      pushGazeSample(eyesOnScreen && Math.abs(yawRatio) < GAZE_YAW_THRESHOLD)
     } else {
       // 블렌드셰이프가 없으면(모델 옵션 미지원) 기하 근사로 대체
       const pitchRatio = (nose.y - midY) / eyeDist
-      pushGazeSample(Math.abs(yawRatio) < 0.2 && pitchRatio > 0.3 && pitchRatio < 1.0)
+      pushGazeSample(Math.abs(yawRatio) < GAZE_YAW_THRESHOLD && pitchRatio > 0.3 && pitchRatio < 1.0)
     }
   }
 
@@ -229,6 +250,7 @@ export const useFaceAnalysis = () => {
     // A pause/resume boundary is not a gaze-deviation event. The first sample
     // after resuming only establishes the new baseline.
     wasFrontal = null
+    consecutiveDeviationSamples = 0
     if (clearTarget) videoEl = null
   }
 

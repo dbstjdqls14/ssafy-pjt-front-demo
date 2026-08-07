@@ -205,7 +205,7 @@ describe('PresentationQnaView answer persistence', () => {
     recording.tick()
     recording.addTranscript('유실될 답변')
     recording.stop(new Blob(['video'], { type: 'video/webm' }))
-    markActiveRecording('presentation')
+    markActiveRecording('presentation', 'previous-document')
     const router = createRouter({
       history: createMemoryHistory(),
       routes: [

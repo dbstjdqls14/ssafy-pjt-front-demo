@@ -23,6 +23,18 @@ body.presentation-ready-page {
   transform: none;
 }
 
+/* The shared flow stylesheet constrains ready screens to a fixed viewport row
+   and hides overflow at three nested levels. The slide review is taller than
+   that row on short viewports, so its bottom actions get clipped before the
+   page scroller can reach them. Let this review route size from its content;
+   the body already owns vertical scrolling for this page. */
+.presentation-ready-page .presentation-flow-shell,
+.presentation-ready-page .wizard-shell,
+.presentation-ready-page .workflow-stage-content.ready-flow-content {
+  height: auto;
+  overflow: visible;
+}
+
 .presentation-ready-page .ready-confirm-card {
   width: min(600px, 100%);
   margin: 0 auto;
@@ -113,7 +125,6 @@ body.presentation-ready-page {
 }
 
 .presentation-ready-page .ready-review-actions {
-  margin: 0;
   padding-top: 4px;
 }
 
