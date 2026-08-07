@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { queryRequiredMediaPermissions } from '../../composables/useMediaDevices.js'
 import { usePresentationStore } from '../../stores/presentationStore.js'
 
 const router = useRouter()
@@ -11,6 +12,51 @@ const checks = ref({ screen: false, audio: false, ppt: false, ready: false })
 const canOpenReview = ref(false)
 const readyState = ref('checklist') // 'checklist' | 'review' | 'ready'
 const slideError = ref('')
+const permissionStates = ref({ video: 'checking', audio: 'checking' })
+const permissionResolved = ref(false)
+const checkSteps = [
+  { key: 'screen', title: '화면 연결 확인', doneStatus: '연결 정상', pendingStatus: '연결 확인 중', automatic: true },
+  { key: 'audio', title: '음성 오디오 확인', doneStatus: '오디오 정상', pendingStatus: '오디오 확인 중', automatic: true },
+  { key: 'ppt', title: '발표 PPT 업로드', doneStatus: '업로드 완료', pendingStatus: '확인 필요', automatic: true, opensReview: true },
+  { key: 'ready', title: '발표 준비', doneStatus: '작성 완료', pendingStatus: '작성 완료', automatic: false, reviewAction: true },
+]
+const automaticCheckSteps = checkSteps.filter((step) => step.automatic)
+const permissionGranted = (state) => state === 'granted' || state === 'unsupported'
+const devicePermissionMessage = computed(() => {
+  if (!permissionResolved.value) return ''
+  const cameraMissing = !permissionGranted(permissionStates.value.video)
+  const microphoneMissing = !permissionGranted(permissionStates.value.audio)
+  if (cameraMissing && microphoneMissing) return '카메라와 마이크 권한이 필요합니다. 장치 확인 화면에서 권한을 허용해주세요.'
+  if (cameraMissing) return '카메라 권한이 필요합니다. 장치 확인 화면에서 권한을 허용해주세요.'
+  if (microphoneMissing) return '마이크 권한이 필요합니다. 장치 확인 화면에서 권한을 허용해주세요.'
+  return ''
+})
+
+const refreshDevicePermissions = async ({ applyChecks = true } = {}) => {
+  const states = await queryRequiredMediaPermissions()
+  if (!active) return false
+  permissionStates.value = states
+  permissionResolved.value = true
+  const screenAllowed = permissionGranted(states.video)
+  const audioAllowed = permissionGranted(states.audio)
+  if (applyChecks) {
+    checks.value.screen = screenAllowed
+    checks.value.audio = audioAllowed
+  }
+  const allowed = screenAllowed && audioAllowed
+  if (!allowed) {
+    checks.value.ready = false
+    if (readyState.value === 'ready') readyState.value = 'checklist'
+    presentation.setPreflightDone(false)
+  }
+  return allowed
+}
+
+const stepStatus = (step) => {
+  if (checks.value[step.key]) return step.doneStatus
+  if (permissionResolved.value && (step.key === 'screen' || step.key === 'audio')) return '권한 필요'
+  return step.pendingStatus
+}
 
 const reviewIndex = ref(0)
 const slides = computed(() => presentation.slides)
@@ -38,24 +84,59 @@ const confirmSlides = async () => {
   checks.value.ready = true
   await wait(520)
   if (!active) return
+  if (!await refreshDevicePermissions()) return
   readyState.value = 'ready'
+  // 이 다음부터는(핵심 내용을 고치러 돌아갔다 와도) 같은 확인을 반복하지 않는다.
+  presentation.setPreflightDone(true)
 }
-const start = () => { if (readyState.value === 'ready') router.push('/presentation/record') }
+const start = async () => {
+  if (readyState.value !== 'ready' || !await refreshDevicePermissions()) return
+  router.push('/presentation/record')
+}
+
+const onPermissionFocus = () => { void refreshDevicePermissions() }
+const onPermissionVisibility = () => {
+  if (document.visibilityState === 'visible') void refreshDevicePermissions()
+}
 
 onMounted(async () => {
+  window.addEventListener('focus', onPermissionFocus)
+  document.addEventListener('visibilitychange', onPermissionVisibility)
+  await refreshDevicePermissions({ applyChecks: false })
   await presentation.ensureSlidesLoaded()
-  for (const key of ['screen', 'audio']) {
+  const hasRenderableSlides = presentation.hasRenderableSlides
+  if (!hasRenderableSlides) {
+    slideError.value = '변환된 슬라이드 이미지를 불러오지 못했습니다. 발표 자료를 다시 업로드해 주세요.'
+  }
+
+  // 이미 한 번 확인을 끝낸 연습이면 체크 애니메이션·슬라이드 확인을 건너뛰고
+  // 바로 '발표 시작'을 열어 준다. ('다시 작성하러 가기' 후 재진입 경로)
+  if (presentation.preflightDone && hasRenderableSlides) {
+    checks.value.screen = permissionGranted(permissionStates.value.video)
+    checks.value.audio = permissionGranted(permissionStates.value.audio)
+    checks.value.ppt = true
+    checks.value.ready = checks.value.screen && checks.value.audio
+    canOpenReview.value = true
+    readyState.value = checks.value.ready ? 'ready' : 'checklist'
+    return
+  }
+
+  for (const step of automaticCheckSteps) {
     await wait(760)
     if (!active) return
-    checks.value[key] = true
+    let completed
+    if (step.key === 'screen') completed = permissionGranted(permissionStates.value.video)
+    else if (step.key === 'audio') completed = permissionGranted(permissionStates.value.audio)
+    else completed = hasRenderableSlides
+    checks.value[step.key] = completed
+    if (step.opensReview) canOpenReview.value = completed
   }
-  checks.value.ppt = presentation.hasRenderableSlides
-  canOpenReview.value = checks.value.ppt
-  if (!checks.value.ppt) slideError.value = '변환된 슬라이드 이미지를 불러오지 못했습니다. 발표 자료를 다시 업로드해 주세요.'
 })
 
 onBeforeUnmount(() => {
   active = false
+  window.removeEventListener('focus', onPermissionFocus)
+  document.removeEventListener('visibilitychange', onPermissionVisibility)
   timers.forEach(clearTimeout)
 })
 </script>
@@ -67,23 +148,16 @@ onBeforeUnmount(() => {
         <div class="workflow-stage-content ready-flow-content" data-flow-content>
           <section v-show="readyState !== 'review'" class="ready-confirm-card" aria-label="설정 확인 항목">
             <ol class="ready-check-list" aria-live="polite">
-              <li class="ready-item" :class="{ done: checks.screen }">
-                <i class="ready-check-icon" aria-hidden="true">{{ checks.screen ? '✓' : '' }}</i>
-                <div><strong>화면 연결 확인</strong><span class="status">연결 정상</span></div>
-              </li>
-              <li class="ready-item" :class="{ done: checks.audio }">
-                <i class="ready-check-icon" aria-hidden="true">{{ checks.audio ? '✓' : '' }}</i>
-                <div><strong>음성 오디오 확인</strong><span class="status">오디오 정상</span></div>
-              </li>
-              <li class="ready-item" :class="{ done: checks.ppt }">
-                <i class="ready-check-icon" aria-hidden="true">{{ checks.ppt ? '✓' : '' }}</i>
-                <div><strong>발표 PPT 업로드</strong><span class="status">{{ checks.ppt ? '업로드 완료' : '확인 필요' }}</span></div>
-              </li>
-              <li class="ready-item" :class="{ done: checks.ready }">
-                <i class="ready-check-icon" aria-hidden="true">{{ checks.ready ? '✓' : '' }}</i>
-                <div class="ready-item-main">
-                  <div><strong>발표 준비</strong><span class="status">작성 완료</span></div>
-                  <button type="button" class="ready-review-link" :disabled="!canOpenReview" @click="openReview">
+              <li
+                v-for="step in checkSteps"
+                :key="step.key"
+                class="ready-item"
+                :class="{ done: checks[step.key] }"
+              >
+                <i class="ready-check-icon" aria-hidden="true">{{ checks[step.key] ? '✓' : '' }}</i>
+                <div :class="{ 'ready-item-main': step.reviewAction }">
+                  <div><strong>{{ step.title }}</strong><span class="status">{{ stepStatus(step) }}</span></div>
+                  <button v-if="step.reviewAction" type="button" class="ready-review-link" :disabled="!canOpenReview" @click="openReview">
                     슬라이드 확인하러가기
                   </button>
                 </div>
@@ -91,6 +165,9 @@ onBeforeUnmount(() => {
             </ol>
 
             <p v-if="slideError" class="ready-slide-error" role="alert">{{ slideError }}</p>
+            <p v-if="devicePermissionMessage" class="ready-slide-error" role="alert">
+              {{ devicePermissionMessage }}
+            </p>
 
             <button
               type="button"

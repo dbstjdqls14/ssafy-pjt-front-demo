@@ -6,7 +6,16 @@ const DEFAULT_POSE_MODEL = 'https://storage.googleapis.com/mediapipe-models/pose
 const clampScore = (value) => Math.round(Math.min(100, Math.max(0, value)))
 const safeRatio = (value, base) => (Math.abs(base) < 0.0001 ? 0 : value / Math.abs(base))
 
-export const scoreFaceAlignment = (landmarks = []) => {
+const averageCategoryScore = (categories, names) => {
+  const values = names
+    .map((name) => categories.find((category) => category.categoryName === name)?.score)
+    .filter((score) => Number.isFinite(score))
+  return values.length
+    ? values.reduce((total, score) => total + score, 0) / values.length
+    : 0
+}
+
+export const scoreFaceAlignment = (landmarks = [], blendshapes = []) => {
   if (landmarks.length < 474) return null
 
   const leftEyeOuter = landmarks[33]
@@ -28,30 +37,47 @@ export const scoreFaceAlignment = (landmarks = []) => {
   const headOffset = safeRatio(Math.abs(nose.x - eyesCenter), faceWidth)
   const irisOffset = (Math.abs(leftRatio - 0.5) + Math.abs(rightRatio - 0.5)) / 2
 
-  return clampScore(100 - irisOffset * 150 - headOffset * 110)
+  const geometryScore = 100 - irisOffset * 150 - headOffset * 110
+  if (!blendshapes.length) return clampScore(geometryScore)
+
+  const lookLeft = averageCategoryScore(blendshapes, ['eyeLookOutLeft', 'eyeLookInRight'])
+  const lookRight = averageCategoryScore(blendshapes, ['eyeLookInLeft', 'eyeLookOutRight'])
+  const lookUp = averageCategoryScore(blendshapes, ['eyeLookUpLeft', 'eyeLookUpRight'])
+  const lookDown = averageCategoryScore(blendshapes, ['eyeLookDownLeft', 'eyeLookDownRight'])
+  const horizontalPenalty = Math.max(lookLeft, lookRight) * 100
+  const verticalPenalty = Math.max(lookUp, Math.max(0, lookDown - 0.2)) * 80
+
+  return clampScore(geometryScore - horizontalPenalty - verticalPenalty)
 }
 
-export const scorePosture = (landmarks = []) => {
-  if (landmarks.length < 25) return null
+export const scorePosture = (landmarks = [], aspectRatio = 1) => {
+  if (landmarks.length < 13) return null
 
   const leftShoulder = landmarks[11]
   const rightShoulder = landmarks[12]
-  const leftHip = landmarks[23]
-  const rightHip = landmarks[24]
 
-  if (![leftShoulder, rightShoulder, leftHip, rightHip].every(Boolean)) return null
+  if (![leftShoulder, rightShoulder].every(Boolean)) return null
 
   const shoulderWidth = Math.max(Math.abs(rightShoulder.x - leftShoulder.x), 0.01)
-  const shoulderTilt = Math.abs(leftShoulder.y - rightShoulder.y) / shoulderWidth
-  const shoulderCenterX = (leftShoulder.x + rightShoulder.x) / 2
-  const hipCenterX = (leftHip.x + rightHip.x) / 2
-  const torsoLean = Math.abs(shoulderCenterX - hipCenterX) / shoulderWidth
+  const safeAspectRatio = Number.isFinite(aspectRatio) && aspectRatio > 0 ? aspectRatio : 1
+  const shoulderTilt = Math.abs(leftShoulder.y - rightShoulder.y)
+    / (shoulderWidth * safeAspectRatio)
   const shoulderVisibility = Math.min(leftShoulder.visibility ?? 1, rightShoulder.visibility ?? 1)
-  const hipVisibility = Math.min(leftHip.visibility ?? 1, rightHip.visibility ?? 1)
 
-  if (Math.min(shoulderVisibility, hipVisibility) < 0.35) return null
+  if (shoulderVisibility < 0.35) return null
 
-  return clampScore(100 - shoulderTilt * 180 - torsoLean * 220)
+  let score = 100 - shoulderTilt * 180
+  const leftHip = landmarks[23]
+  const rightHip = landmarks[24]
+  const hipVisibility = Math.min(leftHip?.visibility ?? 0, rightHip?.visibility ?? 0)
+  if (leftHip && rightHip && hipVisibility >= 0.25) {
+    const shoulderCenterX = (leftShoulder.x + rightShoulder.x) / 2
+    const hipCenterX = (leftHip.x + rightHip.x) / 2
+    const torsoLean = Math.abs(shoulderCenterX - hipCenterX) / shoulderWidth
+    score -= torsoLean * 220
+  }
+
+  return clampScore(score)
 }
 
 let modelPromise = null
@@ -72,6 +98,7 @@ const createModels = async (delegate) => {
     minFaceDetectionConfidence: 0.5,
     minFacePresenceConfidence: 0.5,
     minTrackingConfidence: 0.5,
+    outputFaceBlendshapes: true,
   })
 
   try {
@@ -106,11 +133,15 @@ export const analyzePresentationFrame = async (video, timestampMs) => {
   const poseResult = models.poseLandmarker.detectForVideo(video, timestampMs)
 
   const faceLandmarks = faceResult.faceLandmarks?.[0] ?? []
+  const faceBlendshapes = faceResult.faceBlendshapes?.[0]?.categories ?? []
   const poseLandmarks = poseResult.landmarks?.[0] ?? []
+  const aspectRatio = video.videoWidth && video.videoHeight
+    ? video.videoWidth / video.videoHeight
+    : 1
 
   return {
-    gazeScore: scoreFaceAlignment(faceLandmarks),
-    postureScore: scorePosture(poseLandmarks),
+    gazeScore: scoreFaceAlignment(faceLandmarks, faceBlendshapes),
+    postureScore: scorePosture(poseLandmarks, aspectRatio),
     faceDetected: faceLandmarks.length > 0,
     poseDetected: poseLandmarks.length > 0,
     delegate: models.delegate,

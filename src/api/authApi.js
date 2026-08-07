@@ -6,8 +6,21 @@ export const authApi = {
     return post('/auth/login', credentials)
   },
 
+  // 회원가입 — 백엔드 실제 경로는 /auth/signup (기존 /auth/register 아님).
+  signup(payload) {
+    return post('/auth/signup', payload)
+  },
+
+  // 하위호환 별칭: 기존 호출부가 register를 쓰더라도 동작하도록 유지.
   register(payload) {
-    return post('/auth/register', payload)
+    return post('/auth/signup', payload)
+  },
+
+  // 액세스 토큰 재발급(RTR). refreshToken은 바디로 전달.
+  // ⚠️ 현재 배포는 login/signup이 refreshToken을 내려주지 않아 실사용 불가 —
+  // 백엔드가 refreshToken 전달 방식을 확정하면 연결한다.
+  reissue(refreshToken) {
+    return post('/auth/reissue', { refreshToken })
   },
 
   logout() {

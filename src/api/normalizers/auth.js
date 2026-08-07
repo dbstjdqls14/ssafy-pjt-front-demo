@@ -1,5 +1,12 @@
 import { unwrapApiResponse } from '../response.js'
 
+// 로그인/회원가입 응답에서 accessToken 추출. 실제 형태: { tokenResponse: { accessToken } }.
+// 혹시 모를 변형(최상위 accessToken)도 함께 수용.
+export const extractAccessToken = (response) => {
+  const value = unwrapApiResponse(response)
+  return value?.tokenResponse?.accessToken ?? value?.accessToken ?? null
+}
+
 export const extractAuthUser = (response) => {
   const value = unwrapApiResponse(response)
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null

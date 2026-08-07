@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 
 import { authApi } from '../../api/index.js'
 import { withMock } from '../../api/withMock.js'
+import { INPUT_LIMITS } from '../../constants/inputLimits.js'
 import { authMessages, isEmail } from '../../utils/validators.js'
 
 const route = useRoute()
@@ -30,6 +31,9 @@ const submitFindId = async () => {
   let valid = true
   if (!findName.value.trim()) {
     errors.value.findName = authMessages.name
+    valid = false
+  } else if (findName.value.trim().length > INPUT_LIMITS.USERNAME) {
+    errors.value.findName = `이름은 ${INPUT_LIMITS.USERNAME}자 이하로 입력해 주세요.`
     valid = false
   }
   if (!isEmail(findEmail.value)) {
@@ -94,12 +98,12 @@ onMounted(() => {
       <form v-show="activeTab === 'id'" novalidate @submit.prevent="submitFindId">
         <div class="form-field" :class="{ 'field-invalid': errors.findName }">
           <label for="name">이름</label>
-          <input id="name" v-model="findName" type="text" placeholder="가입 시 입력한 이름" @input="errors.findName = ''" />
+          <input id="name" v-model="findName" type="text" :maxlength="INPUT_LIMITS.USERNAME" placeholder="가입 시 입력한 이름" @input="errors.findName = ''" />
           <small v-if="errors.findName" class="field-error">{{ errors.findName }}</small>
         </div>
         <div class="form-field" :class="{ 'field-invalid': errors.findEmail }">
           <label for="idEmail">가입한 이메일</label>
-          <input id="idEmail" v-model="findEmail" type="email" placeholder="you@example.com" @input="errors.findEmail = ''" />
+          <input id="idEmail" v-model="findEmail" type="email" :maxlength="INPUT_LIMITS.EMAIL" placeholder="you@example.com" @input="errors.findEmail = ''" />
           <small v-if="errors.findEmail" class="field-error">{{ errors.findEmail }}</small>
         </div>
         <button type="submit" class="auth-submit" :disabled="submitting">{{ submitting ? '조회 중…' : '아이디 찾기' }}</button>
@@ -108,7 +112,7 @@ onMounted(() => {
       <form v-show="activeTab === 'password'" novalidate @submit.prevent="submitResetPw">
         <div class="form-field" :class="{ 'field-invalid': errors.resetEmail }">
           <label for="pwEmail">가입한 이메일</label>
-          <input id="pwEmail" v-model="resetEmail" type="email" placeholder="you@example.com" @input="errors.resetEmail = ''" />
+          <input id="pwEmail" v-model="resetEmail" type="email" :maxlength="INPUT_LIMITS.EMAIL" placeholder="you@example.com" @input="errors.resetEmail = ''" />
           <small v-if="errors.resetEmail" class="field-error">{{ errors.resetEmail }}</small>
         </div>
         <button type="submit" class="auth-submit" :disabled="submitting">{{ submitting ? '보내는 중…' : '재설정 링크 보내기' }}</button>

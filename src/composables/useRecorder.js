@@ -34,18 +34,62 @@ export const useRecorder = () => {
     isPaused.value = false
   }
 
-  const pause = () => {
-    if (recorder.value?.state === 'recording') {
-      recorder.value.pause()
-      isPaused.value = true
+  const waitForStateTransition = ({ expectedState, eventName, action, paused }) => {
+    const current = recorder.value
+    if (!current) return Promise.resolve(false)
+    if (current.state === expectedState) {
+      isPaused.value = paused
+      return Promise.resolve(true)
     }
+
+    return new Promise((resolve, reject) => {
+      const cleanup = () => {
+        current.removeEventListener(eventName, onTransition)
+        current.removeEventListener('error', onError)
+      }
+      const onTransition = () => {
+        cleanup()
+        isPaused.value = paused
+        resolve(true)
+      }
+      const onError = (event) => {
+        cleanup()
+        reject(event?.error ?? new Error(`MediaRecorder ${eventName} failed`))
+      }
+
+      current.addEventListener(eventName, onTransition, { once: true })
+      current.addEventListener('error', onError, { once: true })
+      try {
+        action(current)
+      } catch (error) {
+        cleanup()
+        reject(error)
+      }
+    })
+  }
+
+  const pause = () => {
+    if (recorder.value?.state !== 'recording') {
+      return Promise.resolve(recorder.value?.state === 'paused')
+    }
+    return waitForStateTransition({
+      expectedState: 'paused',
+      eventName: 'pause',
+      action: (current) => current.pause(),
+      paused: true,
+    })
   }
 
   const resume = () => {
-    if (recorder.value?.state === 'paused') {
-      recorder.value.resume()
-      isPaused.value = false
+    if (recorder.value?.state !== 'paused') {
+      return Promise.resolve(recorder.value?.state === 'recording')
     }
+    return waitForStateTransition({
+      expectedState: 'recording',
+      eventName: 'resume',
+      action: (current) => current.resume(),
+      paused: false,
+    })
   }
 
   const stop = () => {

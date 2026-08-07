@@ -16,18 +16,30 @@ const displayTime = (value) => {
 
 export const normalizeArchiveRecord = (item, index = 0) => {
   const recordedAt = item.recordedAt ?? item.completedAt ?? item.createdAt
-  const durationSeconds = Number(item.durationSeconds)
+  const durationSeconds = item.durationSeconds == null || item.durationSeconds === ''
+    ? Number.NaN
+    : Number(item.durationSeconds)
+  const rawScore = item.score ?? item.overallScore
+  const numericScore = rawScore == null || rawScore === '' ? null : Number(rawScore)
+  const score = Number.isFinite(numericScore) && numericScore >= 0 && numericScore <= 100
+    ? numericScore
+    : null
+  const roundedDurationSeconds = Number.isFinite(durationSeconds) && durationSeconds >= 0
+    ? Math.round(durationSeconds)
+    : undefined
   return {
     ...item,
     id: String(item.reportId ?? item.recordId ?? item.id ?? `record-${index + 1}`),
+    presentationId: item.presentationId ?? item.presentation?.presentationId ?? null,
+    interviewId: item.interviewId ?? item.interview?.interviewId ?? null,
     folderId: item.folderId ?? item.practiceFolderId ?? null,
     type: String(item.type ?? item.practiceType ?? 'presentation').toLowerCase(),
     title: item.title ?? item.folderName ?? item.sessionTitle ?? `연습 기록 ${index + 1}`,
     date: displayDate(item.date ?? recordedAt),
     time: displayTime(item.time ?? recordedAt),
-    score: Number(item.score ?? item.overallScore ?? 0),
-    duration: item.duration ?? (Number.isFinite(durationSeconds) ? `${Math.floor(durationSeconds / 60)}분 ${String(durationSeconds % 60).padStart(2, '0')}초` : '-'),
-    durationSeconds: Number.isFinite(durationSeconds) ? durationSeconds : undefined,
+    score,
+    duration: item.duration ?? (roundedDurationSeconds != null ? `${Math.floor(roundedDurationSeconds / 60)}분 ${String(roundedDurationSeconds % 60).padStart(2, '0')}초` : '-'),
+    durationSeconds: roundedDurationSeconds,
     recordingId: item.recordingId ?? item.recording?.id ?? null,
     recordingUrl: item.recordingUrl ?? item.videoUrl ?? item.mediaUrl ?? item.recording?.url ?? null,
   }

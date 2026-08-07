@@ -12,9 +12,9 @@
 - **프론트**: Vue 3(`<script setup>` SFC) + Vite. 상태 관리는 **Pinia**, 라우팅은 **Vue Router**(`createWebHistory`).
 - 화면은 `src/views`의 SFC가 렌더링하고, `route.meta.layout`으로 `DefaultLayout`(헤더/스텝/푸터) 또는 `ImmersiveLayout`(홈·녹화)을 선택.
 - 녹화·카메라·음성 인식·홈 스크롤 연출과 공통 타이머 수명주기는 `src/composables`에서 관리하고, 슬라이드 상태는 `presentationStore`가 담당.
-- 백엔드 통신은 `src/api`(`client.js` fetch 래퍼 + 도메인 API). `withMock`은 네트워크 실패·미구현 endpoint·SPA fallback에만 목을 사용하며 인증·권한·검증 오류는 호출자에게 전달한다.
+- 백엔드 통신은 `src/api`(`client.js` fetch 래퍼 + 도메인 API). 연습 폴더와 면접 카탈로그·질문 생성/관리는 실제 API만 사용하고, 아직 미연동인 도메인만 제한적으로 `withMock` 폴백을 사용한다.
 - 데이터 임시 저장: `localStorage`(사용자 `aivo.user`, 기록 `aivo.session-history.v2`), `sessionStorage`(발표/면접 위저드 드래프트). 키는 `constants/storageKeys.js`, JSON 직렬화·복원은 `utils/storage.js`에서 공통 관리한다.
-- 발표 녹화의 시선·자세 분석은 브라우저 MediaPipe, 음량 분석은 Web Audio로 연결됨. 생성형 AI 기반 핵심 내용·질문 생성과 의미 기반 평가, 면접 분석은 아직 목 데이터이며 백엔드 Spring Boot REST·AI FastAPI 연동이 필요함.
+- 발표 녹화의 시선·자세 분석은 브라우저 MediaPipe, 음량 분석은 Web Audio로 연결됨. 면접 질문 생성은 Spring의 `POST /interviews` 응답을 사용한다. 발표 청중 질문·내용 의미 평가 등 남은 AI 기능은 추가 연동이 필요함.
 - 상세 구조는 `docs/frontend-structure.md`, 배포/연동은 `docs/backend-integration-guide.md`.
 
 ## 3. 핵심 사용자 흐름

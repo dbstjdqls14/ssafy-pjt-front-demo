@@ -47,7 +47,7 @@ src/
 2. **components** = 여러 화면에서 재사용하거나 화면 내부에서 분리한 UI 조각.
 3. **stores**(Pinia) = 로그인 사용자·연습 세션·녹화 상태·기록 등 공유 상태. `defineStore`.
 4. **composables** = 카메라/마이크(`useMediaDevices`), 녹화(`useRecorder`), 음성 인식(`useSpeechRecognition`), 검색 지연 호출(`useDebouncedCallback`), 점수 카운트업(`useCountUp`), 홈 스크롤 연출(`useHomeMotion`), 발표 시선·자세·음량(`useRealtimePresentationAnalysis`). 슬라이드 상태와 이동은 `presentationStore`가 관리.
-5. **api** = 백엔드 endpoint 통신 함수. `withMock(request, mock)`은 네트워크 실패·미구현 endpoint·SPA fallback에만 목을 사용하고, 인증·권한·검증 오류는 호출자에게 그대로 전달한다. HTTP 응답 envelope은 `response.js`, 선택 쿼리는 `query.js`, 파일·녹화 payload는 `formData.js`에서 공통 처리한다. 서버 DTO의 필드 별칭·기본값 변환은 `normalizers/`, 세션 요청 DTO 조립은 `payloads/`에 둔다.
+5. **api** = 백엔드 endpoint 통신 함수. 연습 폴더와 면접 카탈로그·질문 생성/관리는 실제 API만 사용한다. 그 외 미연동 기능의 `withMock(request, mock)`은 네트워크 실패·미구현 endpoint·SPA fallback에만 목을 사용하고, 인증·권한·검증 오류는 호출자에게 그대로 전달한다. HTTP 응답 envelope은 `response.js`, 서버 숫자 ID 검증은 `serverId.js`, 선택 쿼리는 `query.js`, 파일·녹화 payload는 `formData.js`에서 공통 처리한다.
 6. **mocks** = `withMock`의 fallback fixture. Store에는 목 목록을 직접 선언하지 않고 상태·정규화·API 흐름만 유지.
 7. **디자인** = `assets/styles/tokens.css`의 CSS 변수 + `assets/styles/global/*`(공통 크롬)·`assets/styles/views/*`(화면별 CSS, body 클래스로 스코프). 룩은 파스텔 라벤더-글래스.
 8. **constants** = local/session storage 키처럼 여러 store가 함께 쓰는 계약. 문자열을 각 store에 중복 선언하지 않음.
@@ -73,7 +73,7 @@ src/
 | 기록/리포트 | `src/api/archiveApi.js`, `src/stores/archiveStore.js` |
 | 녹화/카메라 | `src/composables/useMediaDevices.js`, `useRecorder.js` |
 
-각 store의 데이터 로딩은 `withMock`을 통과합니다. 실제 endpoint가 200을 주면 목은 사용되지 않으므로, 백엔드는 `src/api/*Api.js`의 경로/응답 형태만 맞추면 됩니다.
+연습 폴더와 면접 설정·질문 흐름은 `withMock`을 거치지 않습니다. 실제 API 장애를 화면에 표시하며, 로컬 목 ID가 실제 Spring `Long` 필드로 전송되지 않도록 요청 전에 검증합니다. 아직 백엔드 미연동인 나머지 기능만 제한적으로 목 폴백을 사용합니다.
 
 ## 검증
 

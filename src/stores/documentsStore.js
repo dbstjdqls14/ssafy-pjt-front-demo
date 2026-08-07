@@ -1,59 +1,72 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
-import { documentApi, readApiCollection, unwrapApiResponse } from '../api/index.js'
 import {
-  formatDocumentSize as formatSize,
-  inferDocumentType as inferType,
-  normalizeDocument,
+  portfolioApi,
+  readApiCollection,
+  resumeApi,
+  unwrapApiResponse,
+} from '../api/index.js'
+import {
+  mergeSupportDocuments,
+  normalizePortfolioDocument,
+  normalizeResumeDocument,
+  parseSupportDocumentId,
 } from '../api/normalizers/documents.js'
-import { withMock } from '../api/withMock.js'
-import { LOCAL_STORAGE_KEYS } from '../constants/storageKeys.js'
-import { supportDocumentMocks } from '../mocks/supportDocuments.js'
-import { createOpaqueLocalId } from '../utils/id.js'
-import { readJsonStorage, writeJsonStorage } from '../utils/storage.js'
+import { validateSupportDocumentFile } from '../utils/supportDocumentFiles.js'
 
-const STORAGE_KEY = LOCAL_STORAGE_KEYS.supportDocuments
-
-const responseItems = (response) => readApiCollection(response, ['items', 'documents', 'content'])
-const readLocal = () => {
-  const stored = readJsonStorage(localStorage, STORAGE_KEY)
-  if (Array.isArray(stored)) return stored.map(normalizeDocument)
-  const seed = supportDocumentMocks.map((item) => ({ ...item }))
-  writeJsonStorage(localStorage, STORAGE_KEY, seed)
-  return seed
-}
+const resumeItems = (response) => readApiCollection(response, ['resumes', 'items', 'content'])
+const portfolioItems = (response) => readApiCollection(response, ['portfolios', 'items', 'content'])
 
 export const useDocumentsStore = defineStore('documents', () => {
-  const documents = ref(readLocal())
+  const resumes = ref([])
+  const portfolios = ref([])
   const loading = ref(false)
   const error = ref('')
 
-  const persist = () => {
-    const serializable = documents.value.map((item) => ({
-      ...item,
-      previewUrl: item.previewUrl?.startsWith?.('blob:') ? null : item.previewUrl,
-      downloadUrl: item.downloadUrl?.startsWith?.('blob:') ? null : item.downloadUrl,
-    }))
-    writeJsonStorage(localStorage, STORAGE_KEY, serializable)
+  const documents = computed(() => mergeSupportDocuments(resumes.value, portfolios.value))
+  const count = computed(() => documents.value.length)
+  const find = (id) => documents.value.find((item) => item.id === String(id)) ?? null
+
+  const refreshResumes = async () => {
+    resumes.value = resumeItems(await resumeApi.list())
+    return resumes.value
   }
 
-  const count = computed(() => documents.value.length)
-  const find = (id) => documents.value.find((item) => String(item.id) === String(id)) ?? null
+  const refreshPortfolios = async () => {
+    portfolios.value = portfolioItems(await portfolioApi.list())
+    return portfolios.value
+  }
 
   const loadDocuments = async () => {
     loading.value = true
     error.value = ''
     try {
-      const response = await withMock(
-        () => documentApi.listDocuments(),
-        () => ({ documents: readLocal() }),
-      )
-      documents.value = responseItems(response).map(normalizeDocument)
-      persist()
+      const [resumeResult, portfolioResult] = await Promise.allSettled([
+        resumeApi.list(),
+        portfolioApi.list(),
+      ])
+
+      if (resumeResult.status === 'fulfilled') {
+        resumes.value = resumeItems(resumeResult.value)
+      }
+      if (portfolioResult.status === 'fulfilled') {
+        portfolios.value = portfolioItems(portfolioResult.value)
+      }
+
+      const resumeFailed = resumeResult.status === 'rejected'
+      const portfolioFailed = portfolioResult.status === 'rejected'
+      if (resumeFailed) resumes.value = []
+      if (portfolioFailed) portfolios.value = []
+      if (resumeFailed && portfolioFailed) {
+        error.value = '자소서와 포트폴리오 자료를 불러오지 못했습니다.'
+        throw resumeResult.reason
+      }
+      if (resumeFailed) error.value = '자소서 목록을 불러오지 못했습니다. 포트폴리오 자료만 표시합니다.'
+      if (portfolioFailed) error.value = '포트폴리오 목록을 불러오지 못했습니다. 자소서 자료만 표시합니다.'
       return documents.value
     } catch (requestError) {
-      error.value = requestError?.message || '지원 자료를 불러오지 못했습니다.'
+      if (!error.value) error.value = '지원 자료를 불러오지 못했습니다.'
       throw requestError
     } finally {
       loading.value = false
@@ -61,37 +74,44 @@ export const useDocumentsStore = defineStore('documents', () => {
   }
 
   const loadDocument = async (id) => {
-    const cached = find(id)
-    const response = await withMock(
-      () => documentApi.getDocument(id),
-      () => cached,
-    )
-    return response ? normalizeDocument(unwrapApiResponse(response)) : null
-  }
+    const parsed = parseSupportDocumentId(id)
+    if (!parsed) return null
 
-  const uploadDocument = async (file, type = inferType(file?.name)) => {
     loading.value = true
     error.value = ''
-    const fallback = {
-      id: createOpaqueLocalId('document'),
-      name: file.name,
-      type,
-      size: formatSize(file.size),
-      date: '방금 전',
-      mimeType: file.type || 'application/octet-stream',
-      previewUrl: globalThis.URL?.createObjectURL?.(file) ?? null,
-    }
     try {
-      const response = await withMock(
-        () => documentApi.uploadDocument(file, type),
-        () => fallback,
-      )
-      const created = normalizeDocument({ ...fallback, ...unwrapApiResponse(response) })
-      documents.value = [created, ...documents.value.filter((item) => item.id !== created.id)]
-      persist()
-      return created
+      if (parsed.type === 'resume') {
+        const item = unwrapApiResponse(await resumeApi.get(parsed.serverId))
+        return normalizeResumeDocument(item)
+      }
+      const item = unwrapApiResponse(await portfolioApi.get(parsed.serverId))
+      return normalizePortfolioDocument(item)
     } catch (requestError) {
-      error.value = requestError?.message || '지원 자료 등록에 실패했습니다.'
+      error.value = '지원 자료를 불러오지 못했습니다.'
+      throw requestError
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const uploadDocument = async ({ type, title, file }) => {
+    if (type !== 'resume' && type !== 'portfolio') throw new Error('지원 자료 유형이 올바르지 않습니다.')
+    const fileValidationError = validateSupportDocumentFile(file)
+    if (fileValidationError) throw new Error(fileValidationError)
+
+    loading.value = true
+    error.value = ''
+    try {
+      if (type === 'resume') {
+        await resumeApi.upload({ title, file })
+        await refreshResumes()
+      } else {
+        await portfolioApi.upload({ title, file })
+        await refreshPortfolios()
+      }
+      return documents.value.find((item) => item.type === type) ?? null
+    } catch (requestError) {
+      error.value = '지원 자료를 등록하지 못했습니다.'
       throw requestError
     } finally {
       loading.value = false
@@ -99,23 +119,39 @@ export const useDocumentsStore = defineStore('documents', () => {
   }
 
   const removeDocument = async (id) => {
-    const target = find(id)
-    if (!target) return false
+    const parsed = parseSupportDocumentId(id)
+    if (!parsed) return false
+
     loading.value = true
     error.value = ''
     try {
-      await withMock(() => documentApi.deleteDocument(id), () => ({ success: true }))
-      documents.value = documents.value.filter((item) => item.id !== target.id)
-      if (target.previewUrl?.startsWith?.('blob:')) globalThis.URL?.revokeObjectURL?.(target.previewUrl)
-      persist()
+      if (parsed.type === 'resume') {
+        await resumeApi.remove(parsed.serverId)
+        resumes.value = resumes.value.filter((item) => Number(item.id ?? item.resumeId) !== Number(parsed.serverId))
+      } else {
+        await portfolioApi.remove(parsed.serverId)
+        portfolios.value = portfolios.value.filter((item) => Number(item.id ?? item.portfolioId) !== Number(parsed.serverId))
+      }
       return true
     } catch (requestError) {
-      error.value = requestError?.message || '지원 자료 삭제에 실패했습니다.'
+      error.value = '지원 자료를 삭제하지 못했습니다.'
       throw requestError
     } finally {
       loading.value = false
     }
   }
 
-  return { documents, loading, error, count, find, loadDocuments, loadDocument, uploadDocument, removeDocument }
+  return {
+    resumes,
+    portfolios,
+    documents,
+    loading,
+    error,
+    count,
+    find,
+    loadDocuments,
+    loadDocument,
+    uploadDocument,
+    removeDocument,
+  }
 })

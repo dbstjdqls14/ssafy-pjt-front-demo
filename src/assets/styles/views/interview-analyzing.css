@@ -1,0 +1,29 @@
+/* 면접 분석 화면 — presentation-outcome.css를 공유해서 쓰다 보니(발표 쪽
+   레이아웃 기준으로 맞춘 CSS) 실패 상태가 어중간하게 보이던 부분만 정리한다.
+   진행 중 상태는 발표와 그대로 공유. */
+body.interview-analyzing-page .iv-analysis-failed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+  gap: 10px;
+}
+
+body.interview-analyzing-page .iv-analysis-failed-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.4;
+}
+
+body.interview-analyzing-page .iv-analysis-failed .analysis-error-message {
+  margin: 0;
+}
+
+body.interview-analyzing-page .analysis-retry-guidance {
+  margin: 6px 0 0;
+  color: #66738f;
+  font-size: 14px;
+  font-weight: 700;
+}

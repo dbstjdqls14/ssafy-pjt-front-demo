@@ -261,3 +261,28 @@ body.presentation-analyzing-page .analysis-status-panel {
 body.presentation-result-page .score-reveal {
   transform: none;
 }
+
+/* 진행 중인 단계는 완료 단계의 ✓와 같은 자리에 회전 스피너를 둔다 —
+   멈춘 화면처럼 보이지 않게(발표·면접 분석 화면 공통 마크업). */
+.presentation-analysis-shell .analyzing-status li.active::after {
+  content: "";
+  flex: 0 0 auto;
+  position: static;
+  width: 15px;
+  height: 15px;
+  border: 2px solid #ccd5f3;
+  border-top-color: #4e6fc2;
+  border-radius: 50%;
+  transform: none;
+  animation: analyzing-step-spin .8s linear infinite;
+}
+
+@keyframes analyzing-step-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .presentation-analysis-shell .analyzing-status li.active::after {
+    animation-duration: 2.4s;
+  }
+}
